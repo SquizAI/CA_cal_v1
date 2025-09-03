@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Test</title>
+</head>
+<body>
+    <h1>Testing Calendar Functionality</h1>
+    <button onclick="testCalendar()">Test Calendar</button>
+    <div id="results"></div>
+    
+    <script>
+        function testCalendar() {
+            // Open calendar in iframe to test
+            const iframe = document.createElement('iframe');
+            iframe.src = 'index.html';
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            iframe.onload = function() {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const results = document.getElementById('results');
+                
+                // Check if calendar rendered
+                const calendar = iframeDoc.getElementById('calendar');
+                if (calendar && calendar.children.length > 0) {
+                    results.innerHTML += '<p>✅ Calendar rendered successfully</p>';
+                    
+                    // Check for school days with lessons
+                    const schoolDays = iframeDoc.querySelectorAll('.has-lessons');
+                    results.innerHTML += `<p>✅ Found ${schoolDays.length} school days with lessons</p>`;
+                    
+                    // Check if modal exists
+                    const modal = iframeDoc.getElementById('lessonModal');
+                    if (modal) {
+                        results.innerHTML += '<p>✅ Modal element exists</p>';
+                    }
+                    
+                    // Test clicking on first school day
+                    if (schoolDays.length > 0) {
+                        schoolDays[0].click();
+                        setTimeout(() => {
+                            if (!modal.classList.contains('hidden')) {
+                                results.innerHTML += '<p>✅ Modal opens on click</p>';
+                            } else {
+                                results.innerHTML += '<p>❌ Modal did not open</p>';
+                            }
+                        }, 100);
+                    }
+                } else {
+                    results.innerHTML += '<p>❌ Calendar did not render</p>';
+                }
+            };
+            document.body.appendChild(iframe);
+        }
+    </script>
+</body>
+</html>

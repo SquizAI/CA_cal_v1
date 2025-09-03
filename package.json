@@ -1,0 +1,26 @@
+{
+  "name": "school-calendar-2025-2026",
+  "version": "1.0.0",
+  "description": "Interactive School Calendar with A/B Day Schedule and Full Curriculum",
+  "main": "index.html",
+  "keywords": [
+    "school",
+    "calendar",
+    "education",
+    "curriculum",
+    "florida",
+    "2025-2026"
+  ],
+  "author": "AI Academy",
+  "license": "MIT",
+  "repository": {
+    "type": "local",
+    "directory": "SchoolCalendar2025-2026"
+  },
+  "features": {
+    "interactive": true,
+    "mobileResponsive": true,
+    "offlineCapable": true,
+    "floridaStandards": true
+  }
+}
