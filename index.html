@@ -7,14 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Centner Academy Brand Colors */
         :root {
             --centner-blue: #57BAEB;
             --centner-pink: #EC4E88;
             --centner-orange: #FC6F24;
             --centner-dark: #2c3e50;
             --centner-light: #f8f9fa;
-            --centner-gradient: linear-gradient(135deg, #57BAEB 0%, #EC4E88 50%, #FC6F24 100%);
         }
         
         * {
@@ -24,361 +22,333 @@
         }
         
         body {
-            font-family: 'Open Sans', 'Roboto', sans-serif;
-            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            font-family: 'Open Sans', sans-serif;
+            background: #f9fafb;
             color: var(--centner-dark);
             min-height: 100vh;
         }
         
-        /* Header Styles */
         header {
-            background: var(--centner-gradient);
+            background: linear-gradient(135deg, var(--centner-blue) 0%, var(--centner-pink) 50%, var(--centner-orange) 100%);
             color: white;
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
         }
         
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: shimmer 10s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        h1 {
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .header-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
             margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
         }
         
-        .subtitle {
-            font-size: clamp(1rem, 3vw, 1.4rem);
-            opacity: 0.95;
-            font-weight: 300;
-            margin-bottom: 0.25rem;
-            position: relative;
-            z-index: 1;
+        .controls {
+            background: white;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
-        .tagline {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            opacity: 0.9;
-            font-weight: 500;
-            font-style: italic;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* View Toggle Buttons */
-        .view-toggle {
+        .controls-container {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 1.5rem auto;
-            padding: 0 1rem;
             flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .view-buttons {
+            display: flex;
+            gap: 0.5rem;
         }
         
         .view-btn {
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--centner-pink);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
             background: white;
-            color: var(--centner-pink);
-            border-radius: 25px;
+            border: 1px solid #d1d5db;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-        
-        .view-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(236, 78, 136, 0.3);
+            transition: all 0.2s;
+            font-size: 0.875rem;
         }
         
         .view-btn.active {
-            background: var(--centner-pink);
+            background: var(--centner-blue);
             color: white;
+            border-color: var(--centner-blue);
         }
         
-        /* Calendar Container */
+        .grade-filters {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .grade-filter {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .grade-filter.active {
+            background: var(--centner-pink);
+            color: white;
+            border-color: var(--centner-pink);
+        }
+        
         .calendar-container {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
         
         /* Month View */
-        .month-container {
+        .month-view {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            overflow: hidden;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         }
         
         .month-header {
-            background: linear-gradient(135deg, var(--centner-blue), var(--centner-pink));
-            color: white;
-            padding: 1rem;
-            font-size: 1.3rem;
-            font-weight: 700;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
         
-        .weekday-headers {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            background: var(--centner-light);
-            border-bottom: 2px solid #dee2e6;
-        }
-        
-        .weekday-header {
-            padding: 0.75rem 0.5rem;
-            text-align: center;
+        .month-title {
+            font-size: 1.5rem;
             font-weight: 600;
             color: var(--centner-dark);
-            font-size: 0.9rem;
         }
         
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
-            background: #dee2e6;
-            padding: 1px;
+            background: #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .weekday-header {
+            background: #f9fafb;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
         }
         
         .day-cell {
             background: white;
+            min-height: 120px;
             padding: 0.5rem;
-            min-height: 5rem;
-            display: flex;
-            flex-direction: column;
             position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .day-cell.has-lessons {
             cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .day-cell.has-lessons:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 10;
+        .day-cell:hover {
+            background: #f0f9ff;
         }
         
         .day-number {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             margin-bottom: 0.25rem;
         }
         
-        .day-info {
-            font-size: 0.7rem;
-            line-height: 1.2;
+        .day-type {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
         
-        .a-day {
-            background: linear-gradient(135deg, rgba(236, 78, 136, 0.1), rgba(236, 78, 136, 0.05));
-            border-left: 3px solid var(--centner-pink);
+        .day-type.a-day {
+            background: #dbeafe;
+            color: #1e40af;
         }
         
-        .b-day {
-            background: linear-gradient(135deg, rgba(87, 186, 235, 0.1), rgba(87, 186, 235, 0.05));
-            border-left: 3px solid var(--centner-blue);
+        .day-type.b-day {
+            background: #fce7f3;
+            color: #be185d;
+        }
+        
+        .lesson-preview {
+            font-size: 0.625rem;
+            color: #6b7280;
+            line-height: 1.3;
+            margin-top: 0.25rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
         
         .no-school {
-            background: linear-gradient(135deg, rgba(252, 111, 36, 0.1), rgba(252, 111, 36, 0.05));
-            border-left: 3px solid var(--centner-orange);
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+        
+        .test-day {
+            background: #fef3c7;
+            color: #d97706;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            margin-top: 0.25rem;
+            display: inline-block;
         }
         
         /* Week View */
         .week-view {
-            display: none;
             background: white;
-            border-radius: 15px;
-            padding: 1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .week-view.active {
-            display: block;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         }
         
         .week-grid {
             display: grid;
-            grid-template-columns: 100px 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .week-time-slot {
-            padding: 1rem 0.5rem;
-            border-right: 2px solid #dee2e6;
-            text-align: right;
-            font-weight: 600;
-            color: var(--centner-dark);
-        }
-        
-        .week-days {
-            display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
+            gap: 1rem;
         }
         
-        .week-day-column {
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 0.5rem;
-            min-height: 400px;
+        .week-day {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
         }
         
         .week-day-header {
-            background: var(--centner-gradient);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            text-align: center;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
         }
         
         /* Day View */
         .day-view {
-            display: none;
             background: white;
-            border-radius: 15px;
+            border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         }
         
-        .day-view.active {
-            display: block;
-        }
-        
-        .day-view-header {
-            background: var(--centner-gradient);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
+        .day-detail {
             margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        
-        .day-view-date {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .day-view-type {
-            font-size: 1.1rem;
-            opacity: 0.95;
         }
         
         .period-block {
-            background: var(--centner-light);
-            border-radius: 10px;
+            background: #f9fafb;
+            border-left: 4px solid var(--centner-blue);
             padding: 1rem;
             margin-bottom: 1rem;
-            border-left: 4px solid var(--centner-pink);
+            border-radius: 0.375rem;
         }
         
-        .period-time {
+        .period-header {
             font-weight: 600;
             color: var(--centner-dark);
             margin-bottom: 0.5rem;
-        }
-        
-        .period-subject {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--centner-pink);
-            margin-bottom: 0.5rem;
-        }
-        
-        .period-details {
-            font-size: 0.9rem;
-            color: #495057;
-            line-height: 1.5;
-        }
-        
-        /* Navigation */
-        .nav-controls {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 1rem;
-            margin: 1.5rem auto;
-            flex-wrap: wrap;
+            justify-content: space-between;
         }
         
-        .nav-btn {
-            padding: 0.5rem 1rem;
+        .lesson-code {
             background: var(--centner-blue);
             color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
             font-weight: 600;
-            transition: all 0.3s ease;
         }
         
-        .nav-btn:hover {
-            background: var(--centner-pink);
-            transform: translateY(-2px);
-        }
-        
-        .current-display {
+        .lesson-title {
+            font-size: 1.125rem;
             font-weight: 600;
             color: var(--centner-dark);
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
         }
         
-        /* Legend */
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin: 1.5rem auto;
-            flex-wrap: wrap;
-            padding: 1rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        .lesson-details {
+            color: #4b5563;
+            line-height: 1.6;
         }
         
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .legend-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 5px;
+        /* Mobile Accordion */
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .weekday-header {
+                display: none;
+            }
+            
+            .day-cell {
+                min-height: auto;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .accordion-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: pointer;
+                padding: 0.75rem;
+                background: #f9fafb;
+                border-radius: 0.5rem 0.5rem 0 0;
+            }
+            
+            .accordion-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                padding: 0 0.75rem;
+            }
+            
+            .accordion-content.open {
+                max-height: 500px;
+                padding: 0.75rem;
+            }
+            
+            .accordion-arrow {
+                transition: transform 0.3s;
+            }
+            
+            .accordion-arrow.open {
+                transform: rotate(180deg);
+            }
         }
         
         /* Modal */
@@ -390,574 +360,609 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
         }
         
         .modal.show {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
         
         .modal-content {
             background: white;
-            border-radius: 15px;
-            max-width: 90%;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 800px;
             max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { 
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         
         .modal-header {
-            background: var(--centner-gradient);
+            background: linear-gradient(135deg, var(--centner-blue) 0%, var(--centner-pink) 100%);
             color: white;
             padding: 1.5rem;
-            border-radius: 15px 15px 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .modal-body {
             padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
         }
         
-        .modal-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid #dee2e6;
-            text-align: center;
-        }
-        
-        .close-btn {
-            background: var(--centner-pink);
-            color: white;
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: background 0.2s;
         }
         
-        .close-btn:hover {
-            background: var(--centner-orange);
-            transform: translateY(-2px);
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .calendar-container {
-                padding: 0.5rem;
-            }
-            
-            .weekday-header {
-                font-size: 0.7rem;
-                padding: 0.5rem 0.25rem;
-            }
-            
-            .day-cell {
-                min-height: 3.5rem;
-                padding: 0.25rem;
-            }
-            
-            .day-number {
-                font-size: 0.8rem;
-            }
-            
-            .day-info {
-                font-size: 0.6rem;
-            }
-            
-            .week-grid {
-                grid-template-columns: 60px 1fr;
-            }
-            
-            .week-days {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .legend {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-            
-            .view-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-            
-            .nav-controls {
-                font-size: 0.9rem;
-            }
-            
-            /* Hide weekday names on very small screens */
-            @media (max-width: 480px) {
-                .weekday-header span {
-                    display: none;
-                }
-                
-                .weekday-header::after {
-                    content: attr(data-short);
-                }
-            }
-        }
-        
-        /* Tablet Responsive */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .calendar-container {
-                padding: 1rem;
-            }
-            
-            .day-cell {
-                min-height: 4rem;
-            }
-        }
-        
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-            }
-            
-            header {
-                background: none;
-                color: black;
-                border-bottom: 2px solid black;
-            }
-            
-            .view-toggle, .nav-controls {
-                display: none;
-            }
-            
-            .month-container {
-                box-shadow: none;
-                border: 1px solid black;
-                page-break-inside: avoid;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
-        <h1>🚀 AI Academy @ Centner</h1>
-        <div class="subtitle">2025-2026 School Calendar • A/B Day Block Schedule</div>
-        <div class="tagline">Cultivating Leaders with Heart Through AI-Driven Education</div>
+        <h1 class="header-title">AI Academy @ Centner</h1>
+        <p>2025-2026 Academic Calendar</p>
     </header>
     
-    <!-- View Toggle -->
-    <div class="view-toggle">
-        <button class="view-btn active" onclick="switchView('month')">Month View</button>
-        <button class="view-btn" onclick="switchView('week')">Week View</button>
-        <button class="view-btn" onclick="switchView('day')">Day View</button>
-    </div>
-    
-    <!-- Navigation Controls -->
-    <div class="nav-controls">
-        <button class="nav-btn" onclick="navigate('prev')">← Previous</button>
-        <span class="current-display" id="currentDisplay">September 2025</span>
-        <button class="nav-btn" onclick="navigate('next')">Next →</button>
-    </div>
-    
-    <!-- Legend -->
-    <div class="legend">
-        <div class="legend-item">
-            <div class="legend-box" style="background: var(--centner-pink);"></div>
-            <span>A Day</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-box" style="background: var(--centner-blue);"></div>
-            <span>B Day</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-box" style="background: var(--centner-orange);"></div>
-            <span>No School</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-box" style="background: #10B981;"></div>
-            <span>Half Day</span>
+    <div class="controls">
+        <div class="controls-container">
+            <div class="view-buttons">
+                <button class="view-btn active" onclick="setView('month')">Month</button>
+                <button class="view-btn" onclick="setView('week')">Week</button>
+                <button class="view-btn" onclick="setView('day')">Day</button>
+            </div>
+            
+            <div class="navigation">
+                <button onclick="navigate('prev')" class="view-btn">←</button>
+                <span id="current-date" class="mx-3 font-semibold"></span>
+                <button onclick="navigate('next')" class="view-btn">→</button>
+            </div>
+            
+            <div class="grade-filters">
+                <span class="text-sm font-medium">Filter:</span>
+                <button class="grade-filter active" onclick="setGradeFilter('all')">All</button>
+                <button class="grade-filter" onclick="setGradeFilter('7th')">7th Grade</button>
+                <button class="grade-filter" onclick="setGradeFilter('9th')">9th Grade</button>
+                <button class="grade-filter" onclick="setGradeFilter('11th')">11th Grade</button>
+            </div>
         </div>
     </div>
     
-    <!-- Calendar Container -->
     <div class="calendar-container">
-        <!-- Month View -->
-        <div id="monthView" class="month-view active">
-            <div id="calendar-container"></div>
-        </div>
-        
-        <!-- Week View -->
-        <div id="weekView" class="week-view">
-            <div id="week-container"></div>
-        </div>
-        
-        <!-- Day View -->
-        <div id="dayView" class="day-view">
-            <div id="day-container"></div>
-        </div>
+        <div id="calendar-content"></div>
     </div>
     
-    <!-- Modal for Lesson Details -->
+    <!-- Modal for lesson details -->
     <div id="lessonModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Lesson Details</h2>
-                <div id="modalDate"></div>
+                <h2 id="modalTitle">Day Details</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
-                <!-- Lesson details will be inserted here -->
-            </div>
-            <div class="modal-footer">
-                <button onclick="closeModal()" class="close-btn">Close</button>
+                <!-- Content will be dynamically inserted -->
             </div>
         </div>
     </div>
     
+    <script src="calendar_data.js"></script>
     <script>
-        // Import curriculum and lesson plans from the existing file
-        let curriculum = {};
-        let lessonPlans = {};
-        
-        // Current view state
         let currentView = 'month';
-        let currentDate = new Date(2025, 8, 1); // September 2025
-        let currentMonth = 8;
-        let currentYear = 2025;
-        let currentWeek = 1;
-        let currentDayIndex = 0;
+        let currentDate = new Date('2025-09-01');
+        let gradeFilter = 'all';
+        let aDayCount = 0;
+        let bDayCount = 0;
         
-        // School calendar data
-        const schoolDays = [];
-        const specialDays = new Map([
-            ['2025-09-23', { type: 'No School', name: 'No School' }],
-            ['2025-10-02', { type: 'No School', name: 'No School' }],
-            ['2025-10-31', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
-            ['2025-11-11', { type: 'No School', name: 'Veterans Day' }],
-            ['2025-11-24', { type: 'No School', name: 'Thanksgiving Break' }],
-            ['2025-11-25', { type: 'No School', name: 'Thanksgiving Break' }],
-            ['2025-11-26', { type: 'No School', name: 'Thanksgiving Break' }],
-            ['2025-11-27', { type: 'No School', name: 'Thanksgiving Break' }],
-            ['2025-11-28', { type: 'No School', name: 'Thanksgiving Break' }],
-            ['2025-12-05', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
-            ['2025-12-19', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
-            ['2025-12-22', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-23', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-24', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-25', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-26', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-29', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-30', { type: 'No School', name: 'Winter Break' }],
-            ['2025-12-31', { type: 'No School', name: 'Winter Break' }],
-            ['2026-01-01', { type: 'No School', name: 'Winter Break' }],
-            ['2026-01-02', { type: 'No School', name: 'Winter Break' }],
-            ['2026-01-05', { type: 'No School', name: 'No School' }],
-            ['2026-01-19', { type: 'No School', name: 'MLK Day' }],
-            ['2026-02-16', { type: 'No School', name: 'Presidents Day' }],
-            ['2026-03-23', { type: 'No School', name: 'Spring Break' }],
-            ['2026-03-24', { type: 'No School', name: 'Spring Break' }],
-            ['2026-03-25', { type: 'No School', name: 'Spring Break' }],
-            ['2026-03-26', { type: 'No School', name: 'Spring Break' }],
-            ['2026-03-27', { type: 'No School', name: 'Spring Break' }],
-            ['2026-04-03', { type: 'No School', name: 'No School' }],
-            ['2026-05-22', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
-            ['2026-05-25', { type: 'No School', name: 'Memorial Day' }],
-            ['2026-06-11', { type: 'Noon Dismissal', name: 'Last Day - Noon Dismissal' }],
-            ['2026-06-12', { type: 'No School', name: 'Summer Break' }]
-        ]);
+        // Detailed lesson plans with proper numbering
+        const detailedLessons = {
+            '7th_science': {
+                '7_sci_1.1': {
+                    title: 'Cell Theory & Structure',
+                    objectives: [
+                        'Understand the three principles of cell theory',
+                        'Identify differences between prokaryotic and eukaryotic cells',
+                        'Label major cell organelles and their functions'
+                    ],
+                    activities: [
+                        'Microscope lab: Observe plant and animal cells',
+                        'Build a 3D cell model with Discovery Box materials',
+                        'Cell organelle matching game'
+                    ],
+                    assessment: 'Lab report on cell observations and organelle quiz',
+                    standards: 'SC.6.L.14.2, SC.6.L.14.3, SC.6.L.14.4'
+                },
+                '7_sci_1.2': {
+                    title: 'Human Body Systems',
+                    objectives: [
+                        'Describe the major organ systems and their functions',
+                        'Explain how body systems work together',
+                        'Analyze the effects of disease on body systems'
+                    ],
+                    activities: [
+                        'Body systems stations rotation',
+                        'Create a human body systems flipbook',
+                        'Virtual dissection using 3D models'
+                    ],
+                    assessment: 'Body systems project presentation',
+                    standards: 'SC.6.L.14.5, SC.6.L.14.6'
+                }
+            },
+            '7th_civics': {
+                '7_civ_1.1': {
+                    title: 'Foundations of Government',
+                    objectives: [
+                        'Identify the influence of Enlightenment ideas on American government',
+                        'Explain the concept of natural rights',
+                        'Analyze the social contract theory'
+                    ],
+                    activities: [
+                        'Enlightenment thinkers gallery walk',
+                        'Create a government from scratch simulation',
+                        'Primary source analysis: John Locke excerpts'
+                    ],
+                    assessment: 'Essay on influence of Enlightenment on Constitution',
+                    standards: 'SS.7.C.1.1, SS.7.C.1.2'
+                },
+                '7_civ_1.2': {
+                    title: 'Declaration & Constitution',
+                    objectives: [
+                        'Analyze the grievances in the Declaration of Independence',
+                        'Trace the development from Articles to Constitution',
+                        'Identify key compromises at Constitutional Convention'
+                    ],
+                    activities: [
+                        'Declaration of Independence breakup letter activity',
+                        'Constitutional Convention simulation',
+                        'Compare/contrast Articles vs Constitution'
+                    ],
+                    assessment: 'Document-based question (DBQ) on founding documents',
+                    standards: 'SS.7.C.1.3, SS.7.C.1.4, SS.7.C.1.5'
+                }
+            },
+            '9th_ela': {
+                '9_ela_1.1': {
+                    title: 'Literary Elements',
+                    objectives: [
+                        'Identify and analyze plot structure',
+                        'Examine character development techniques',
+                        'Evaluate the role of setting in literature'
+                    ],
+                    activities: [
+                        'Plot diagram creation for selected short stories',
+                        'Character analysis graphic organizers',
+                        'Setting influence timeline project'
+                    ],
+                    assessment: 'Literary analysis essay on short story elements',
+                    standards: 'LA.910.2.1.1, LA.910.2.1.2, LA.910.2.1.3'
+                }
+            },
+            '9th_history': {
+                '9_hist_1.1': {
+                    title: 'Ancient Civilizations',
+                    objectives: [
+                        'Compare early river valley civilizations',
+                        'Analyze the development of writing systems',
+                        'Evaluate the impact of agriculture on society'
+                    ],
+                    activities: [
+                        'Create civilization comparison charts',
+                        'Cuneiform writing workshop',
+                        'Agricultural revolution simulation'
+                    ],
+                    assessment: 'Civilization comparison project',
+                    standards: 'SS.912.W.1.1, SS.912.W.1.2'
+                }
+            },
+            '11th_precalc': {
+                '11_calc_1.1': {
+                    title: 'Functions & Graphs',
+                    objectives: [
+                        'Master function notation and evaluation',
+                        'Graph and transform parent functions',
+                        'Analyze domain, range, and function behavior'
+                    ],
+                    activities: [
+                        'Function transformation exploration with graphing software',
+                        'Real-world function modeling project',
+                        'Function operation practice sets'
+                    ],
+                    assessment: 'Function analysis test and graphing project',
+                    standards: 'MA.912.F.1.1, MA.912.F.1.2'
+                }
+            },
+            '11th_econ': {
+                '11_econ_1.1': {
+                    title: 'Economic Fundamentals',
+                    objectives: [
+                        'Define scarcity and opportunity cost',
+                        'Analyze production possibilities curves',
+                        'Evaluate economic systems'
+                    ],
+                    activities: [
+                        'Personal budget opportunity cost analysis',
+                        'Production possibilities simulation',
+                        'Economic systems debate'
+                    ],
+                    assessment: 'Economic systems comparison essay',
+                    standards: 'SS.912.E.1.1, SS.912.E.1.2'
+                }
+            }
+        };
         
-        // Switch between views
-        function switchView(view) {
+        function getLessonCode(subject, date, period) {
+            const dayType = getABDay(date.toISOString().split('T')[0]);
+            if (!dayType) return '';
+            
+            const dayNum = dayType === 'A' ? ++aDayCount : ++bDayCount;
+            const periodNum = period;
+            const dayLetter = dayType.toLowerCase();
+            
+            return `${dayNum}.${periodNum}.${dayLetter}`;
+        }
+        
+        function setView(view) {
             currentView = view;
-            
-            // Update active button
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
-            // Hide all views
-            document.getElementById('monthView').classList.remove('active');
-            document.getElementById('weekView').classList.remove('active');
-            document.getElementById('dayView').classList.remove('active');
-            
-            // Show selected view
-            switch(view) {
-                case 'month':
-                    document.getElementById('monthView').classList.add('active');
-                    renderMonthView();
-                    break;
-                case 'week':
-                    document.getElementById('weekView').classList.add('active');
-                    renderWeekView();
-                    break;
-                case 'day':
-                    document.getElementById('dayView').classList.add('active');
-                    renderDayView();
-                    break;
-            }
-            
-            updateDisplay();
+            renderCalendar();
         }
         
-        // Navigation
+        function setGradeFilter(grade) {
+            gradeFilter = grade;
+            document.querySelectorAll('.grade-filter').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCalendar();
+        }
+        
         function navigate(direction) {
-            switch(currentView) {
-                case 'month':
-                    if (direction === 'next') {
-                        currentMonth++;
-                        if (currentMonth > 11) {
-                            currentMonth = 0;
-                            currentYear++;
-                        }
-                    } else {
-                        currentMonth--;
-                        if (currentMonth < 0) {
-                            currentMonth = 11;
-                            currentYear--;
-                        }
-                    }
-                    renderMonthView();
-                    break;
-                case 'week':
-                    if (direction === 'next') {
-                        currentWeek++;
-                    } else {
-                        currentWeek = Math.max(1, currentWeek - 1);
-                    }
-                    renderWeekView();
-                    break;
-                case 'day':
-                    if (direction === 'next') {
-                        currentDayIndex++;
-                    } else {
-                        currentDayIndex = Math.max(0, currentDayIndex - 1);
-                    }
-                    renderDayView();
-                    break;
+            if (currentView === 'month') {
+                currentDate.setMonth(currentDate.getMonth() + (direction === 'next' ? 1 : -1));
+            } else if (currentView === 'week') {
+                currentDate.setDate(currentDate.getDate() + (direction === 'next' ? 7 : -7));
+            } else {
+                currentDate.setDate(currentDate.getDate() + (direction === 'next' ? 1 : -1));
             }
-            updateDisplay();
+            renderCalendar();
         }
         
-        // Update current display
-        function updateDisplay() {
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                          'July', 'August', 'September', 'October', 'November', 'December'];
-            let displayText = '';
+        function renderCalendar() {
+            const container = document.getElementById('calendar-content');
             
-            switch(currentView) {
-                case 'month':
-                    displayText = `${months[currentMonth]} ${currentYear}`;
-                    break;
-                case 'week':
-                    displayText = `Week ${currentWeek} - ${currentYear}`;
-                    break;
-                case 'day':
-                    if (schoolDays[currentDayIndex]) {
-                        displayText = schoolDays[currentDayIndex].date;
-                    }
-                    break;
+            if (currentView === 'month') {
+                renderMonthView(container);
+            } else if (currentView === 'week') {
+                renderWeekView(container);
+            } else {
+                renderDayView(container);
             }
             
-            document.getElementById('currentDisplay').textContent = displayText;
+            updateCurrentDateDisplay();
         }
         
-        // Render Month View
-        function renderMonthView() {
-            const container = document.getElementById('calendar-container');
-            container.innerHTML = '';
+        function renderMonthView(container) {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
             
-            const monthContainer = document.createElement('div');
-            monthContainer.className = 'month-container';
+            let html = '<div class="month-view">';
+            html += `<div class="month-header">
+                <h2 class="month-title">${firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2>
+            </div>`;
             
-            // Month Header
-            const monthHeader = document.createElement('div');
-            monthHeader.className = 'month-header';
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                          'July', 'August', 'September', 'October', 'November', 'December'];
-            monthHeader.textContent = `${months[currentMonth]} ${currentYear}`;
-            monthContainer.appendChild(monthHeader);
+            html += '<div class="calendar-grid">';
             
-            // Weekday Headers
-            const weekdayHeaders = document.createElement('div');
-            weekdayHeaders.className = 'weekday-headers';
-            const weekdays = [
-                { full: 'Sunday', short: 'Sun' },
-                { full: 'Monday', short: 'Mon' },
-                { full: 'Tuesday', short: 'Tue' },
-                { full: 'Wednesday', short: 'Wed' },
-                { full: 'Thursday', short: 'Thu' },
-                { full: 'Friday', short: 'Fri' },
-                { full: 'Saturday', short: 'Sat' }
-            ];
-            
+            // Weekday headers
+            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             weekdays.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'weekday-header';
-                header.setAttribute('data-short', day.short);
-                header.innerHTML = `<span>${day.full}</span>`;
-                weekdayHeaders.appendChild(header);
+                html += `<div class="weekday-header">${day}</div>`;
             });
-            monthContainer.appendChild(weekdayHeaders);
             
-            // Calendar Grid
-            const grid = document.createElement('div');
-            grid.className = 'calendar-grid';
+            // Calendar days
+            const endDate = new Date(lastDay);
+            endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
             
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
-            // Empty cells for days before month starts
-            for (let i = 0; i < firstDay; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'day-cell';
-                grid.appendChild(emptyCell);
-            }
-            
-            // Days of the month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'day-cell';
+            let currentDay = new Date(startDate);
+            while (currentDay <= endDate) {
+                const dateStr = currentDay.toISOString().split('T')[0];
+                const dayType = getABDay(dateStr);
+                const isCurrentMonth = currentDay.getMonth() === month;
+                const isNoSchool = schoolCalendar.noSchoolDays.has(dateStr);
+                const isTestDay = Object.values(schoolCalendar.testDays).includes(dateStr);
                 
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
-                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                html += `<div class="day-cell ${isCurrentMonth ? '' : 'opacity-40'} ${dayType ? 'has-lessons' : ''}" 
+                         onclick="showDayDetails('${dateStr}')" 
+                         data-date="${dateStr}">`;
                 
-                // Check for special days
-                const special = specialDays.get(dateStr);
+                html += `<div class="day-number">${currentDay.getDate()}</div>`;
                 
-                if (special) {
-                    if (special.type === 'No School') {
-                        dayCell.classList.add('no-school');
-                    } else if (special.type === 'Noon Dismissal') {
-                        dayCell.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))';
-                        dayCell.style.borderLeft = '3px solid #10B981';
+                if (dayType) {
+                    html += `<div class="day-type ${dayType.toLowerCase()}-day">${dayType} Day</div>`;
+                }
+                
+                if (isNoSchool) {
+                    html += '<div class="no-school">No School</div>';
+                } else if (isTestDay) {
+                    const testName = Object.entries(schoolCalendar.testDays)
+                        .find(([name, date]) => date === dateStr)[0];
+                    html += `<div class="test-day">${testName}</div>`;
+                } else if (dayType && isCurrentMonth) {
+                    const preview = getPreviewForDay(dateStr, dayType);
+                    if (preview) {
+                        html += `<div class="lesson-preview">${preview}</div>`;
                     }
                 }
                 
-                // Add day number
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'day-number';
-                dayNumber.textContent = day;
-                dayCell.appendChild(dayNumber);
-                
-                // Add day info
-                const dayInfo = document.createElement('div');
-                dayInfo.className = 'day-info';
-                
-                if (special) {
-                    dayInfo.textContent = special.name;
-                } else if (!isWeekend) {
-                    // Determine if it's an A or B day
-                    // This is simplified - you'd need the actual logic from your curriculum
-                    const dayType = Math.random() > 0.5 ? 'A' : 'B';
-                    dayCell.classList.add(dayType === 'A' ? 'a-day' : 'b-day');
-                    dayCell.classList.add('has-lessons');
-                    dayInfo.textContent = `${dayType} Day`;
-                    
-                    dayCell.onclick = function() {
-                        showLessonDetails(dateStr, dayType);
-                    };
-                }
-                
-                dayCell.appendChild(dayInfo);
-                grid.appendChild(dayCell);
+                html += '</div>';
+                currentDay.setDate(currentDay.getDate() + 1);
             }
             
-            monthContainer.appendChild(grid);
-            container.appendChild(monthContainer);
+            html += '</div></div>';
+            container.innerHTML = html;
         }
         
-        // Render Week View
-        function renderWeekView() {
-            const container = document.getElementById('week-container');
-            container.innerHTML = '<div class="week-view active">Week view coming soon!</div>';
-            // Implementation would show detailed week schedule
+        function renderWeekView(container) {
+            const startOfWeek = new Date(currentDate);
+            const day = startOfWeek.getDay();
+            const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+            startOfWeek.setDate(diff);
+            
+            let html = '<div class="week-view">';
+            html += '<div class="week-grid">';
+            
+            for (let i = 0; i < 5; i++) {
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate() + i);
+                const dateStr = currentDay.toISOString().split('T')[0];
+                const dayType = getABDay(dateStr);
+                
+                html += `<div class="week-day">
+                    <div class="week-day-header">
+                        ${currentDay.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                        ${dayType ? `<span class="day-type ${dayType.toLowerCase()}-day">${dayType} Day</span>` : ''}
+                    </div>`;
+                
+                if (schoolCalendar.noSchoolDays.has(dateStr)) {
+                    html += '<div class="no-school">No School</div>';
+                } else if (dayType) {
+                    html += renderDayLessons(dateStr, dayType);
+                }
+                
+                html += '</div>';
+            }
+            
+            html += '</div></div>';
+            container.innerHTML = html;
         }
         
-        // Render Day View
-        function renderDayView() {
-            const container = document.getElementById('day-container');
-            container.innerHTML = '<div class="day-view active">Day view coming soon!</div>';
-            // Implementation would show detailed day schedule
+        function renderDayView(container) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const dayType = getABDay(dateStr);
+            
+            let html = '<div class="day-view">';
+            html += `<div class="day-detail">
+                <h2>${currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h2>
+                ${dayType ? `<span class="day-type ${dayType.toLowerCase()}-day">${dayType} Day</span>` : ''}
+            </div>`;
+            
+            if (schoolCalendar.noSchoolDays.has(dateStr)) {
+                html += '<div class="no-school">No School</div>';
+            } else if (dayType) {
+                html += renderDetailedDayLessons(dateStr, dayType);
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
         }
         
-        // Show Lesson Details Modal
-        function showLessonDetails(date, dayType) {
+        function renderDayLessons(dateStr, dayType) {
+            let html = '';
+            const subjects = getSubjectsForDay(dayType);
+            
+            subjects.forEach((subject, index) => {
+                const lesson = getLesson(subject.key, dateStr);
+                if (lesson && shouldShowSubject(subject.grade)) {
+                    html += `<div class="period-block">
+                        <div class="period-header">
+                            <span>Period ${index + 1}: ${subject.name}</span>
+                            <span class="lesson-code">${getLessonCode(subject.key, new Date(dateStr), index + 1)}</span>
+                        </div>
+                        <div class="lesson-title">${lesson}</div>
+                    </div>`;
+                }
+            });
+            
+            return html;
+        }
+        
+        function renderDetailedDayLessons(dateStr, dayType) {
+            let html = '';
+            const date = new Date(dateStr);
+            
+            // Check if it's the last week
+            if (date >= new Date('2026-06-08') && date <= new Date('2026-06-11')) {
+                const daySchedule = lastWeekSchedule[dateStr];
+                if (daySchedule) {
+                    Object.entries(daySchedule.activities).forEach(([period, activity]) => {
+                        html += `<div class="period-block">
+                            <div class="period-header">
+                                <span>${period}</span>
+                            </div>
+                            <div class="lesson-title">${activity}</div>
+                        </div>`;
+                    });
+                }
+                return html;
+            }
+            
+            const subjects = getSubjectsForDay(dayType);
+            const dayNum = getDayNumber(dateStr, dayType);
+            
+            subjects.forEach((subject, index) => {
+                const lesson = getLesson(subject.key, dateStr);
+                if (lesson && shouldShowSubject(subject.grade)) {
+                    const lessonKey = lesson.split(':')[0].trim().toLowerCase().replace(/ /g, '_');
+                    const details = detailedLessons[subject.key]?.[lessonKey];
+                    
+                    html += `<div class="period-block">
+                        <div class="period-header">
+                            <span>Period ${index + 1}: ${subject.name}</span>
+                            <span class="lesson-code">${dayNum}.${index + 1}.${dayType.toLowerCase()}</span>
+                        </div>
+                        <div class="lesson-title">${lesson}</div>`;
+                    
+                    if (details) {
+                        html += `<div class="lesson-details">
+                            <div><strong>Objectives:</strong></div>
+                            <ul class="list-disc list-inside ml-4">
+                                ${details.objectives.map(obj => `<li>${obj}</li>`).join('')}
+                            </ul>
+                            <div class="mt-2"><strong>Activities:</strong></div>
+                            <ul class="list-disc list-inside ml-4">
+                                ${details.activities.map(act => `<li>${act}</li>`).join('')}
+                            </ul>
+                            <div class="mt-2"><strong>Assessment:</strong> ${details.assessment}</div>
+                            <div class="mt-2"><strong>Standards:</strong> ${details.standards}</div>
+                        </div>`;
+                    }
+                    
+                    html += '</div>';
+                }
+            });
+            
+            return html;
+        }
+        
+        function getSubjectsForDay(dayType) {
+            if (dayType === 'A') {
+                return [
+                    { key: '7th_science', name: '7th Science', grade: '7th' },
+                    { key: '9th_ela', name: '9th ELA', grade: '9th' },
+                    { key: '11th_precalc', name: '11th PreCalculus', grade: '11th' }
+                ];
+            } else {
+                return [
+                    { key: '7th_civics', name: '7th Civics', grade: '7th' },
+                    { key: '9th_history', name: '9th World History', grade: '9th' },
+                    { key: '11th_econ', name: '11th Economics', grade: '11th' }
+                ];
+            }
+        }
+        
+        function shouldShowSubject(grade) {
+            return gradeFilter === 'all' || gradeFilter === grade;
+        }
+        
+        function getPreviewForDay(dateStr, dayType) {
+            const subjects = getSubjectsForDay(dayType);
+            const previews = [];
+            
+            subjects.forEach(subject => {
+                if (shouldShowSubject(subject.grade)) {
+                    const lesson = getLesson(subject.key, dateStr);
+                    if (lesson) {
+                        const shortLesson = lesson.split(':')[1] ? lesson.split(':')[1].trim() : lesson;
+                        previews.push(`${subject.grade}: ${shortLesson.substring(0, 20)}...`);
+                    }
+                }
+            });
+            
+            return previews.join(' | ');
+        }
+        
+        function showDayDetails(dateStr) {
             const modal = document.getElementById('lessonModal');
             const modalTitle = document.getElementById('modalTitle');
-            const modalDate = document.getElementById('modalDate');
             const modalBody = document.getElementById('modalBody');
             
-            modalTitle.textContent = `${dayType} Day Schedule`;
-            modalDate.textContent = date;
+            const date = new Date(dateStr + 'T12:00:00');
+            const dayType = getABDay(dateStr);
             
-            // Sample lesson content - would be populated from curriculum data
-            modalBody.innerHTML = `
-                <div class="period-block">
-                    <div class="period-time">Period 1 (8:00 AM - 9:30 AM)</div>
-                    <div class="period-subject">Mathematics</div>
-                    <div class="period-details">
-                        Topic: Algebraic Expressions<br>
-                        Objectives: Solve multi-step equations<br>
-                        Activities: Problem-solving workshop
-                    </div>
-                </div>
-                <div class="period-block">
-                    <div class="period-time">Period 2 (9:45 AM - 11:15 AM)</div>
-                    <div class="period-subject">Science</div>
-                    <div class="period-details">
-                        Topic: Cell Biology<br>
-                        Objectives: Understand cell structure<br>
-                        Activities: Microscope lab
-                    </div>
-                </div>
-                <div class="period-block">
-                    <div class="period-time">Period 3 (12:00 PM - 1:30 PM)</div>
-                    <div class="period-subject">English Language Arts</div>
-                    <div class="period-details">
-                        Topic: Literary Analysis<br>
-                        Objectives: Analyze themes in literature<br>
-                        Activities: Group discussion
-                    </div>
-                </div>
-            `;
+            modalTitle.textContent = date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            
+            if (schoolCalendar.noSchoolDays.has(dateStr)) {
+                modalBody.innerHTML = '<div class="no-school">No School</div>';
+            } else if (dayType) {
+                modalBody.innerHTML = renderDetailedDayLessons(dateStr, dayType);
+            } else {
+                modalBody.innerHTML = '<p>No classes scheduled</p>';
+            }
             
             modal.classList.add('show');
         }
         
-        // Close Modal
         function closeModal() {
-            const modal = document.getElementById('lessonModal');
-            modal.classList.remove('show');
+            document.getElementById('lessonModal').classList.remove('show');
         }
         
-        // Close modal when clicking outside
+        function updateCurrentDateDisplay() {
+            const display = document.getElementById('current-date');
+            if (currentView === 'month') {
+                display.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            } else if (currentView === 'week') {
+                const startOfWeek = new Date(currentDate);
+                const day = startOfWeek.getDay();
+                const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+                startOfWeek.setDate(diff);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 4);
+                display.textContent = `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            } else {
+                display.textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            }
+        }
+        
+        // Mobile accordion functionality
+        if (window.innerWidth <= 768) {
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('accordion-header')) {
+                    const content = e.target.nextElementSibling;
+                    const arrow = e.target.querySelector('.accordion-arrow');
+                    content.classList.toggle('open');
+                    arrow.classList.toggle('open');
+                }
+            });
+        }
+        
+        // Close modal on outside click
         window.onclick = function(event) {
             const modal = document.getElementById('lessonModal');
-            if (event.target == modal) {
+            if (event.target === modal) {
                 closeModal();
             }
         }
         
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', function() {
-            renderMonthView();
-            updateDisplay();
-        });
+        // Initialize calendar
+        renderCalendar();
     </script>
 </body>
 </html>
