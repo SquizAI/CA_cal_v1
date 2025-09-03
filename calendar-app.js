@@ -50,7 +50,7 @@ function getLesson(dayType, dayNum, subjectKey) {
 }
 
 // Create day cell for calendar grid
-function createDayCell(date) {
+function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     const cell = document.createElement('div');
     cell.className = 'day-cell';
     
@@ -65,6 +65,17 @@ function createDayCell(date) {
         return cell;
     }
     
+    // Don't show school content before Sept 8
+    const sep8 = new Date('2025-09-08');
+    if (date < sep8) {
+        cell.classList.add('no-school');
+        cell.innerHTML = `
+            <div class="day-number">${date.getDate()}</div>
+            <div class="text-xs text-gray-600">School starts Sept 8</div>
+        `;
+        return cell;
+    }
+    
     // Check if there's no school
     if (!scheduleInfo || !scheduleInfo.dayType) {
         cell.classList.add('no-school');
@@ -75,20 +86,8 @@ function createDayCell(date) {
         return cell;
     }
     
-    // Count school days starting from Sep 8
-    const sep8 = new Date('2025-09-08');
-    if (date >= sep8) {
-        if (scheduleInfo.dayType === 'A') {
-            aCounter++;
-            dayCounter++;
-        } else if (scheduleInfo.dayType === 'B') {
-            bCounter++;
-            dayCounter++;
-        }
-    }
-    
     const dayType = scheduleInfo.dayType;
-    const dayNum = dayType === 'A' ? aCounter : bCounter;
+    const dayNum = dayType === 'A' ? currentACount : currentBCount;
     
     // Add appropriate class
     cell.classList.add(dayType.toLowerCase() + '-day');
@@ -103,10 +102,10 @@ function createDayCell(date) {
     const lastWeekEnd = new Date('2026-06-11');
     const isLastWeek = date >= lastWeekStart && date <= lastWeekEnd;
     
-    // Build cell content
+    // Build cell content  
     let cellContent = `
         <div class="day-number">${date.getDate()}</div>
-        <div class="day-label ${dayType.toLowerCase()}-label">${dayCounter}.${dayType}</div>
+        <div class="day-label ${dayType.toLowerCase()}-label">${currentDayCount}.${dayType}</div>
     `;
     
     if (isLastWeek) {
@@ -151,8 +150,8 @@ function createDayCell(date) {
     
     cell.innerHTML = cellContent;
     
-    // Add click handler for lesson details - pass dayCounter instead of dayNum
-    cell.addEventListener('click', () => showLessonDetails(date, dayType, dayCounter, isLastWeek));
+    // Add click handler for lesson details - pass currentDayCount
+    cell.addEventListener('click', () => showLessonDetails(date, dayType, currentDayCount, isLastWeek));
     
     return cell;
 }
@@ -207,7 +206,7 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                     // Special handling for AI Awareness Days (Sept 8-9)
                     const isAIAwarenessDay = (date >= new Date('2025-09-08') && date <= new Date('2025-09-09'));
                     
-                    if (isAIAwarenessDay) {
+                    if (isAIAwarenessDay && dayCounter <= 2) {
                         const aiLesson = curriculumMap['ai_awareness'][dayCounter.toString()];
                         if (aiLesson) {
                             content += `
@@ -219,11 +218,26 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                                     <p><strong>Activities:</strong></p>
                                     <ul>${aiLesson.activities.map(act => `<li>${act}</li>`).join('')}</ul>
                                     <p><strong>Assessment:</strong> ${aiLesson.assessment}</p>
-                                    <p><strong>Standards:</strong> <span class="text-sm text-blue-600">${aiLesson.standards}</span></p>
+                                    <p><strong>Standards:</strong> <span class="text-sm text-blue-600">${aiLesson.standards}</span></p>`;
+                            
+                            // Add period-specific details if available
+                            if (aiLesson.details && aiLesson.details[period]) {
+                                const periodDetails = aiLesson.details[period];
+                                if (periodDetails[grade]) {
+                                    content += `
+                                        <div class="mt-4 p-3 bg-blue-50 rounded">
+                                            <p><strong>Period-Specific Activities:</strong></p>
+                                            <p class="text-sm">${periodDetails[grade]}</p>
+                                        </div>
+                                    `;
+                                }
+                            }
+                            
+                            content += `
                                     <div class="lesson-metadata">
                                         <span>🤖 AI Awareness</span>
                                         <span>📐 ${grade}th Grade</span>
-                                        <span>📅 ${dayType} Day</span>
+                                        <span>📅 Day ${dayCounter}</span>
                                     </div>
                                 </div>
                             `;
@@ -357,11 +371,6 @@ function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     const monthYearElem = document.getElementById('currentMonth');
     
-    // Reset counters for each render
-    dayCounter = 0;
-    aCounter = 0;
-    bCounter = 0;
-    
     // Clear grid
     grid.innerHTML = '';
     
@@ -385,29 +394,47 @@ function renderCalendar() {
         grid.appendChild(emptyCell);
     }
     
-    // Count all days before current month for accurate numbering
-    if (currentMonth > 8 || currentYear > 2025) {
-        const startDate = new Date('2025-09-03');
-        const currentMonthStart = new Date(currentYear, currentMonth, 1);
-        
-        for (let d = new Date(startDate); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
-            const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-            const info = schoolSchedule[dateStr];
-            if (info && info.dayType) {
-                const sep8 = new Date('2025-09-08');
-                if (d >= sep8) {
-                    dayCounter++;
-                    if (info.dayType === 'A') aCounter++;
-                    else if (info.dayType === 'B') bCounter++;
-                }
-            }
+    // Calculate running totals for days up to current month
+    let runningDayCount = 0;
+    let runningACount = 0;
+    let runningBCount = 0;
+    
+    const sep8 = new Date('2025-09-08');
+    const currentMonthStart = new Date(currentYear, currentMonth, 1);
+    
+    // Count all school days from Sep 8 up to current month
+    for (let d = new Date(sep8); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
+        const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+        const info = schoolSchedule[dateStr];
+        if (info && info.dayType) {
+            runningDayCount++;
+            if (info.dayType === 'A') runningACount++;
+            else if (info.dayType === 'B') runningBCount++;
         }
     }
     
     // Add days of month
     for (let day = 1; day <= lastDay.getDate(); day++) {
         const date = new Date(currentYear, currentMonth, day);
-        const cell = createDayCell(date);
+        const dateStr = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+        const scheduleInfo = schoolSchedule[dateStr];
+        
+        // Create cell with current counts, then increment for next iteration
+        let cellDayCount = runningDayCount;
+        let cellACount = runningACount;  
+        let cellBCount = runningBCount;
+        
+        // Increment counters AFTER getting values for this cell
+        if (date >= sep8 && scheduleInfo && scheduleInfo.dayType) {
+            runningDayCount++;
+            if (scheduleInfo.dayType === 'A') runningACount++;
+            else if (scheduleInfo.dayType === 'B') runningBCount++;
+            cellDayCount = runningDayCount;  // Use incremented value for display
+            cellACount = runningACount;
+            cellBCount = runningBCount;
+        }
+        
+        const cell = createDayCell(date, cellDayCount, cellACount, cellBCount);
         grid.appendChild(cell);
     }
     
