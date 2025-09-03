@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Year Calendar 2025-2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+        }
+        .day-cell {
+            padding: 0.5rem;
+            min-height: 5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .day-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .day-cell.has-lessons {
+            cursor: pointer;
+        }
+        .day-cell.has-lessons:hover::after {
+            content: '📋 Click for details';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 4px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .day-number {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal.show {
+            display: block;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(80vh - 200px);
+        }
+        .modal-footer {
+            background: #f7fafc;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close:hover {
+            color: #f0f0f0;
+        }
+        .lesson-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .lesson-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .lesson-details {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .calendar-grid {
+                gap: 0.125rem;
+            }
+            .day-cell {
+                padding: 0.25rem;
+                min-height: 7rem;
+            }
+            .day-number {
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            .max-w-7xl {
+                padding: 0.5rem !important;
+            }
+            h1 {
+                font-size: 1.5rem !important;
+            }
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 1px;
+            }
+            .day-cell {
+                padding: 2px;
+                min-height: auto;
+                border-radius: 3px;
+            }
+            .day-number {
+                font-size: 0.75rem;
+                font-weight: 700;
+            }
+            .day-cell .text-xs {
+                font-size: 0.5rem;
+                line-height: 1.2;
+            }
+            .day-cell .text-[0.6rem] {
+                display: none; /* Hide detailed lesson info on mobile */
+            }
+            .day-cell.has-lessons::after {
+                content: '👆';
+                font-size: 0.8rem;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+                max-height: 95vh;
+            }
+            .modal-body {
+                max-height: calc(95vh - 150px);
+            }
+            /* Show abbreviated schedule on mobile */
+            .day-cell .schedule-mobile {
+                display: block;
+            }
+            .day-cell .schedule-desktop {
+                display: none;
+            }
+        }
+        @media (max-width: 480px) {
+            .calendar-grid {
+                font-size: 0.7rem;
+            }
+            .day-cell {
+                padding: 1px;
+            }
+            .day-number {
+                font-size: 0.65rem;
+            }
+            .legend {
+                font-size: 0.7rem;
+            }
+        }
+        /* Schedule display toggles */
+        .schedule-mobile {
+            display: none;
+        }
+        .schedule-desktop {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .schedule-mobile {
+                display: block;
+                font-size: 0.55rem;
+            }
+            .schedule-desktop {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+<div class="max-w-7xl mx-auto bg-white p-4 sm:p-8 md:p-12 rounded-2xl shadow-xl">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-6 text-gray-900">Full School Year Calendar 2025-2026</h1>
+    <p class="text-center text-sm sm:text-base md:text-lg text-gray-600 mb-6 sm:mb-10">
+        Complete A and B Day Schedule with Full Curriculum Mapping for All Classes, Holidays, and Early Dismissals.
+    </p>
+
+    <!-- Legend is made flexible to wrap on small screens -->
+    <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 text-xs sm:text-sm">
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-100 border border-blue-400"></span>
+            <span>A Day</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-indigo-100 border border-indigo-400"></span>
+            <span>B Day</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gray-100 border border-gray-400"></span>
+            <span>Weekend/No School</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-yellow-100 border border-yellow-400"></span>
+            <span>Noon Dismissal</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-blue-600">📚📐🔬⚖️📖</span>
+            <span>A Day Lessons</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-indigo-600">🌍📝➕🏛️📊</span>
+            <span>B Day Lessons</span>
+        </div>
+    </div>
+
+    <div id="calendar-container" class="space-y-8 md:space-y-12">
+        <!-- Calendar will be dynamically generated here -->
+    </div>
+</div>
+
+<!-- Lesson Details Modal -->
+<div id="lessonModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" class="text-xl md:text-2xl font-bold">Lesson Details</h2>
+            <p id="modalDate" class="text-sm opacity-90 mt-1"></p>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Lesson content will be dynamically inserted here -->
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const calendarContainer = document.getElementById('calendar-container');
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        // Data for holidays and special days from the user's provided text
+        const specialDays = new Map([
+            // Month is 0-indexed, so September is 8
+            ['2025-09-23', { type: 'No School', name: 'No School' }],
+            ['2025-10-02', { type: 'No School', name: 'No School' }],
+            ['2025-10-31', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-11-11', { type: 'No School', name: 'No School' }],
+            ['2025-11-24', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-25', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-26', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-27', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-28', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-12-05', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-12-19', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-12-22', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-23', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-24', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-25', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-26', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-29', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-30', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-31', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-01', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-02', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-05', { type: 'No School', name: 'No School' }],
+            ['2026-01-19', { type: 'No School', name: 'No School' }],
+            ['2026-02-16', { type: 'No School', name: 'No School' }],
+            ['2026-03-23', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-24', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-25', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-26', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-27', { type: 'No School', name: 'Spring Break' }],
+            ['2026-04-03', { type: 'No School', name: 'No School' }],
+            ['2026-05-22', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2026-05-25', { type: 'No School', name: 'No School' }],
+            ['2026-06-11', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2026-06-13', { type: 'No School', name: 'No School' }],
+        ]);
+
+        const schedules = {
+            'A': [
+                { period: 1, time: '8:18 - 9:48', classes: ['9th Grade ELA (3 Students)', '11th Grade PreCalc (1 Student)'] },
+                { period: 2, time: '9:51 - 11:21', classes: ['7th Grade Science (6 Students)', '11th Grade US Gov\'t (2 Students)'], scienceLesson: '' },
+                { period: 3, time: '12:12 - 1:42', classes: ['7th Grade ELA (6 Students)'] }
+            ],
+            'B': [
+                { period: 1, time: '8:18 - 9:48', classes: ['9th Grade World History (3 Students)', '11th Grade ELA III (2 Students)'] },
+                { period: 2, time: '9:51 - 11:21', classes: ['7th Grade Math (6 Students)'] },
+                { period: 3, time: '12:12 - 1:42', classes: ['7th Grade History (6 Students)', '9th Grade Math (3 Students)'] }
+            ]
+        };
+
+        let schoolDayCount = 0;
+        let isNumberingStarted = false;
+        let aDayCount = 0; // Track A days for A-day subjects
+        let bDayCount = 0; // Track B days for B-day subjects
+        
+        // Comprehensive curriculum mapping for all classes
+        const curriculum = {
+            // A Day Classes
+            '9th_ela': {
+                '1-5': '9_ela_1.1.1: Literary Elements',
+                '6-10': '9_ela_1.1.2: Narrative Structure',
+                '11-15': '9_ela_1.1.3: Character Analysis',
+                '16-20': '9_ela_1.2.1: Theme Development',
+                '21-25': '9_ela_1.2.2: Symbolism & Imagery',
+                '26-30': '9_ela_1.2.3: Point of View',
+                '31-35': '9_ela_2.1.1: Romeo & Juliet',
+                '36-40': '9_ela_2.1.2: Shakespeare Language',
+                '41-45': '9_ela_2.1.3: Dramatic Elements',
+                '46-50': '9_ela_3.1.1: Essay Structure',
+                '51-55': '9_ela_3.1.2: Argument Writing',
+                '56-60': '9_ela_3.1.3: Research Methods',
+                '61-65': '9_ela_4.1.1: Poetry Forms',
+                '66-70': '9_ela_4.1.2: Poetic Devices',
+                '71-75': '9_ela_4.1.3: Poetry Analysis',
+                '76-80': '9_ela_5.1.1: Novel Study',
+                '81-85': '9_ela_5.1.2: Literary Criticism',
+                '86-90': '9_ela_5.1.3: Final Project',
+                // Second Semester
+                '91-95': '9_ela_6.1.1: Mythology & Folklore',
+                '96-100': '9_ela_6.1.2: Epic Literature',
+                '101-105': '9_ela_6.1.3: Cultural Narratives',
+                '106-110': '9_ela_7.1.1: Modern Fiction',
+                '111-115': '9_ela_7.1.2: Contemporary Issues',
+                '116-120': '9_ela_7.1.3: Social Justice Literature',
+                '121-125': '9_ela_8.1.1: Creative Writing',
+                '126-130': '9_ela_8.1.2: Personal Narratives',
+                '131-135': '9_ela_8.1.3: Publication Workshop',
+                '136-140': '9_ela_9.1.1: Drama Study',
+                '141-145': '9_ela_9.1.2: Performance Literature',
+                '146-150': '9_ela_9.1.3: Reader\'s Theater',
+                '151-155': '9_ela_10.1.1: Research Project',
+                '156-160': '9_ela_10.1.2: Presentation Skills',
+                '161-165': '9_ela_10.1.3: Portfolio Development',
+                '166-170': '9_ela_11.1.1: EOC Review',
+                '171-175': '9_ela_11.1.2: Skills Assessment',
+                '176-180': '9_ela_11.1.3: Final Exhibition'
+            },
+            '11th_precalc': {
+                '1-5': '11_pc_1.1.1: Functions Review',
+                '6-10': '11_pc_1.1.2: Polynomial Functions',
+                '11-15': '11_pc_1.1.3: Rational Functions',
+                '16-20': '11_pc_1.2.1: Exponential Functions',
+                '21-25': '11_pc_1.2.2: Logarithmic Functions',
+                '26-30': '11_pc_1.2.3: Applications',
+                '31-35': '11_pc_2.1.1: Trigonometric Functions',
+                '36-40': '11_pc_2.1.2: Unit Circle',
+                '41-45': '11_pc_2.1.3: Trig Identities',
+                '46-50': '11_pc_2.2.1: Trig Equations',
+                '51-55': '11_pc_2.2.2: Law of Sines/Cosines',
+                '56-60': '11_pc_2.2.3: Polar Coordinates',
+                '61-65': '11_pc_3.1.1: Sequences & Series',
+                '66-70': '11_pc_3.1.2: Limits Introduction',
+                '71-75': '11_pc_3.1.3: Derivatives Preview',
+                '76-80': '11_pc_4.1.1: Conic Sections',
+                '81-85': '11_pc_4.1.2: Parametric Equations',
+                '86-90': '11_pc_4.1.3: CLEP Preparation',
+                // Second Semester
+                '91-95': '11_pc_5.1.1: Vectors',
+                '96-100': '11_pc_5.1.2: Matrices',
+                '101-105': '11_pc_5.1.3: Linear Algebra Intro',
+                '106-110': '11_pc_6.1.1: Complex Numbers',
+                '111-115': '11_pc_6.1.2: DeMoivre\'s Theorem',
+                '116-120': '11_pc_6.1.3: Applications',
+                '121-125': '11_pc_7.1.1: Statistics Review',
+                '126-130': '11_pc_7.1.2: Probability Theory',
+                '131-135': '11_pc_7.1.3: Distributions',
+                '136-140': '11_pc_8.1.1: Calculus Preview',
+                '141-145': '11_pc_8.1.2: Derivative Concepts',
+                '146-150': '11_pc_8.1.3: Integration Basics',
+                '151-155': '11_pc_9.1.1: Advanced Functions',
+                '156-160': '11_pc_9.1.2: Mathematical Modeling',
+                '161-165': '11_pc_9.1.3: Real-World Applications',
+                '166-170': '11_pc_10.1.1: CLEP Review',
+                '171-175': '11_pc_10.1.2: AP Calculus Prep',
+                '176-180': '11_pc_10.1.3: Final Assessment'
+            },
+            '7th_science': {
+                '1-5': '7_sci_1.1.1: What is Science?',
+                '6-10': '7_sci_1.1.2: Scientific Method',
+                '11-15': '7_sci_1.1.3: Variables & Controls',
+                '16-20': '7_sci_1.2.1: Data Collection',
+                '21-25': '7_sci_1.2.2: Graphs & Charts',
+                '26-30': '7_sci_1.2.3: Patterns & Analysis',
+                '31-35': '7_sci_2.1.1: Cell Theory',
+                '36-40': '7_sci_2.1.2: Cell Structure',
+                '41-45': '7_sci_2.1.3: Cell Function',
+                '46-50': '7_sci_2.2.1: Photosynthesis',
+                '51-55': '7_sci_2.2.2: Cellular Respiration',
+                '56-60': '7_sci_2.2.3: Cell Division',
+                '61-65': '7_sci_3.1.1: DNA Structure',
+                '66-70': '7_sci_3.1.2: Heredity',
+                '71-75': '7_sci_3.1.3: Punnett Squares',
+                '76-80': '7_sci_3.2.1: Natural Selection',
+                '81-85': '7_sci_3.2.2: Adaptations',
+                '86-90': '7_sci_3.2.3: Evidence of Evolution',
+                // Second Semester - Life Science Continues
+                '91-95': '7_sci_4.1.1: Ecosystems',
+                '96-100': '7_sci_4.1.2: Food Webs',
+                '101-105': '7_sci_4.1.3: Energy Flow',
+                '106-110': '7_sci_4.2.1: Biomes',
+                '111-115': '7_sci_4.2.2: Climate & Life',
+                '116-120': '7_sci_4.2.3: Conservation',
+                '121-125': '7_sci_5.1.1: Human Body Systems',
+                '126-130': '7_sci_5.1.2: Homeostasis',
+                '131-135': '7_sci_5.1.3: Disease & Immunity',
+                '136-140': '7_sci_5.2.1: Reproduction',
+                '141-145': '7_sci_5.2.2: Development',
+                '146-150': '7_sci_5.2.3: Life Cycles',
+                '151-155': '7_sci_6.1.1: Classification',
+                '156-160': '7_sci_6.1.2: Kingdoms of Life',
+                '161-165': '7_sci_6.1.3: Biodiversity',
+                '166-170': '7_sci_7.1.1: EOC Review Life Science',
+                '171-175': '7_sci_7.1.2: Lab Practicum',
+                '176-180': '7_sci_7.1.3: Final Projects'
+            },
+            '11th_gov': {
+                '1-5': '11_gov_1.1.1: Constitutional Foundations',
+                '6-10': '11_gov_1.1.2: Federalism',
+                '11-15': '11_gov_1.1.3: Separation of Powers',
+                '16-20': '11_gov_1.2.1: Legislative Branch',
+                '21-25': '11_gov_1.2.2: Executive Branch',
+                '26-30': '11_gov_1.2.3: Judicial Branch',
+                '31-35': '11_gov_2.1.1: Bill of Rights',
+                '36-40': '11_gov_2.1.2: Civil Liberties',
+                '41-45': '11_gov_2.1.3: Civil Rights',
+                '46-50': '11_gov_2.2.1: Political Parties',
+                '51-55': '11_gov_2.2.2: Elections & Voting',
+                '56-60': '11_gov_2.2.3: Media & Politics',
+                '61-65': '11_gov_3.1.1: Public Policy',
+                '66-70': '11_gov_3.1.2: Economic Policy',
+                '71-75': '11_gov_3.1.3: Foreign Policy',
+                '76-80': '11_gov_3.2.1: State & Local Gov',
+                '81-85': '11_gov_3.2.2: Civic Participation',
+                '86-90': '11_gov_3.2.3: CLEP Preparation',
+                // Second Semester
+                '91-95': '11_gov_4.1.1: Supreme Court Cases',
+                '96-100': '11_gov_4.1.2: Landmark Decisions',
+                '101-105': '11_gov_4.1.3: Constitutional Interpretation',
+                '106-110': '11_gov_4.2.1: Interest Groups',
+                '111-115': '11_gov_4.2.2: Lobbying & PACs',
+                '116-120': '11_gov_4.2.3: Campaign Finance',
+                '121-125': '11_gov_5.1.1: Bureaucracy',
+                '126-130': '11_gov_5.1.2: Regulatory Agencies',
+                '131-135': '11_gov_5.1.3: Administrative Law',
+                '136-140': '11_gov_5.2.1: Criminal Justice System',
+                '141-145': '11_gov_5.2.2: Due Process',
+                '146-150': '11_gov_5.2.3: Constitutional Rights',
+                '151-155': '11_gov_6.1.1: International Relations',
+                '156-160': '11_gov_6.1.2: Treaties & Agreements',
+                '161-165': '11_gov_6.1.3: Global Governance',
+                '166-170': '11_gov_7.1.1: CLEP Review',
+                '171-175': '11_gov_7.1.2: AP Gov Review',
+                '176-180': '11_gov_7.1.3: Final Assessment'
+            },
+            '7th_ela': {
+                '1-5': '7_ela_1.1.1: Narrative Elements',
+                '6-10': '7_ela_1.1.2: Plot Development',
+                '11-15': '7_ela_1.1.3: Character Traits',
+                '16-20': '7_ela_1.2.1: Theme Analysis',
+                '21-25': '7_ela_1.2.2: Literary Devices',
+                '26-30': '7_ela_1.2.3: Context Clues',
+                '31-35': '7_ela_2.1.1: Informational Text',
+                '36-40': '7_ela_2.1.2: Text Structure',
+                '41-45': '7_ela_2.1.3: Author\'s Purpose',
+                '46-50': '7_ela_3.1.1: Essay Writing',
+                '51-55': '7_ela_3.1.2: Research Skills',
+                '56-60': '7_ela_3.1.3: Citations & Sources',
+                '61-65': '7_ela_4.1.1: Grammar Review',
+                '66-70': '7_ela_4.1.2: Vocabulary Building',
+                '71-75': '7_ela_4.1.3: Speaking & Listening',
+                '76-80': '7_ela_5.1.1: Novel Study',
+                '81-85': '7_ela_5.1.2: Book Reports',
+                '86-90': '7_ela_5.1.3: Final Portfolio',
+                // Second Semester
+                '91-95': '7_ela_6.1.1: Poetry Exploration',
+                '96-100': '7_ela_6.1.2: Figurative Language',
+                '101-105': '7_ela_6.1.3: Poetry Writing',
+                '106-110': '7_ela_7.1.1: Drama & Plays',
+                '111-115': '7_ela_7.1.2: Shakespeare Introduction',
+                '116-120': '7_ela_7.1.3: Performance Reading',
+                '121-125': '7_ela_8.1.1: Media Literacy',
+                '126-130': '7_ela_8.1.2: Digital Communication',
+                '131-135': '7_ela_8.1.3: Multimedia Projects',
+                '136-140': '7_ela_9.1.1: Mythology & Legends',
+                '141-145': '7_ela_9.1.2: Folk Tales',
+                '146-150': '7_ela_9.1.3: Cultural Stories',
+                '151-155': '7_ela_10.1.1: Biography Study',
+                '156-160': '7_ela_10.1.2: Historical Fiction',
+                '161-165': '7_ela_10.1.3: Memoir Writing',
+                '166-170': '7_ela_11.1.1: F.A.S.T. Review',
+                '171-175': '7_ela_11.1.2: Skills Assessment',
+                '176-180': '7_ela_11.1.3: Portfolio Presentation'
+            },
+            // B Day Classes
+            '9th_history': {
+                '1-5': '9_wh_1.1.1: Ancient Civilizations',
+                '6-10': '9_wh_1.1.2: Mesopotamia & Egypt',
+                '11-15': '9_wh_1.1.3: Greece & Rome',
+                '16-20': '9_wh_1.2.1: Medieval Europe',
+                '21-25': '9_wh_1.2.2: Islamic Civilizations',
+                '26-30': '9_wh_1.2.3: Asian Empires',
+                '31-35': '9_wh_2.1.1: Renaissance',
+                '36-40': '9_wh_2.1.2: Reformation',
+                '41-45': '9_wh_2.1.3: Age of Exploration',
+                '46-50': '9_wh_2.2.1: Enlightenment',
+                '51-55': '9_wh_2.2.2: Scientific Revolution',
+                '56-60': '9_wh_2.2.3: Political Revolutions',
+                '61-65': '9_wh_3.1.1: Industrial Revolution',
+                '66-70': '9_wh_3.1.2: Imperialism',
+                '71-75': '9_wh_3.1.3: World War I',
+                '76-80': '9_wh_3.2.1: World War II',
+                '81-85': '9_wh_3.2.2: Cold War',
+                '86-90': '9_wh_3.2.3: Modern World',
+                // Second Semester
+                '91-95': '9_wh_4.1.1: Decolonization',
+                '96-100': '9_wh_4.1.2: Independence Movements',
+                '101-105': '9_wh_4.1.3: Post-Colonial World',
+                '106-110': '9_wh_4.2.1: Globalization',
+                '111-115': '9_wh_4.2.2: Technology Revolution',
+                '116-120': '9_wh_4.2.3: Information Age',
+                '121-125': '9_wh_5.1.1: Middle East Conflicts',
+                '126-130': '9_wh_5.1.2: Asian Development',
+                '131-135': '9_wh_5.1.3: African Challenges',
+                '136-140': '9_wh_5.2.1: European Union',
+                '141-145': '9_wh_5.2.2: Americas Today',
+                '146-150': '9_wh_5.2.3: Pacific Rim',
+                '151-155': '9_wh_6.1.1: Environmental History',
+                '156-160': '9_wh_6.1.2: Climate & Civilization',
+                '161-165': '9_wh_6.1.3: Sustainability',
+                '166-170': '9_wh_7.1.1: EOC Review',
+                '171-175': '9_wh_7.1.2: Document Analysis',
+                '176-180': '9_wh_7.1.3: Final Projects'
+            },
+            '11th_ela': {
+                '1-5': '11_ela_1.1.1: American Literature Origins',
+                '6-10': '11_ela_1.1.2: Colonial Literature',
+                '11-15': '11_ela_1.1.3: Revolutionary Writers',
+                '16-20': '11_ela_1.2.1: Romanticism',
+                '21-25': '11_ela_1.2.2: Transcendentalism',
+                '26-30': '11_ela_1.2.3: Dark Romanticism',
+                '31-35': '11_ela_2.1.1: Realism & Naturalism',
+                '36-40': '11_ela_2.1.2: Mark Twain',
+                '41-45': '11_ela_2.1.3: Regional Literature',
+                '46-50': '11_ela_3.1.1: Modernism',
+                '51-55': '11_ela_3.1.2: Harlem Renaissance',
+                '56-60': '11_ela_3.1.3: Lost Generation',
+                '61-65': '11_ela_4.1.1: Post-War Literature',
+                '66-70': '11_ela_4.1.2: Civil Rights Era',
+                '71-75': '11_ela_4.1.3: Contemporary Voices',
+                '76-80': '11_ela_5.1.1: Research Paper',
+                '81-85': '11_ela_5.1.2: Literary Criticism',
+                '86-90': '11_ela_5.1.3: AP/CLEP Prep',
+                // Second Semester
+                '91-95': '11_ela_6.1.1: Beat Generation',
+                '96-100': '11_ela_6.1.2: Confessional Poetry',
+                '101-105': '11_ela_6.1.3: Postmodernism',
+                '106-110': '11_ela_7.1.1: Southern Gothic',
+                '111-115': '11_ela_7.1.2: Native American Lit',
+                '116-120': '11_ela_7.1.3: Immigrant Voices',
+                '121-125': '11_ela_8.1.1: Women Writers',
+                '126-130': '11_ela_8.1.2: LGBTQ Literature',
+                '131-135': '11_ela_8.1.3: Diverse Perspectives',
+                '136-140': '11_ela_9.1.1: Environmental Writing',
+                '141-145': '11_ela_9.1.2: Science Fiction',
+                '146-150': '11_ela_9.1.3: Dystopian Literature',
+                '151-155': '11_ela_10.1.1: Journalism & Media',
+                '156-160': '11_ela_10.1.2: Digital Literature',
+                '161-165': '11_ela_10.1.3: Contemporary Issues',
+                '166-170': '11_ela_11.1.1: AP Exam Prep',
+                '171-175': '11_ela_11.1.2: College Essays',
+                '176-180': '11_ela_11.1.3: Senior Portfolio'
+            },
+            '7th_math': {
+                '1-5': '7_math_1.1.1: Number Systems',
+                '6-10': '7_math_1.1.2: Integers & Operations',
+                '11-15': '7_math_1.1.3: Rational Numbers',
+                '16-20': '7_math_1.2.1: Algebraic Expressions',
+                '21-25': '7_math_1.2.2: One-Step Equations',
+                '26-30': '7_math_1.2.3: Two-Step Equations',
+                '31-35': '7_math_2.1.1: Proportions',
+                '36-40': '7_math_2.1.2: Percent Applications',
+                '41-45': '7_math_2.1.3: Scale & Similar Figures',
+                '46-50': '7_math_2.2.1: Area & Perimeter',
+                '51-55': '7_math_2.2.2: Surface Area',
+                '56-60': '7_math_2.2.3: Volume',
+                '61-65': '7_math_3.1.1: Data & Statistics',
+                '66-70': '7_math_3.1.2: Measures of Center',
+                '71-75': '7_math_3.1.3: Probability Basics',
+                '76-80': '7_math_3.2.1: Linear Relationships',
+                '81-85': '7_math_3.2.2: Graphing Lines',
+                '86-90': '7_math_3.2.3: EOC Review',
+                // Second Semester
+                '91-95': '7_math_4.1.1: Advanced Equations',
+                '96-100': '7_math_4.1.2: Multi-Step Problems',
+                '101-105': '7_math_4.1.3: Word Problems',
+                '106-110': '7_math_4.2.1: Coordinate Plane',
+                '111-115': '7_math_4.2.2: Transformations',
+                '116-120': '7_math_4.2.3: Symmetry',
+                '121-125': '7_math_5.1.1: Angle Relationships',
+                '126-130': '7_math_5.1.2: Triangles',
+                '131-135': '7_math_5.1.3: Quadrilaterals',
+                '136-140': '7_math_5.2.1: Circles',
+                '141-145': '7_math_5.2.2: 3D Shapes',
+                '146-150': '7_math_5.2.3: Composite Figures',
+                '151-155': '7_math_6.1.1: Advanced Probability',
+                '156-160': '7_math_6.1.2: Compound Events',
+                '161-165': '7_math_6.1.3: Simulations',
+                '166-170': '7_math_7.1.1: EOC Review',
+                '171-175': '7_math_7.1.2: Practice Tests',
+                '176-180': '7_math_7.1.3: Final Assessment'
+            },
+            '7th_history': {
+                '1-5': '7_civ_1.1.1: John Locke',
+                '6-10': '7_civ_1.1.2: Montesquieu',
+                '11-15': '7_civ_1.1.3: English Documents',
+                '16-20': '7_civ_1.2.1: Colonial Grievances',
+                '21-25': '7_civ_1.2.2: Declaration of Independence',
+                '26-30': '7_civ_1.2.3: Articles of Confederation',
+                '31-35': '7_civ_2.1.1: Constitutional Convention',
+                '36-40': '7_civ_2.1.2: Constitution Structure',
+                '41-45': '7_civ_2.1.3: Bill of Rights',
+                '46-50': '7_civ_2.2.1: Legislative Branch',
+                '51-55': '7_civ_2.2.2: Executive Branch',
+                '56-60': '7_civ_2.2.3: Judicial Branch',
+                '61-65': '7_civ_3.1.1: Federalism',
+                '66-70': '7_civ_3.1.2: State Government',
+                '71-75': '7_civ_3.1.3: Local Government',
+                '76-80': '7_civ_3.2.1: Citizenship',
+                '81-85': '7_civ_3.2.2: Civic Participation',
+                '86-90': '7_civ_3.2.3: EOC Preparation',
+                // Second Semester
+                '91-95': '7_civ_4.1.1: Political Parties',
+                '96-100': '7_civ_4.1.2: Elections',
+                '101-105': '7_civ_4.1.3: Voting Rights',
+                '106-110': '7_civ_4.2.1: Media & Politics',
+                '111-115': '7_civ_4.2.2: Interest Groups',
+                '116-120': '7_civ_4.2.3: Public Opinion',
+                '121-125': '7_civ_5.1.1: Civil Rights Movement',
+                '126-130': '7_civ_5.1.2: Women\'s Rights',
+                '131-135': '7_civ_5.1.3: Modern Movements',
+                '136-140': '7_civ_5.2.1: Criminal Justice',
+                '141-145': '7_civ_5.2.2: Due Process',
+                '146-150': '7_civ_5.2.3: Juvenile Justice',
+                '151-155': '7_civ_6.1.1: Economics & Government',
+                '156-160': '7_civ_6.1.2: Taxes & Budget',
+                '161-165': '7_civ_6.1.3: Public Policy',
+                '166-170': '7_civ_7.1.1: EOC Review',
+                '171-175': '7_civ_7.1.2: Mock Government',
+                '176-180': '7_civ_7.1.3: Final Projects'
+            },
+            '9th_math': {
+                '1-5': '9_alg_1.1.1: Algebraic Foundations',
+                '6-10': '9_alg_1.1.2: Linear Equations',
+                '11-15': '9_alg_1.1.3: Inequalities',
+                '16-20': '9_alg_1.2.1: Functions Intro',
+                '21-25': '9_alg_1.2.2: Linear Functions',
+                '26-30': '9_alg_1.2.3: Function Operations',
+                '31-35': '9_alg_2.1.1: Systems of Equations',
+                '36-40': '9_alg_2.1.2: Systems Applications',
+                '41-45': '9_alg_2.1.3: Linear Programming',
+                '46-50': '9_alg_2.2.1: Exponents & Powers',
+                '51-55': '9_alg_2.2.2: Polynomials',
+                '56-60': '9_alg_2.2.3: Factoring',
+                '61-65': '9_alg_3.1.1: Quadratic Functions',
+                '66-70': '9_alg_3.1.2: Quadratic Formula',
+                '71-75': '9_alg_3.1.3: Parabolas',
+                '76-80': '9_alg_3.2.1: Radicals',
+                '81-85': '9_alg_3.2.2: Rational Expressions',
+                '86-90': '9_alg_3.2.3: EOC Review',
+                // Second Semester
+                '91-95': '9_alg_4.1.1: Exponential Functions',
+                '96-100': '9_alg_4.1.2: Growth & Decay',
+                '101-105': '9_alg_4.1.3: Applications',
+                '106-110': '9_alg_4.2.1: Sequences',
+                '111-115': '9_alg_4.2.2: Series',
+                '116-120': '9_alg_4.2.3: Patterns',
+                '121-125': '9_alg_5.1.1: Data Analysis',
+                '126-130': '9_alg_5.1.2: Statistical Measures',
+                '131-135': '9_alg_5.1.3: Correlation',
+                '136-140': '9_alg_5.2.1: Probability',
+                '141-145': '9_alg_5.2.2: Combinations',
+                '146-150': '9_alg_5.2.3: Permutations',
+                '151-155': '9_alg_6.1.1: Matrices',
+                '156-160': '9_alg_6.1.2: Transformations',
+                '161-165': '9_alg_6.1.3: Vectors Intro',
+                '166-170': '9_alg_7.1.1: EOC Review',
+                '171-175': '9_alg_7.1.2: Practice Tests',
+                '176-180': '9_alg_7.1.3: Final Assessment'
+            }
+        };
+        
+        // Lesson plan details for each subject
+        const lessonPlans = {
+            '7_sci_1.1.1': {
+                title: 'What is Science?',
+                objectives: ['Define science and scientific thinking', 'Distinguish science from non-science', 'Identify fields of science'],
+                materials: 'Discovery Box 1.1.1: Mystery boxes, observation tools, science sorting cards',
+                activities: ['Mystery Box Investigation', 'Science vs Non-Science Sorting', 'Fields of Science Exploration'],
+                assessment: 'Exit ticket on scientific thinking, Mystery box lab report',
+                standards: 'SC.7.N.1.1, SC.7.N.1.5, SC.7.N.1.3'
+            },
+            '7_sci_1.1.2': {
+                title: 'The Scientific Method',
+                objectives: ['Apply the scientific method', 'Form testable hypotheses', 'Collect and analyze data'],
+                materials: 'Discovery Box 1.1.2: Mystery powder kit, data sheets, measurement tools',
+                activities: ['Cookie Crime Mystery', 'Mystery Powder Analysis Lab', 'Data Collection Practice'],
+                assessment: 'Method application quiz, Lab report',
+                standards: 'SC.7.N.1.1, SC.7.N.1.2, SC.7.N.1.6'
+            },
+            '7_sci_1.1.3': {
+                title: 'Variables and Controls',
+                objectives: ['Identify independent and dependent variables', 'Design controlled experiments', 'Understand fair testing'],
+                materials: 'Discovery Box 1.1.3: Plant growth materials, variable sorting cards',
+                activities: ['Plant Growth Investigation', 'Variable Sorting Game', 'Fair Test Planning'],
+                assessment: 'Variable identification quiz, Experimental design project',
+                standards: 'SC.7.N.1.4, SC.7.N.1.1'
+            },
+            // Add more lesson plan details as needed
+            '7_civ_1.1.1': {
+                title: 'John Locke & Natural Rights',
+                objectives: ['Understand natural rights philosophy', 'Connect Locke to American founding', 'Apply concepts to modern situations'],
+                materials: 'Primary source excerpts, interactive timeline, role-play materials',
+                activities: ['Locke philosophy stations', 'Natural rights debate', 'Modern applications discussion'],
+                assessment: 'Document analysis, Exit ticket on natural rights',
+                standards: 'SS.7.C.1.1, SS.7.C.1.2'
+            },
+            '9_ela_1.1.1': {
+                title: 'Literary Elements',
+                objectives: ['Identify key literary elements', 'Analyze how elements create meaning', 'Apply to text analysis'],
+                materials: 'Short story anthology, graphic organizers, analysis guides',
+                activities: ['Element identification practice', 'Small group analysis', 'Creative writing exercise'],
+                assessment: 'Literary analysis paragraph, Elements quiz',
+                standards: 'LAFS.9-10.RL.1.1, LAFS.9-10.RL.1.2'
+            },
+            '11_pc_1.1.1': {
+                title: 'Functions Review',
+                objectives: ['Review function notation and types', 'Graph various functions', 'Apply transformations'],
+                materials: 'Graphing calculators, function cards, online graphing tools',
+                activities: ['Function matching game', 'Graphing practice', 'Real-world applications'],
+                assessment: 'Functions quiz, Graphing portfolio',
+                standards: 'MAFS.912.F-IF.1.1, MAFS.912.F-IF.2.4'
+            }
+        };
+
+        // Function to get lesson code from full lesson string
+        function getLessonCode(lessonString) {
+            if (!lessonString) return null;
+            const match = lessonString.match(/(\d+_\w+_[\d.]+): /);
+            return match ? match[1] : null;
+        }
+
+        // Function to get lesson based on day count
+        function getLesson(subject, dayNumber) {
+            const subjectCurriculum = curriculum[subject];
+            if (!subjectCurriculum) return '';
+            
+            for (const [range, lesson] of Object.entries(subjectCurriculum)) {
+                const [start, end] = range.split('-').map(num => parseInt(num));
+                if (dayNumber >= start && dayNumber <= end) {
+                    const dayInLesson = ((dayNumber - start) % 5) + 1;
+                    return `${lesson} (Day ${dayInLesson}/5)`;
+                }
+            }
+            return 'Review/Assessment';
+        }
+        
+        // This is the date when numbering starts based on the user's request.
+        const startDateString = '2025-09-08';
+
+        function renderCalendar(year, monthIndex) {
+            const startDay = new Date(year, monthIndex, 1);
+            const endDay = new Date(year, monthIndex + 1, 0);
+            const daysInMonth = endDay.getDate();
+            const firstDayOfWeek = startDay.getDay(); // 0 = Sunday, 1 = Monday
+
+            const monthDiv = document.createElement('div');
+            monthDiv.className = 'bg-gray-50 rounded-lg shadow-md p-4 sm:p-6';
+            monthDiv.innerHTML = `<h2 class="text-xl sm:text-2xl font-bold text-center mb-4 text-gray-800">${months[monthIndex]} ${year}</h2>`;
+
+            const weekdaysHeader = `
+                <div class="calendar-grid font-bold text-center text-gray-500 mb-2 text-sm sm:text-base">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+            `;
+            monthDiv.innerHTML += weekdaysHeader;
+
+            const daysContainer = document.createElement('div');
+            daysContainer.className = 'calendar-grid';
+
+            // Add empty cells for the days before the 1st
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell';
+                daysContainer.appendChild(emptyCell);
+            }
+
+            // Loop through each day of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, monthIndex, day);
+                const dayOfWeek = date.getDay();
+                const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                
+                let dayType = '';
+                let extraText = '';
+                let bgColor = 'bg-white';
+                let textColor = 'text-gray-900';
+                let scheduleHtml = '';
+
+                // Check for weekends
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                // Check for holidays
+                const specialDay = specialDays.get(formattedDate);
+                const isNoSchool = specialDay && specialDay.type === 'No School';
+                const isNoonDismissal = specialDay && specialDay.type === 'Noon Dismissal';
+
+                // Check if this is the day to start numbering
+                if (formattedDate === startDateString) {
+                    isNumberingStarted = true;
+                }
+                
+                if (isWeekend || isNoSchool) {
+                    dayType = 'Weekend';
+                    extraText = specialDay ? specialDay.name : '';
+                    bgColor = 'bg-gray-100';
+                    textColor = 'text-gray-400';
+                } else if (isNumberingStarted) {
+                    // It's a school day, count it and determine the A/B type
+                    schoolDayCount++;
+                    const schoolDayNumber = Math.ceil(schoolDayCount / 2);
+                    const isADay = schoolDayCount % 2 !== 0;
+
+                    dayType = `${schoolDayNumber}.${isADay ? 'A' : 'B'}`;
+                    
+                    // Track lesson days for A and B days (excluding noon dismissals)
+                    if (!isNoonDismissal) {
+                        if (isADay) {
+                            aDayCount++;
+                        } else {
+                            bDayCount++;
+                        }
+                    }
+
+                    if (isADay) {
+                        bgColor = 'bg-blue-100';
+                        textColor = 'text-blue-700';
+                    } else {
+                        bgColor = 'bg-indigo-100';
+                        textColor = 'text-indigo-700';
+                    }
+
+                    if (isNoonDismissal) {
+                        extraText = specialDay.name;
+                        bgColor = 'bg-yellow-100';
+                        textColor = 'text-yellow-700';
+                    }
+                    
+                    // Generate schedule HTML
+                    const currentDayType = isADay ? 'A' : 'B';
+                    let daySchedule = JSON.parse(JSON.stringify(schedules[currentDayType]));
+                    
+                    if (isNoonDismissal) {
+                        daySchedule = daySchedule.filter(period => period.period <= 2);
+                    }
+                    
+                    scheduleHtml += `<div class="mt-2 text-xs font-normal text-gray-700 space-y-1">`;
+                    daySchedule.forEach(period => {
+                        scheduleHtml += `<div class="p-1 rounded-md bg-white/50 border border-gray-200">`;
+                        scheduleHtml += `<strong class="text-xs">P${period.period}</strong> <span class="text-[0.6rem] sm:text-[0.65rem] text-gray-500 ml-1">${period.time}</span>`;
+                        
+                        // Add lesson info for each class
+                        if (isADay && aDayCount > 0) {
+                            // A Day lessons
+                            if (period.period === 1) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">9th Grade ELA (3 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-blue-600">📚 ${getLesson('9th_ela', aDayCount)}</div>`;
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem] mt-1">11th Grade PreCalc (1 Student)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-blue-600">📐 ${getLesson('11th_precalc', aDayCount)}</div>`;
+                            } else if (period.period === 2) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">7th Grade Science (6 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-blue-600">🔬 ${getLesson('7th_science', aDayCount)}</div>`;
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem] mt-1">11th Grade US Gov't (2 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-blue-600">⚖️ ${getLesson('11th_gov', aDayCount)}</div>`;
+                            } else if (period.period === 3) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">7th Grade ELA (6 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-blue-600">📖 ${getLesson('7th_ela', aDayCount)}</div>`;
+                            }
+                        } else if (!isADay && bDayCount > 0) {
+                            // B Day lessons
+                            if (period.period === 1) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">9th Grade World History (3 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-indigo-600">🌍 ${getLesson('9th_history', bDayCount)}</div>`;
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem] mt-1">11th Grade ELA III (2 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-indigo-600">📝 ${getLesson('11th_ela', bDayCount)}</div>`;
+                            } else if (period.period === 2) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">7th Grade Math (6 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-indigo-600">➕ ${getLesson('7th_math', bDayCount)}</div>`;
+                            } else if (period.period === 3) {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">7th Grade History (6 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-indigo-600">🏛️ ${getLesson('7th_history', bDayCount)}</div>`;
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem] mt-1">9th Grade Math (3 Students)</div>`;
+                                scheduleHtml += `<div class="ml-3 text-[0.6rem] italic text-indigo-600">📊 ${getLesson('9th_math', bDayCount)}</div>`;
+                            }
+                        } else {
+                            // No lessons yet (before curriculum starts)
+                            period.classes.forEach(cls => {
+                                scheduleHtml += `<div class="ml-2 text-[0.65rem] sm:text-[0.65rem]">${cls}</div>`;
+                            });
+                        }
+                        scheduleHtml += `</div>`;
+                    });
+                    scheduleHtml += `</div>`;
+                } else {
+                    // School day before numbering started
+                    bgColor = 'bg-gray-100';
+                    textColor = 'text-gray-400';
+                }
+                
+                const dayCell = document.createElement('div');
+                const hasLessons = (isADay && aDayCount > 0) || (!isADay && bDayCount > 0);
+                dayCell.className = `day-cell ${bgColor} ${hasLessons && !isWeekend && !isNoSchool ? 'has-lessons' : ''}`;
+                
+                // Store data attributes for the modal
+                if (hasLessons && !isWeekend && !isNoSchool) {
+                    dayCell.setAttribute('data-date', `${months[monthIndex]} ${day}, ${year}`);
+                    dayCell.setAttribute('data-day-type', isADay ? 'A' : 'B');
+                    dayCell.setAttribute('data-day-number', isADay ? aDayCount : bDayCount);
+                    dayCell.setAttribute('data-is-noon', isNoonDismissal ? 'true' : 'false');
+                    
+                    // Add click handler
+                    dayCell.onclick = function() {
+                        showLessonDetails(this);
+                    };
+                }
+                
+                dayCell.innerHTML = `
+                    <div class="day-number ${textColor}">${day}</div>
+                    <div class="text-xs font-semibold mt-1">${dayType}</div>
+                    <div class="text-xs mt-1 text-gray-500">${extraText}</div>
+                    ${scheduleHtml}
+                `;
+                daysContainer.appendChild(dayCell);
+            }
+            
+            monthDiv.appendChild(daysContainer);
+            calendarContainer.appendChild(monthDiv);
+        }
+
+        // Loop through the entire school year
+        // 2025: September through December
+        for (let i = 8; i < 12; i++) {
+            renderCalendar(2025, i);
+        }
+        // 2026: January through June
+        for (let i = 0; i < 6; i++) {
+            renderCalendar(2026, i);
+        }
+    });
+    
+    // Modal Functions
+    function showLessonDetails(dayCell) {
+        const modal = document.getElementById('lessonModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDate = document.getElementById('modalDate');
+        const modalBody = document.getElementById('modalBody');
+        
+        const date = dayCell.getAttribute('data-date');
+        const dayType = dayCell.getAttribute('data-day-type');
+        const dayNumber = parseInt(dayCell.getAttribute('data-day-number'));
+        const isNoon = dayCell.getAttribute('data-is-noon') === 'true';
+        
+        modalTitle.textContent = `${dayType} Day Schedule`;
+        modalDate.textContent = date + (isNoon ? ' - Noon Dismissal' : '');
+        
+        // Build the lesson details HTML
+        let lessonsHtml = '';
+        
+        if (dayType === 'A') {
+            // Period 1
+            lessonsHtml += buildLessonSection('Period 1', '8:18 - 9:48', [
+                { subject: '9th Grade ELA', code: '9th_ela', icon: '📚', students: 3 },
+                { subject: '11th Grade PreCalc', code: '11th_precalc', icon: '📐', students: 1 }
+            ], dayNumber);
+            
+            // Period 2
+            lessonsHtml += buildLessonSection('Period 2', '9:51 - 11:21', [
+                { subject: '7th Grade Science', code: '7th_science', icon: '🔬', students: 6 },
+                { subject: '11th Grade US Government', code: '11th_gov', icon: '⚖️', students: 2 }
+            ], dayNumber);
+            
+            // Period 3 (if not noon dismissal)
+            if (!isNoon) {
+                lessonsHtml += buildLessonSection('Period 3', '12:12 - 1:42', [
+                    { subject: '7th Grade ELA', code: '7th_ela', icon: '📖', students: 6 }
+                ], dayNumber);
+            }
+        } else {
+            // Period 1
+            lessonsHtml += buildLessonSection('Period 1', '8:18 - 9:48', [
+                { subject: '9th Grade World History', code: '9th_history', icon: '🌍', students: 3 },
+                { subject: '11th Grade ELA III', code: '11th_ela', icon: '📝', students: 2 }
+            ], dayNumber);
+            
+            // Period 2
+            lessonsHtml += buildLessonSection('Period 2', '9:51 - 11:21', [
+                { subject: '7th Grade Math', code: '7th_math', icon: '➕', students: 6 }
+            ], dayNumber);
+            
+            // Period 3 (if not noon dismissal)
+            if (!isNoon) {
+                lessonsHtml += buildLessonSection('Period 3', '12:12 - 1:42', [
+                    { subject: '7th Grade History', code: '7th_history', icon: '🏛️', students: 6 },
+                    { subject: '9th Grade Math', code: '9th_math', icon: '📊', students: 3 }
+                ], dayNumber);
+            }
+        }
+        
+        modalBody.innerHTML = lessonsHtml;
+        modal.classList.add('show');
+    }
+    
+    function buildLessonSection(period, time, subjects, dayNumber) {
+        let html = `
+            <div class="lesson-section">
+                <h3 class="lesson-title">${period} - ${time}</h3>
+        `;
+        
+        subjects.forEach(subject => {
+            const lessonInfo = getLesson(subject.code, dayNumber);
+            const lessonCode = getLessonCode(lessonInfo);
+            const lessonPlan = lessonPlans[lessonCode] || {};
+            
+            html += `
+                <div class="lesson-details mb-3">
+                    <h4 class="font-semibold text-lg mb-2">${subject.icon} ${subject.subject} (${subject.students} Students)</h4>
+                    <p class="text-blue-600 font-medium mb-2">${lessonInfo}</p>
+            `;
+            
+            if (lessonPlan.title) {
+                html += `
+                    <div class="ml-4">
+                        <p class="text-sm mb-1"><strong>Topic:</strong> ${lessonPlan.title}</p>
+                        <p class="text-sm mb-1"><strong>Objectives:</strong></p>
+                        <ul class="text-sm ml-4 list-disc mb-1">
+                            ${lessonPlan.objectives ? lessonPlan.objectives.map(obj => `<li>${obj}</li>`).join('') : ''}
+                        </ul>
+                        <p class="text-sm mb-1"><strong>Activities:</strong> ${lessonPlan.activities ? lessonPlan.activities.join(', ') : 'See lesson plan'}</p>
+                        <p class="text-sm mb-1"><strong>Materials:</strong> ${lessonPlan.materials || 'See Discovery Box'}</p>
+                        <p class="text-sm mb-1"><strong>Assessment:</strong> ${lessonPlan.assessment || 'Formative assessment'}</p>
+                        <p class="text-sm"><strong>Standards:</strong> ${lessonPlan.standards || 'Florida Standards Aligned'}</p>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="ml-4 text-sm text-gray-600">
+                        <p>Full lesson plan available in curriculum guide</p>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+        });
+        
+        html += `</div>`;
+        return html;
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById('lessonModal');
+        modal.classList.remove('show');
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('lessonModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>

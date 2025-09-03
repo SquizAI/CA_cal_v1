@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Academy @ Centner - School Calendar 2025-2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Centner Academy Brand Colors */
+        :root {
+            --centner-blue: #57BAEB;
+            --centner-pink: #EC4E88;
+            --centner-orange: #FC6F24;
+            --centner-dark: #2c3e50;
+            --centner-light: #f8f9fa;
+            --centner-gradient: linear-gradient(135deg, #57BAEB 0%, #EC4E88 50%, #FC6F24 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            color: var(--centner-dark);
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        header {
+            background: var(--centner-gradient);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 10s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            opacity: 0.95;
+            font-weight: 300;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tagline {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+            font-weight: 500;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* View Toggle Buttons */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .view-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--centner-pink);
+            background: white;
+            color: var(--centner-pink);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 78, 136, 0.3);
+        }
+        
+        .view-btn.active {
+            background: var(--centner-pink);
+            color: white;
+        }
+        
+        /* Calendar Container */
+        .calendar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Month View */
+        .month-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .month-header {
+            background: linear-gradient(135deg, var(--centner-blue), var(--centner-pink));
+            color: white;
+            padding: 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .weekday-headers {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: var(--centner-light);
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .weekday-header {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--centner-dark);
+            font-size: 0.9rem;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #dee2e6;
+            padding: 1px;
+        }
+        
+        .day-cell {
+            background: white;
+            padding: 0.5rem;
+            min-height: 5rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .day-cell.has-lessons {
+            cursor: pointer;
+        }
+        
+        .day-cell.has-lessons:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+        
+        .day-number {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .day-info {
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+        
+        .a-day {
+            background: linear-gradient(135deg, rgba(236, 78, 136, 0.1), rgba(236, 78, 136, 0.05));
+            border-left: 3px solid var(--centner-pink);
+        }
+        
+        .b-day {
+            background: linear-gradient(135deg, rgba(87, 186, 235, 0.1), rgba(87, 186, 235, 0.05));
+            border-left: 3px solid var(--centner-blue);
+        }
+        
+        .no-school {
+            background: linear-gradient(135deg, rgba(252, 111, 36, 0.1), rgba(252, 111, 36, 0.05));
+            border-left: 3px solid var(--centner-orange);
+        }
+        
+        /* Week View */
+        .week-view {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .week-view.active {
+            display: block;
+        }
+        
+        .week-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .week-time-slot {
+            padding: 1rem 0.5rem;
+            border-right: 2px solid #dee2e6;
+            text-align: right;
+            font-weight: 600;
+            color: var(--centner-dark);
+        }
+        
+        .week-days {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .week-day-column {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.5rem;
+            min-height: 400px;
+        }
+        
+        .week-day-header {
+            background: var(--centner-gradient);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Day View */
+        .day-view {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .day-view.active {
+            display: block;
+        }
+        
+        .day-view-header {
+            background: var(--centner-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .day-view-date {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .day-view-type {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+        
+        .period-block {
+            background: var(--centner-light);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--centner-pink);
+        }
+        
+        .period-time {
+            font-weight: 600;
+            color: var(--centner-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .period-subject {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--centner-pink);
+            margin-bottom: 0.5rem;
+        }
+        
+        .period-details {
+            font-size: 0.9rem;
+            color: #495057;
+            line-height: 1.5;
+        }
+        
+        /* Navigation */
+        .nav-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: var(--centner-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: var(--centner-pink);
+            transform: translateY(-2px);
+        }
+        
+        .current-display {
+            font-weight: 600;
+            color: var(--centner-dark);
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem auto;
+            flex-wrap: wrap;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: var(--centner-gradient);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px 15px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .close-btn {
+            background: var(--centner-pink);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: var(--centner-orange);
+            transform: translateY(-2px);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .calendar-container {
+                padding: 0.5rem;
+            }
+            
+            .weekday-header {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.25rem;
+            }
+            
+            .day-cell {
+                min-height: 3.5rem;
+                padding: 0.25rem;
+            }
+            
+            .day-number {
+                font-size: 0.8rem;
+            }
+            
+            .day-info {
+                font-size: 0.6rem;
+            }
+            
+            .week-grid {
+                grid-template-columns: 60px 1fr;
+            }
+            
+            .week-days {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .legend {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .view-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .nav-controls {
+                font-size: 0.9rem;
+            }
+            
+            /* Hide weekday names on very small screens */
+            @media (max-width: 480px) {
+                .weekday-header span {
+                    display: none;
+                }
+                
+                .weekday-header::after {
+                    content: attr(data-short);
+                }
+            }
+        }
+        
+        /* Tablet Responsive */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .calendar-container {
+                padding: 1rem;
+            }
+            
+            .day-cell {
+                min-height: 4rem;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            header {
+                background: none;
+                color: black;
+                border-bottom: 2px solid black;
+            }
+            
+            .view-toggle, .nav-controls {
+                display: none;
+            }
+            
+            .month-container {
+                box-shadow: none;
+                border: 1px solid black;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>🚀 AI Academy @ Centner</h1>
+        <div class="subtitle">2025-2026 School Calendar • A/B Day Block Schedule</div>
+        <div class="tagline">Cultivating Leaders with Heart Through AI-Driven Education</div>
+    </header>
+    
+    <!-- View Toggle -->
+    <div class="view-toggle">
+        <button class="view-btn active" onclick="switchView('month')">Month View</button>
+        <button class="view-btn" onclick="switchView('week')">Week View</button>
+        <button class="view-btn" onclick="switchView('day')">Day View</button>
+    </div>
+    
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="navigate('prev')">← Previous</button>
+        <span class="current-display" id="currentDisplay">September 2025</span>
+        <button class="nav-btn" onclick="navigate('next')">Next →</button>
+    </div>
+    
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box" style="background: var(--centner-pink);"></div>
+            <span>A Day</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background: var(--centner-blue);"></div>
+            <span>B Day</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background: var(--centner-orange);"></div>
+            <span>No School</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background: #10B981;"></div>
+            <span>Half Day</span>
+        </div>
+    </div>
+    
+    <!-- Calendar Container -->
+    <div class="calendar-container">
+        <!-- Month View -->
+        <div id="monthView" class="month-view active">
+            <div id="calendar-container"></div>
+        </div>
+        
+        <!-- Week View -->
+        <div id="weekView" class="week-view">
+            <div id="week-container"></div>
+        </div>
+        
+        <!-- Day View -->
+        <div id="dayView" class="day-view">
+            <div id="day-container"></div>
+        </div>
+    </div>
+    
+    <!-- Modal for Lesson Details -->
+    <div id="lessonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Lesson Details</h2>
+                <div id="modalDate"></div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Lesson details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Import curriculum and lesson plans from the existing file
+        let curriculum = {};
+        let lessonPlans = {};
+        
+        // Current view state
+        let currentView = 'month';
+        let currentDate = new Date(2025, 8, 1); // September 2025
+        let currentMonth = 8;
+        let currentYear = 2025;
+        let currentWeek = 1;
+        let currentDayIndex = 0;
+        
+        // School calendar data
+        const schoolDays = [];
+        const specialDays = new Map([
+            ['2025-09-23', { type: 'No School', name: 'No School' }],
+            ['2025-10-02', { type: 'No School', name: 'No School' }],
+            ['2025-10-31', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-11-11', { type: 'No School', name: 'Veterans Day' }],
+            ['2025-11-24', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-25', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-26', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-27', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-11-28', { type: 'No School', name: 'Thanksgiving Break' }],
+            ['2025-12-05', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-12-19', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2025-12-22', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-23', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-24', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-25', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-26', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-29', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-30', { type: 'No School', name: 'Winter Break' }],
+            ['2025-12-31', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-01', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-02', { type: 'No School', name: 'Winter Break' }],
+            ['2026-01-05', { type: 'No School', name: 'No School' }],
+            ['2026-01-19', { type: 'No School', name: 'MLK Day' }],
+            ['2026-02-16', { type: 'No School', name: 'Presidents Day' }],
+            ['2026-03-23', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-24', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-25', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-26', { type: 'No School', name: 'Spring Break' }],
+            ['2026-03-27', { type: 'No School', name: 'Spring Break' }],
+            ['2026-04-03', { type: 'No School', name: 'No School' }],
+            ['2026-05-22', { type: 'Noon Dismissal', name: 'Noon Dismissal' }],
+            ['2026-05-25', { type: 'No School', name: 'Memorial Day' }],
+            ['2026-06-11', { type: 'Noon Dismissal', name: 'Last Day - Noon Dismissal' }],
+            ['2026-06-12', { type: 'No School', name: 'Summer Break' }]
+        ]);
+        
+        // Switch between views
+        function switchView(view) {
+            currentView = view;
+            
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all views
+            document.getElementById('monthView').classList.remove('active');
+            document.getElementById('weekView').classList.remove('active');
+            document.getElementById('dayView').classList.remove('active');
+            
+            // Show selected view
+            switch(view) {
+                case 'month':
+                    document.getElementById('monthView').classList.add('active');
+                    renderMonthView();
+                    break;
+                case 'week':
+                    document.getElementById('weekView').classList.add('active');
+                    renderWeekView();
+                    break;
+                case 'day':
+                    document.getElementById('dayView').classList.add('active');
+                    renderDayView();
+                    break;
+            }
+            
+            updateDisplay();
+        }
+        
+        // Navigation
+        function navigate(direction) {
+            switch(currentView) {
+                case 'month':
+                    if (direction === 'next') {
+                        currentMonth++;
+                        if (currentMonth > 11) {
+                            currentMonth = 0;
+                            currentYear++;
+                        }
+                    } else {
+                        currentMonth--;
+                        if (currentMonth < 0) {
+                            currentMonth = 11;
+                            currentYear--;
+                        }
+                    }
+                    renderMonthView();
+                    break;
+                case 'week':
+                    if (direction === 'next') {
+                        currentWeek++;
+                    } else {
+                        currentWeek = Math.max(1, currentWeek - 1);
+                    }
+                    renderWeekView();
+                    break;
+                case 'day':
+                    if (direction === 'next') {
+                        currentDayIndex++;
+                    } else {
+                        currentDayIndex = Math.max(0, currentDayIndex - 1);
+                    }
+                    renderDayView();
+                    break;
+            }
+            updateDisplay();
+        }
+        
+        // Update current display
+        function updateDisplay() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            let displayText = '';
+            
+            switch(currentView) {
+                case 'month':
+                    displayText = `${months[currentMonth]} ${currentYear}`;
+                    break;
+                case 'week':
+                    displayText = `Week ${currentWeek} - ${currentYear}`;
+                    break;
+                case 'day':
+                    if (schoolDays[currentDayIndex]) {
+                        displayText = schoolDays[currentDayIndex].date;
+                    }
+                    break;
+            }
+            
+            document.getElementById('currentDisplay').textContent = displayText;
+        }
+        
+        // Render Month View
+        function renderMonthView() {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = '';
+            
+            const monthContainer = document.createElement('div');
+            monthContainer.className = 'month-container';
+            
+            // Month Header
+            const monthHeader = document.createElement('div');
+            monthHeader.className = 'month-header';
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            monthHeader.textContent = `${months[currentMonth]} ${currentYear}`;
+            monthContainer.appendChild(monthHeader);
+            
+            // Weekday Headers
+            const weekdayHeaders = document.createElement('div');
+            weekdayHeaders.className = 'weekday-headers';
+            const weekdays = [
+                { full: 'Sunday', short: 'Sun' },
+                { full: 'Monday', short: 'Mon' },
+                { full: 'Tuesday', short: 'Tue' },
+                { full: 'Wednesday', short: 'Wed' },
+                { full: 'Thursday', short: 'Thu' },
+                { full: 'Friday', short: 'Fri' },
+                { full: 'Saturday', short: 'Sat' }
+            ];
+            
+            weekdays.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'weekday-header';
+                header.setAttribute('data-short', day.short);
+                header.innerHTML = `<span>${day.full}</span>`;
+                weekdayHeaders.appendChild(header);
+            });
+            monthContainer.appendChild(weekdayHeaders);
+            
+            // Calendar Grid
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell';
+                grid.appendChild(emptyCell);
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+                
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                
+                // Check for special days
+                const special = specialDays.get(dateStr);
+                
+                if (special) {
+                    if (special.type === 'No School') {
+                        dayCell.classList.add('no-school');
+                    } else if (special.type === 'Noon Dismissal') {
+                        dayCell.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))';
+                        dayCell.style.borderLeft = '3px solid #10B981';
+                    }
+                }
+                
+                // Add day number
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayCell.appendChild(dayNumber);
+                
+                // Add day info
+                const dayInfo = document.createElement('div');
+                dayInfo.className = 'day-info';
+                
+                if (special) {
+                    dayInfo.textContent = special.name;
+                } else if (!isWeekend) {
+                    // Determine if it's an A or B day
+                    // This is simplified - you'd need the actual logic from your curriculum
+                    const dayType = Math.random() > 0.5 ? 'A' : 'B';
+                    dayCell.classList.add(dayType === 'A' ? 'a-day' : 'b-day');
+                    dayCell.classList.add('has-lessons');
+                    dayInfo.textContent = `${dayType} Day`;
+                    
+                    dayCell.onclick = function() {
+                        showLessonDetails(dateStr, dayType);
+                    };
+                }
+                
+                dayCell.appendChild(dayInfo);
+                grid.appendChild(dayCell);
+            }
+            
+            monthContainer.appendChild(grid);
+            container.appendChild(monthContainer);
+        }
+        
+        // Render Week View
+        function renderWeekView() {
+            const container = document.getElementById('week-container');
+            container.innerHTML = '<div class="week-view active">Week view coming soon!</div>';
+            // Implementation would show detailed week schedule
+        }
+        
+        // Render Day View
+        function renderDayView() {
+            const container = document.getElementById('day-container');
+            container.innerHTML = '<div class="day-view active">Day view coming soon!</div>';
+            // Implementation would show detailed day schedule
+        }
+        
+        // Show Lesson Details Modal
+        function showLessonDetails(date, dayType) {
+            const modal = document.getElementById('lessonModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDate = document.getElementById('modalDate');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = `${dayType} Day Schedule`;
+            modalDate.textContent = date;
+            
+            // Sample lesson content - would be populated from curriculum data
+            modalBody.innerHTML = `
+                <div class="period-block">
+                    <div class="period-time">Period 1 (8:00 AM - 9:30 AM)</div>
+                    <div class="period-subject">Mathematics</div>
+                    <div class="period-details">
+                        Topic: Algebraic Expressions<br>
+                        Objectives: Solve multi-step equations<br>
+                        Activities: Problem-solving workshop
+                    </div>
+                </div>
+                <div class="period-block">
+                    <div class="period-time">Period 2 (9:45 AM - 11:15 AM)</div>
+                    <div class="period-subject">Science</div>
+                    <div class="period-details">
+                        Topic: Cell Biology<br>
+                        Objectives: Understand cell structure<br>
+                        Activities: Microscope lab
+                    </div>
+                </div>
+                <div class="period-block">
+                    <div class="period-time">Period 3 (12:00 PM - 1:30 PM)</div>
+                    <div class="period-subject">English Language Arts</div>
+                    <div class="period-details">
+                        Topic: Literary Analysis<br>
+                        Objectives: Analyze themes in literature<br>
+                        Activities: Group discussion
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('show');
+        }
+        
+        // Close Modal
+        function closeModal() {
+            const modal = document.getElementById('lessonModal');
+            modal.classList.remove('show');
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('lessonModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMonthView();
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

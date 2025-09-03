@@ -227,11 +227,6 @@
             color: #1f2937;
         }
         
-        .period-time {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-        
         .lesson-code {
             background: var(--centner-blue);
             color: white;
@@ -290,7 +285,7 @@
         </div>
         
         <div class="grade-filter">
-            <button class="filter-btn active" onclick="filterGrade('all')">All Classes</button>
+            <button class="filter-btn active" onclick="filterGrade('all')">All Grades</button>
             <button class="filter-btn" onclick="filterGrade('7th')">7th Grade</button>
             <button class="filter-btn" onclick="filterGrade('9th')">9th Grade</button>
             <button class="filter-btn" onclick="filterGrade('11th')">11th Grade</button>
@@ -385,266 +380,92 @@
             }
         }
         
-        // Period Schedule based on actual AI Lab schedule
-        const periodSchedule = {
-            'A': {
-                'Period 1 (8:18-9:48)': {
-                    '9th': '9th Grade ELA',
-                    '11th': '11th Grade PreCalculus'
-                },
-                'Period 2 (9:51-11:21)': {
-                    '7th': '7th Grade Science',
-                    '11th': '11th Grade US Government'
-                },
-                'Period 3 (12:12-1:42)': {
-                    '7th': '7th Grade ELA'
-                }
-            },
-            'B': {
-                'Period 1 (8:18-9:48)': {
-                    '9th': '9th Grade World History',
-                    '11th': '11th Grade ELA III'
-                },
-                'Period 2 (9:51-11:21)': {
-                    '7th': '7th Grade Math'
-                },
-                'Period 3 (12:12-1:42)': {
-                    '7th': '7th Grade History/Civics',
-                    '9th': '9th Grade Math'
-                }
-            }
-        };
-        
-        // Curriculum mapping by subject
+        // Curriculum mapping
         const curriculum = {
-            '9th Grade ELA': {
-                '1-10': 'Literary Elements & Structure',
-                '11-20': 'Character Analysis & Theme',
-                '21-30': 'Romeo & Juliet Act I-II',
-                '31-40': 'Romeo & Juliet Act III-V',
-                '41-50': 'Essay Writing & Arguments',
-                '51-60': 'Research Methods',
-                '61-70': 'Poetry Forms & Devices',
-                '71-80': 'Novel Study: To Kill a Mockingbird',
-                '81-87': 'EOC Review & Portfolio',
-                '88-94': 'Modern Literature',
-                '95-100': 'Creative Writing',
-                '101-110': 'Literary Criticism',
-                '111-120': 'Drama & Performance',
-                '121-130': 'Mythology & Folklore',
-                '131-140': 'Science Fiction & Fantasy',
-                '141-150': 'Non-fiction Analysis',
-                '151-160': 'Media Literacy',
-                '161-170': 'Final Projects',
-                '171-174': 'Portfolio Presentations'
-            },
-            '11th Grade PreCalculus': {
-                '1-10': 'Functions & Graphs',
-                '11-20': 'Polynomial Functions',
-                '21-30': 'Rational Functions',
-                '31-40': 'Exponential & Logarithmic',
-                '41-50': 'Trigonometric Functions',
-                '51-60': 'Trigonometric Identities',
-                '61-70': 'Vectors & Matrices',
-                '71-80': 'Sequences & Series',
-                '81-87': 'Limits Introduction',
-                '88-94': 'Derivative Concepts',
-                '95-100': 'Basic Derivatives',
-                '101-110': 'Applications of Derivatives',
-                '111-120': 'Integration Introduction',
-                '121-130': 'Definite Integrals',
-                '131-140': 'Applications of Integration',
-                '141-150': 'Parametric Equations',
-                '151-160': 'Polar Coordinates',
-                '161-170': 'CLEP Prep',
-                '171-174': 'Final Review'
-            },
-            '7th Grade Science': {
+            '7th_science_A': {
                 '1-10': 'Cell Theory & Structure',
                 '11-20': 'Human Body Systems',
                 '21-30': 'Genetics & Heredity',
                 '31-40': 'Ecosystems & Energy Flow',
                 '41-50': 'Evolution & Natural Selection',
                 '51-60': 'Earth Systems & Cycles',
-                '61-70': 'Weather & Climate',
-                '71-80': 'Forces & Motion',
-                '81-87': 'Energy Transformations',
-                '88-94': 'Chemical Reactions',
-                '95-100': 'Scientific Method',
-                '101-110': 'Lab Techniques',
-                '111-120': 'Environmental Science',
-                '121-130': 'Space Science',
-                '131-140': 'Technology & Engineering',
-                '141-150': 'Science Fair Projects',
-                '151-160': 'STEM Challenges',
-                '161-170': 'EOC Review',
-                '171-174': 'Portfolio Review'
+                '61-70': 'Forces & Motion',
+                '71-80': 'Scientific Method & Inquiry',
+                '81-87': 'EOC Review & Portfolio'
             },
-            '11th Grade US Government': {
-                '1-10': 'Constitutional Foundations',
-                '11-20': 'Legislative Branch',
-                '21-30': 'Executive Branch',
-                '31-40': 'Judicial Branch',
-                '41-50': 'Federalism',
-                '51-60': 'Civil Liberties',
-                '61-70': 'Civil Rights',
-                '71-80': 'Political Parties',
-                '81-87': 'Elections & Voting',
-                '88-94': 'Interest Groups',
-                '95-100': 'Media & Politics',
-                '101-110': 'Public Policy',
-                '111-120': 'Economic Policy',
-                '121-130': 'Foreign Policy',
-                '131-140': 'State & Local Government',
-                '141-150': 'Comparative Government',
-                '151-160': 'Current Events',
-                '161-170': 'CLEP Prep',
-                '171-174': 'Civic Action Project'
-            },
-            '7th Grade ELA': {
-                '1-10': 'Narrative Writing',
-                '11-20': 'Literary Elements',
-                '21-30': 'Poetry Analysis',
-                '31-40': 'Novel Study: The Giver',
-                '41-50': 'Argumentative Writing',
-                '51-60': 'Research Skills',
-                '61-70': 'Grammar & Mechanics',
-                '71-80': 'Short Stories',
-                '81-87': 'Drama: A Midsummer Night\'s Dream',
-                '88-94': 'Non-fiction Reading',
-                '95-100': 'Creative Writing',
-                '101-110': 'Mythology',
-                '111-120': 'Speech & Presentation',
-                '121-130': 'Media Analysis',
-                '131-140': 'Historical Fiction',
-                '141-150': 'Biography Study',
-                '151-160': 'Writing Workshop',
-                '161-170': 'FSA Review',
-                '171-174': 'Portfolio Showcase'
-            },
-            '9th Grade World History': {
-                '1-10': 'Ancient Civilizations',
-                '11-20': 'Classical Greece',
-                '21-30': 'Roman Empire',
-                '31-40': 'Medieval Europe',
-                '41-50': 'Renaissance',
-                '51-60': 'Reformation',
-                '61-70': 'Age of Exploration',
-                '71-80': 'Colonialism',
-                '81-87': 'Enlightenment',
-                '88-94': 'French Revolution',
-                '95-100': 'Industrial Revolution',
-                '101-110': 'Imperialism',
-                '111-120': 'World War I',
-                '121-130': 'Interwar Period',
-                '131-140': 'World War II',
-                '141-150': 'Cold War',
-                '151-160': 'Decolonization',
-                '161-170': 'Modern World',
-                '171-174': 'History Fair'
-            },
-            '11th Grade ELA III': {
-                '1-10': 'American Literature Origins',
-                '11-20': 'Colonial Literature',
-                '21-30': 'Revolutionary Writers',
-                '31-40': 'Romanticism & Transcendentalism',
-                '41-50': 'The Scarlet Letter',
-                '51-60': 'Civil War Literature',
-                '61-70': 'Realism & Naturalism',
-                '71-80': 'The Great Gatsby',
-                '81-87': 'Modernism',
-                '88-94': 'Harlem Renaissance',
-                '95-100': 'Post-War Literature',
-                '101-110': 'Contemporary Voices',
-                '111-120': 'Research Paper',
-                '121-130': 'Literary Criticism',
-                '131-140': 'Creative Writing',
-                '141-150': 'Drama: Death of a Salesman',
-                '151-160': 'Poetry Workshop',
-                '161-170': 'CLEP Prep',
-                '171-174': 'Senior Portfolio'
-            },
-            '7th Grade Math': {
-                '1-10': 'Integers & Rational Numbers',
-                '11-20': 'Expressions & Equations',
-                '21-30': 'Inequalities',
-                '31-40': 'Ratios & Proportions',
-                '41-50': 'Percents',
-                '51-60': 'Geometry Basics',
-                '61-70': 'Area & Volume',
-                '71-80': 'Statistics & Probability',
-                '81-87': 'Linear Relationships',
-                '88-94': 'Transformations',
-                '95-100': 'Pythagorean Theorem',
-                '101-110': 'Systems of Equations',
-                '111-120': 'Functions Introduction',
-                '121-130': 'Data Analysis',
-                '131-140': 'Problem Solving',
-                '141-150': 'Math in Science',
-                '151-160': 'Real-World Applications',
-                '161-170': 'FSA Review',
-                '171-174': 'Math Fair'
-            },
-            '7th Grade History/Civics': {
+            '7th_civics_B': {
                 '1-10': 'Foundations of Government',
-                '11-20': 'Colonial America',
-                '21-30': 'American Revolution',
-                '31-40': 'Constitution & Bill of Rights',
-                '41-50': 'Early Republic',
-                '51-60': 'Westward Expansion',
-                '61-70': 'Civil War & Reconstruction',
-                '71-80': 'Industrial Age',
-                '81-87': 'Progressive Era',
-                '88-94': 'World War I',
-                '95-100': 'Roaring Twenties',
-                '101-110': 'Great Depression',
-                '111-120': 'World War II',
-                '121-130': 'Cold War',
-                '131-140': 'Civil Rights Movement',
-                '141-150': 'Modern America',
-                '151-160': 'Florida History',
-                '161-170': 'EOC Review',
-                '171-174': 'Civic Action Project'
+                '11-20': 'Declaration & Constitution',
+                '21-30': 'Three Branches of Government',
+                '31-40': 'Citizenship & Rights',
+                '41-50': 'Political Parties & Elections',
+                '51-60': 'State & Local Government',
+                '61-70': 'Economics & Government',
+                '71-80': 'Current Events & Foreign Policy',
+                '81-87': 'EOC Review & Civic Action'
             },
-            '9th Grade Math': {
-                '1-10': 'Algebraic Foundations',
-                '11-20': 'Linear Equations',
-                '21-30': 'Systems of Equations',
-                '31-40': 'Inequalities',
-                '41-50': 'Functions',
-                '51-60': 'Quadratic Equations',
-                '61-70': 'Polynomials',
-                '71-80': 'Factoring',
-                '81-87': 'Radicals',
-                '88-94': 'Rational Expressions',
-                '95-100': 'Exponential Functions',
-                '101-110': 'Geometry Connections',
-                '111-120': 'Statistics',
-                '121-130': 'Probability',
-                '131-140': 'Sequences & Series',
-                '141-150': 'Transformations',
-                '151-160': 'Real-World Applications',
-                '161-170': 'EOC Review',
-                '171-174': 'Final Projects'
+            '9th_ela_A': {
+                '1-10': 'Literary Elements & Structure',
+                '11-20': 'Character Analysis & Theme',
+                '21-30': 'Romeo & Juliet',
+                '31-40': 'Essay Writing & Arguments',
+                '41-50': 'Research Methods',
+                '51-60': 'Poetry Forms & Devices',
+                '61-70': 'Novel Study',
+                '71-80': 'Literary Criticism',
+                '81-87': 'EOC Review & Portfolio'
+            },
+            '9th_history_B': {
+                '1-10': 'Ancient Civilizations',
+                '11-20': 'Classical Greece & Rome',
+                '21-30': 'Medieval Europe & Renaissance',
+                '31-40': 'Age of Exploration',
+                '41-50': 'Enlightenment & Revolutions',
+                '51-60': 'Industrial Revolution',
+                '61-70': 'World Wars',
+                '71-80': 'Cold War & Modern World',
+                '81-87': 'EOC Review & History Fair'
+            },
+            '11th_precalc_A': {
+                '1-10': 'Functions & Graphs',
+                '11-20': 'Polynomial & Rational Functions',
+                '21-30': 'Exponential & Logarithmic',
+                '31-40': 'Trigonometric Functions',
+                '41-50': 'Sequences & Series',
+                '51-60': 'Limits & Derivatives',
+                '61-70': 'Integration Basics',
+                '71-80': 'Calculus Applications',
+                '81-87': 'CLEP Prep & Practice'
+            },
+            '11th_econ_B': {
+                '1-10': 'Economic Fundamentals',
+                '11-20': 'Supply & Demand',
+                '21-30': 'Market Structures',
+                '31-40': 'Money & Banking',
+                '41-50': 'Federal Reserve & Policy',
+                '51-60': 'International Trade',
+                '61-70': 'Personal Finance',
+                '71-80': 'Economic Systems',
+                '81-87': 'CLEP Prep & Practice'
             }
         };
         
         // Last week special schedule
         const lastWeekSchedule = {
             '2026-06-08': {
-                'Period 1': 'CLEP/AP Test Prep',
-                'Period 2': 'Portfolio Review',
-                'Period 3': 'EOC Practice Tests'
+                'Period 1': 'CLEP English Literature Practice',
+                'Period 2': 'CLEP PreCalculus Practice',
+                'Period 3': 'AP Biology Practice'
             },
             '2026-06-09': {
-                'Period 1': 'CLEP/AP Test Prep',
-                'Period 2': 'Portfolio Presentations',
-                'Period 3': 'Academic Competitions'
+                'Period 1': 'AP World History Practice',
+                'Period 2': 'CLEP Economics Practice',
+                'Period 3': 'Florida EOC Practice'
             },
             '2026-06-10': {
-                'Period 1': 'Final Assessments',
-                'Period 2': 'College Planning',
-                'Period 3': 'Summer Prep'
+                'Period 1': 'Portfolio Presentations',
+                'Period 2': 'CLEP Registration',
+                'Period 3': 'Summer Planning'
             },
             '2026-06-11': {
                 'Period 1': 'Awards Ceremony',
@@ -717,22 +538,20 @@
                     html += '<div style="color: #d97706; font-size: 0.625rem;">Noon Dismissal</div>';
                 }
                 
-                // Show lesson preview based on grade filter
+                // Show lesson preview
                 if (dayType && !isWeekend && isCurrentMonth && dayNum && dayNum <= 170) {
                     html += '<div class="lesson-preview">';
-                    const schedule = periodSchedule[dayType];
-                    let previewCount = 0;
-                    
-                    for (const [period, classes] of Object.entries(schedule)) {
-                        for (const [grade, className] of Object.entries(classes)) {
-                            if (currentGradeFilter === 'all' || currentGradeFilter === grade) {
-                                const lesson = getLesson(className, dayNum);
-                                if (lesson && previewCount < 2) {
-                                    html += `${className.split(' ')[2]}: ${lesson.substring(0, 12)}...<br>`;
-                                    previewCount++;
-                                }
-                            }
-                        }
+                    if (currentGradeFilter === 'all' || currentGradeFilter === '7th') {
+                        const lesson = dayType === 'A' ? getLesson('7th_science_A', dayNum) : getLesson('7th_civics_B', dayNum);
+                        if (lesson) html += `7th: ${lesson.substring(0, 15)}...<br>`;
+                    }
+                    if (currentGradeFilter === 'all' || currentGradeFilter === '9th') {
+                        const lesson = dayType === 'A' ? getLesson('9th_ela_A', dayNum) : getLesson('9th_history_B', dayNum);
+                        if (lesson) html += `9th: ${lesson.substring(0, 15)}...<br>`;
+                    }
+                    if (currentGradeFilter === 'all' || currentGradeFilter === '11th') {
+                        const lesson = dayType === 'A' ? getLesson('11th_precalc_A', dayNum) : getLesson('11th_econ_B', dayNum);
+                        if (lesson) html += `11th: ${lesson.substring(0, 15)}...`;
                     }
                     html += '</div>';
                 }
@@ -774,47 +593,50 @@
                 }
             } else {
                 // Regular schedule
-                const schedule = periodSchedule[dayType];
-                let periodNum = 1;
+                const subjects = dayType === 'A' 
+                    ? [
+                        { name: '7th Science', key: '7th_science_A', grade: '7th' },
+                        { name: '9th ELA', key: '9th_ela_A', grade: '9th' },
+                        { name: '11th PreCalculus', key: '11th_precalc_A', grade: '11th' }
+                      ]
+                    : [
+                        { name: '7th Civics', key: '7th_civics_B', grade: '7th' },
+                        { name: '9th World History', key: '9th_history_B', grade: '9th' },
+                        { name: '11th Economics', key: '11th_econ_B', grade: '11th' }
+                      ];
                 
-                for (const [period, classes] of Object.entries(schedule)) {
-                    for (const [grade, className] of Object.entries(classes)) {
-                        if (currentGradeFilter === 'all' || currentGradeFilter === grade) {
-                            const lesson = getLesson(className, dayNum);
-                            const lessonCode = `${dayNum}.${periodNum}.${dayType.toLowerCase()}`;
-                            
-                            modalContent += `
-                                <div class="period">
-                                    <div class="period-header">
-                                        <div>
-                                            <div class="period-title">${period}</div>
-                                            <div class="period-time">${className}</div>
-                                        </div>
-                                        <div class="lesson-code">${lessonCode}</div>
-                                    </div>
-                                    <div class="lesson-content">
-                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">${lesson}</h3>
-                                        <h4>Objectives:</h4>
-                                        <ul>
-                                            <li>Master key concepts for this unit</li>
-                                            <li>Apply knowledge through hands-on activities</li>
-                                            <li>Demonstrate understanding through assessment</li>
-                                        </ul>
-                                        <h4>Activities:</h4>
-                                        <ul>
-                                            <li>Interactive lesson with multimedia</li>
-                                            <li>${className.includes('Science') ? 'Discovery Box experiments' : 'Collaborative exercises'}</li>
-                                            <li>Practice problems and discussions</li>
-                                        </ul>
-                                        <h4>Assessment:</h4>
-                                        <p>Formative assessment through class participation and exit tickets</p>
-                                    </div>
+                subjects.forEach((subject, index) => {
+                    if (currentGradeFilter === 'all' || currentGradeFilter === subject.grade) {
+                        const lesson = getLesson(subject.key, dayNum);
+                        const lessonCode = `${dayNum}.${index + 1}.${dayType.toLowerCase()}`;
+                        
+                        modalContent += `
+                            <div class="period">
+                                <div class="period-header">
+                                    <div class="period-title">Period ${index + 1}: ${subject.name}</div>
+                                    <div class="lesson-code">${lessonCode}</div>
                                 </div>
-                            `;
-                        }
+                                <div class="lesson-content">
+                                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">${lesson}</h3>
+                                    <h4>Objectives:</h4>
+                                    <ul>
+                                        <li>Understand key concepts</li>
+                                        <li>Apply knowledge through activities</li>
+                                        <li>Demonstrate mastery through assessment</li>
+                                    </ul>
+                                    <h4>Activities:</h4>
+                                    <ul>
+                                        <li>Interactive lesson presentation</li>
+                                        <li>Hands-on practice with Discovery Box</li>
+                                        <li>Collaborative group work</li>
+                                    </ul>
+                                    <h4>Assessment:</h4>
+                                    <p>Formative assessment through discussion and practice problems</p>
+                                </div>
+                            </div>
+                        `;
                     }
-                    periodNum++;
-                }
+                });
             }
             
             document.getElementById('modalBody').innerHTML = modalContent;
