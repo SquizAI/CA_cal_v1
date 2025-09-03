@@ -16,6 +16,39 @@ function formatDate(date) {
     return date.toLocaleDateString('en-US', options);
 }
 
+// Get lesson for a specific day and subject
+function getLesson(dayType, dayNum, subjectKey) {
+    // Special handling for AI Awareness days
+    if (dayNum <= 2 && curriculumMap['ai_awareness']) {
+        const aiLesson = curriculumMap['ai_awareness'][dayNum.toString()];
+        if (aiLesson) return aiLesson;
+    }
+    
+    if (!curriculumMap[subjectKey]) {
+        console.log(`No curriculum found for subject: ${subjectKey}`);
+        return null;
+    }
+    
+    // Find the appropriate lesson based on day number
+    // Lessons are mapped in 5-day blocks (shifted by 2 for AI Awareness)
+    for (const [dayRange, lesson] of Object.entries(curriculumMap[subjectKey])) {
+        if (dayRange.includes('-')) {
+            const [start, end] = dayRange.split('-').map(Number);
+            if (dayNum >= start && dayNum <= end) {
+                return lesson;
+            }
+        } else {
+            const day = Number(dayRange);
+            if (dayNum === day) {
+                return lesson;
+            }
+        }
+    }
+    
+    console.log(`No lesson found for ${subjectKey} on day ${dayNum}`);
+    return null;
+}
+
 // Create day cell for calendar grid
 function createDayCell(date) {
     const cell = document.createElement('div');
@@ -118,14 +151,14 @@ function createDayCell(date) {
     
     cell.innerHTML = cellContent;
     
-    // Add click handler for lesson details
-    cell.addEventListener('click', () => showLessonDetails(date, dayType, dayNum, isLastWeek));
+    // Add click handler for lesson details - pass dayCounter instead of dayNum
+    cell.addEventListener('click', () => showLessonDetails(date, dayType, dayCounter, isLastWeek));
     
     return cell;
 }
 
 // Show lesson details in modal
-function showLessonDetails(date, dayType, dayNum, isLastWeek) {
+function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
     const modal = document.getElementById('lessonModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
@@ -210,7 +243,8 @@ function showLessonDetails(date, dayType, dayNum, isLastWeek) {
                         else if (grade === '11' && (subject.includes('Literature') || subject.includes('ELA'))) subjectKey = '11th_ela';
                         else if (grade === '11' && subject.includes('Economics')) subjectKey = '11th_econ';
                         
-                        const lesson = getLesson(dayType, dayNum, subjectKey);
+                        // Use dayCounter for lesson retrieval since lessons are mapped by total day count
+                        const lesson = getLesson(dayType, dayCounter, subjectKey);
                         
                         if (lesson) {
                             content += `
@@ -226,14 +260,20 @@ function showLessonDetails(date, dayType, dayNum, isLastWeek) {
                                 <div class="lesson-metadata">
                                     <span>📐 ${grade}th Grade</span>
                                     <span>📚 ${subject}</span>
-                                    <span>📅 ${dayType} Day #${dayNum}</span>
+                                    <span>📅 Day ${dayCounter}</span>
                                 </div>
                             </div>
                         `;
                         } else {
                             content += `
                                 <div class="lesson-details">
-                                    <p class="text-gray-500 italic">Lesson details coming soon...</p>
+                                    <p><strong>Day ${dayCounter} Curriculum</strong></p>
+                                    <p class="text-gray-600">📚 ${subject}</p>
+                                    <p class="text-sm text-gray-500 mt-2">Detailed lesson plan in development</p>
+                                    <div class="lesson-metadata">
+                                        <span>📐 ${grade}th Grade</span>
+                                        <span>📅 Day ${dayCounter}</span>
+                                    </div>
                                 </div>
                             `;
                         }
@@ -263,7 +303,8 @@ function showLessonDetails(date, dayType, dayNum, isLastWeek) {
                     else if (selectedGrade === '11' && (subject.includes('Literature') || subject.includes('ELA'))) subjectKey = '11th_ela';
                     else if (selectedGrade === '11' && subject.includes('Economics')) subjectKey = '11th_econ';
                     
-                    const lesson = getLesson(dayType, dayNum, subjectKey);
+                    // Use dayCounter for single grade view too
+                    const lesson = getLesson(dayType, dayCounter, subjectKey);
                     
                     if (lesson) {
                         content += `
@@ -279,14 +320,20 @@ function showLessonDetails(date, dayType, dayNum, isLastWeek) {
                                 <div class="lesson-metadata">
                                     <span>📐 ${selectedGrade}th Grade</span>
                                     <span>📚 ${subject}</span>
-                                    <span>📅 ${dayType} Day #${dayNum}</span>
+                                    <span>📅 Day ${dayCounter}</span>
                                 </div>
                             </div>
                         `;
                     } else {
                         content += `
                             <div class="lesson-details">
-                                <p class="text-gray-500 italic">Lesson details coming soon...</p>
+                                <p><strong>Day ${dayCounter} Curriculum</strong></p>
+                                <p class="text-gray-600">📚 ${subject}</p>
+                                <p class="text-sm text-gray-500 mt-2">Detailed lesson plan in development</p>
+                                <div class="lesson-metadata">
+                                    <span>📐 ${selectedGrade}th Grade</span>
+                                    <span>📅 Day ${dayCounter}</span>
+                                </div>
                             </div>
                         `;
                     }
@@ -466,9 +513,9 @@ function renderAccordionView() {
             });
         }
         
-        // Add view details button
+        // Add view details button with correct dayCounter
         bodyContent += `<button class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" 
-            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${dayNum}, false)">
+            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${tempDayCounter}, false)">
             View Full Lesson Details
         </button>`;
         
