@@ -3,69 +3,76 @@
 // Updated to include AI Awareness Days (Sept 8-9)
 
 const curriculumMap = {
-    // AI AWARENESS DAYS - All Grades
+    // AI AWARENESS DAYS - All Grades (First Two Days of School)
     'ai_awareness': {
-        '1': { // Sept 8 - Day 1.B
+        '1': { // Sept 8 - Day 1.B - FIRST DAY OF SCHOOL
             code: 'AI_1.B',
-            title: 'AI Awareness Day 1 - Welcome to the Future of Learning',
+            title: 'Welcome to Your AI-Powered Learning Journey',
             objectives: [
-                'Introduction to AI-driven learning',
+                'Welcome students to AI Academy @ Centner',
+                'Introduction to AI-enhanced learning',
                 'Establish AI ethics and digital citizenship',
                 'Explore AI tools for each subject area',
                 'Create classroom AI honor codes'
             ],
-            materials: 'Chromebooks, AI tool accounts (ChatGPT, Claude, Khan Academy), digital citizenship agreements',
+            materials: 'Chromebooks, AI tool accounts (ChatGPT, Claude, Khan Academy/Khanmigo), digital citizenship agreements, mystery boxes',
             activities: [
-                'Period 1: AI Timeline & Ethics Discussion (9th WH, 11th AmLit)',
-                'Period 2: Khan Academy Setup & AI Tutors (7th Pre-Algebra)',
-                'Period 3: Digital Constitution Creation (7th Civics, 9th Algebra I)',
-                'After School: AI Exploration Lab (Optional)'
+                'Opening Circle: Share your name and one thing you hope AI can help you learn',
+                'AI Timeline: Ancient Abacus (2700 BCE) to ChatGPT (2022)',
+                'Interactive "AI or Human?" - Guess which writings are AI-generated',
+                'Grade-specific breakout sessions',
+                'Khan Academy & Khanmigo setup (7th Grade)',
+                'Creating class AI Honor Code',
+                'Digital Constitution development'
             ],
-            assessment: 'Digital citizenship pledge signed, Khan Academy setup complete, AI ethics agreement created, reflection essay',
+            assessment: 'Exit ticket on ethical AI use, Digital citizenship pledge, Khan Academy diagnostic, Math learning contracts',
             standards: 'Technology and Digital Literacy Standards, Florida B.E.S.T. Standards',
             details: {
                 'Period 1 (8:18-9:48)': {
-                    '9th World History': 'AI Through the Ages - Historical development of AI, ethical guidelines',
-                    '11th American Literature': 'AI as Writing Partner - Prompt engineering, citation practices'
+                    '9': 'World History: AI helps historians analyze ancient texts, digital archaeology, pattern recognition',
+                    '11': 'American Literature: AI as writing partner (not replacement), understanding authorial voice vs AI'
                 },
                 'Period 2 (9:51-11:21)': {
-                    '7th Pre-Algebra': 'Math with AI Assistants - Khan Academy/Khanmigo, problem-solving with AI'
+                    '7': 'Pre-Algebra: Calculator Evolution activity, Khan Academy/Khanmigo setup, AI word problem translation, pattern recognition stations'
                 },
                 'Period 3 (12:12-1:42)': {
-                    '7th Civics': 'Digital Citizenship - Rights and responsibilities in AI age',
-                    '9th Algebra I': 'AI Pattern Recognition - Machine learning basics, mathematical patterns'
+                    '7': 'Civics: Digital rights & responsibilities, privacy, misinformation, creating Digital Constitution',
+                    '9': 'Algebra I: How AI uses algebra, creating equations AI can solve, finding patterns in data'
                 }
             }
         },
-        '2': { // Sept 9 - Day 2.A
+        '2': { // Sept 9 - Day 2.A - SECOND DAY OF SCHOOL
             code: 'AI_2.A',
-            title: 'AI Awareness Day 2 - Mastering AI Tools for Academic Excellence',
+            title: 'Mastering AI Tools for Academic Excellence',
             objectives: [
                 'Master subject-specific AI tools',
                 'Practice prompt engineering strategies',
                 'Create AI-assisted projects',
-                'Prepare for Parent Showcase'
+                'Prepare for Parent Showcase (Thursday)'
             ],
-            materials: 'AI platforms (Grammarly, Wolfram Alpha, Desmos, iNaturalist), project materials, presentation tools',
+            materials: 'Grammarly Premium, QuillBot, Hemingway Editor, Wolfram Alpha, Desmos, PhotoMath, Symbolab, iNaturalist, Google Lens',
             activities: [
-                'Period 1: Subject AI Tools Deep Dive (9th ELA, 11th Pre-Calc)',
-                'Period 2: Discovery Box AI Integration (7th Science), Democracy & AI (11th Gov)',
-                'Period 3: AI Writing Workshop (7th ELA)',
-                'After School: Showcase Preparation Workshop'
+                'AI Speed Analysis Challenge',
+                'Subject-specific AI tool deep dives',
+                'Cross-curricular "Mathematics of Literature" project',
+                'Virtual microscope with AI identification',
+                'AI Writing Workshop stations',
+                'Collaborative story creation',
+                'Parent showcase preparation'
             ],
-            assessment: 'AI tool proficiency demonstration, collaborative project completion, showcase presentation ready',
+            assessment: 'AI tool proficiency checks, Digital portfolio creation, Skills assessment exit tickets, Parent showcase sign-ups',
             standards: 'Technology and Digital Literacy Standards, Subject-specific Florida Standards',
             details: {
                 'Period 1 (8:18-9:48)': {
-                    '9th ELA': 'Grammarly, QuillBot, Hemingway Editor, ChatGPT for literary analysis',
-                    '11th Pre-Calculus': 'Wolfram Alpha, Desmos, PhotoMath, Symbolab for advanced math'
+                    '9': 'ELA: Grammarly Premium, QuillBot paraphrasing, Hemingway Editor, ChatGPT for symbolism analysis',
+                    '11': 'Pre-Calculus: Wolfram Alpha derivatives, Desmos graphing trig functions, PhotoMath verification, Symbolab limits'
                 },
                 'Period 2 (9:51-11:21)': {
-                    '7th Life Science': 'Virtual microscope, iNaturalist, Google Lens for biology',
-                    '11th US Government': 'AI in elections, legislation, constitutional questions'
+                    '7': 'Life Science Discovery Box: Virtual microscope AI, iNaturalist species ID, Google Lens biology, AI research assistant',
+                    '11': 'US Government: AI in elections, deepfakes, fact-checking, AI legislation, constitutional questions about AI'
                 },
                 'Period 3 (12:12-1:42)': {
-                    '7th ELA': 'AI Writing Workshop - Brainstorming, grammar, creative writing, research with AI'
+                    '7': 'ELA Writing Workshop: 4 stations - Brainstorming with AI, Grammar/Style, Creative writing, Research & citations'
                 }
             }
         }
