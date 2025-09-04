@@ -15,7 +15,7 @@ const curriculumMap = {
                 'Explore AI tools for each subject area',
                 'Create classroom AI honor codes'
             ],
-            materials: 'Chromebooks, AI tool accounts (ChatGPT, Claude, Khan Academy/Khanmigo), digital citizenship agreements, mystery boxes',
+            materials: 'MacBooks, AI tool accounts (ChatGPT, Claude, Khan Academy/Khanmigo), digital citizenship agreements, mystery boxes',
             activities: [
                 'Opening Circle: Share your name and one thing you hope AI can help you learn',
                 'AI Timeline: Ancient Abacus (2700 BCE) to ChatGPT (2022)',
