@@ -20,7 +20,8 @@ function formatDate(date) {
 function getLesson(dayType, dayNum, subjectKey) {
     // Special handling for AI Awareness days
     if (dayNum <= 2 && curriculumMap['ai_awareness']) {
-        const aiLesson = curriculumMap['ai_awareness'][dayNum.toString()];
+        const dayKey = `${dayNum}.${dayType}`;
+        const aiLesson = curriculumMap['ai_awareness'][dayKey];
         if (aiLesson) return aiLesson;
     }
     
@@ -29,23 +30,53 @@ function getLesson(dayType, dayNum, subjectKey) {
         return null;
     }
     
-    // Find the appropriate lesson based on day number
-    // Lessons are mapped in 5-day blocks (shifted by 2 for AI Awareness)
+    // Find the appropriate lesson based on day number and type
+    // New format: "1.B-5.B" or "2.A-6.A"
     for (const [dayRange, lesson] of Object.entries(curriculumMap[subjectKey])) {
         if (dayRange.includes('-')) {
-            const [start, end] = dayRange.split('-').map(Number);
-            if (dayNum >= start && dayNum <= end) {
-                return lesson;
+            // Parse range like "1.B-5.B" or "2.A-6.A"
+            const parts = dayRange.split('-');
+            if (parts.length === 2) {
+                // Check if it's the new format with dots
+                if (parts[0].includes('.') && parts[1].includes('.')) {
+                    const startParts = parts[0].split('.');
+                    const endParts = parts[1].split('.');
+                    const startNum = Number(startParts[0]);
+                    const startType = startParts[1];
+                    const endNum = Number(endParts[0]);
+                    const endType = endParts[1];
+                    
+                    // Check if current day matches the type and is within range
+                    if (dayType === startType && dayType === endType) {
+                        if (dayNum >= startNum && dayNum <= endNum) {
+                            return lesson;
+                        }
+                    }
+                } else {
+                    // Fallback to old numeric format if still present
+                    const [start, end] = dayRange.split('-').map(Number);
+                    if (dayNum >= start && dayNum <= end) {
+                        return lesson;
+                    }
+                }
             }
         } else {
-            const day = Number(dayRange);
-            if (dayNum === day) {
-                return lesson;
+            // Single day lesson - check for new format "1.B" or old format "1"
+            if (dayRange.includes('.')) {
+                const [num, type] = dayRange.split('.');
+                if (Number(num) === dayNum && type === dayType) {
+                    return lesson;
+                }
+            } else {
+                const day = Number(dayRange);
+                if (dayNum === day) {
+                    return lesson;
+                }
             }
         }
     }
     
-    console.log(`No lesson found for ${subjectKey} on day ${dayNum}`);
+    console.log(`No lesson found for ${subjectKey} on day ${dayNum}.${dayType}`);
     return null;
 }
 
@@ -208,7 +239,8 @@ function showLessonDetails(date, dayType, dayNum, totalDayCount, isLastWeek) {
                     const isAIAwarenessDay = (date >= new Date('2025-09-08') && date <= new Date('2025-09-09'));
                     
                     if (isAIAwarenessDay && totalDayCount <= 2) {
-                        const aiLesson = curriculumMap['ai_awareness'][totalDayCount.toString()];
+                        const dayKey = `${totalDayCount}.${dayType}`;
+                        const aiLesson = curriculumMap['ai_awareness'][dayKey];
                         if (aiLesson) {
                             content += `
                                 <div class="lesson-details">
@@ -252,6 +284,7 @@ function showLessonDetails(date, dayType, dayNum, totalDayCount, isLastWeek) {
                         else if (grade === '7' && subject.includes('Civics')) subjectKey = '7th_civics';
                         else if (grade === '9' && subject.includes('ELA')) subjectKey = '9th_ela';
                         else if (grade === '9' && subject.includes('History')) subjectKey = '9th_history';
+                        else if (grade === '9' && subject.includes('Geometry')) subjectKey = '9th_geometry';
                         else if (grade === '9' && subject.includes('Algebra')) subjectKey = '9th_algebra';
                         else if (grade === '11' && subject.includes('Pre-Calc')) subjectKey = '11th_precalc';
                         else if (grade === '11' && subject.includes('Government')) subjectKey = '11th_gov';
