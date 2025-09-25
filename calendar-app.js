@@ -96,15 +96,22 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
         return cell;
     }
     
-    // Don't show school content before Sept 8
+    // Don't show school content before Sept 3 (when regular school starts)
+    const sep3 = new Date('2025-09-03');
     const sep8 = new Date('2025-09-08');
-    if (date < sep8) {
+    if (date < sep3) {
         cell.classList.add('no-school');
         cell.innerHTML = `
             <div class="day-number">${date.getDate()}</div>
-            <div class="text-xs text-gray-600">School starts Sept 8</div>
+            <div class="text-xs text-gray-600">School starts Sept 3</div>
         `;
         return cell;
+    }
+    
+    // Show regular school days but AI Academy starts Sept 8
+    if (date >= sep3 && date < sep8) {
+        // Regular school days before AI Academy
+        // These days should still be counted in the A/B pattern
     }
     
     // Check if there's no school
