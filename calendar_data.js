@@ -82,6 +82,9 @@ function getDayNumber(dateStr, dayType) {
     const date = new Date(dateStr);
     const startDate = new Date('2025-09-03');
     
+    // Don't return day numbers for dates before school starts
+    if (date < startDate) return 0;
+    
     let totalSchoolDays = 0;
     let currentDate = new Date(startDate);
     
@@ -92,9 +95,9 @@ function getDayNumber(dateStr, dayType) {
         // Skip weekends and no-school days
         if (dayOfWeek !== 0 && dayOfWeek !== 6 && !schoolCalendar.noSchoolDays.has(currentStr)) {
             totalSchoolDays++;
-            if (currentStr === dateStr) break;
         }
         
+        if (currentStr === dateStr) break;
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
