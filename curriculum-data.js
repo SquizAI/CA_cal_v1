@@ -196,6 +196,25 @@ const curriculumMap = {
             ],
             assessment: 'Citizenship knowledge test, Participation portfolio, Action plan presentation',
             standards: 'SS.7.C.2.1, SS.7.C.2.2, SS.7.C.2.3, SS.7.C.2.14'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B (3 B days before winter break)
+            code: '7_civ_1.3.1',
+            title: 'The Legislative Branch',
+            objectives: [
+                'Understand the structure of Congress',
+                'Analyze the lawmaking process',
+                'Evaluate representation and constituencies',
+                'Apply knowledge to current legislation'
+            ],
+            materials: 'Showrunner Episode 1.3.1, bill tracking sheets, committee cards, legislative simulation',
+            activities: [
+                'How a Bill Becomes a Law simulation',
+                'Committee hearing role-play',
+                'Mock Congress session',
+                'Current legislation tracking'
+            ],
+            assessment: 'Legislative process test, Bill tracking project, Congress simulation evaluation',
+            standards: 'SS.7.C.3.8, SS.7.C.3.9, SS.7.C.3.10, SS.7.C.3.11'
         }
     },
 
@@ -335,6 +354,25 @@ const curriculumMap = {
             ],
             assessment: 'Structure identification quiz, Graphic organizer accuracy, Comprehension assessments, Analysis essays',
             standards: 'ELA.7.R.2.1, ELA.7.R.2.2, ELA.7.C.1.4'
+        },
+        '32.A-35.A': { // Days 32.A, 34.A, 35.A (last days before winter break)
+            code: '7_ela_2.2.1',
+            title: 'Author\'s Purpose and Perspective',
+            objectives: [
+                'Identify author\'s purpose in various texts',
+                'Analyze author\'s perspective and bias',
+                'Evaluate how purpose affects writing style',
+                'Apply understanding to own writing'
+            ],
+            materials: 'Purpose cards, perspective texts, bias detection worksheets, writing samples',
+            activities: [
+                'Purpose identification stations',
+                'Perspective analysis debates',
+                'Bias detection practice',
+                'Purpose-driven writing workshop'
+            ],
+            assessment: 'Author\'s purpose quiz, Perspective analysis essay, Writing portfolio review',
+            standards: 'ELA.7.R.2.3, ELA.7.R.2.4, ELA.7.C.1.3'
         }
     },
 
@@ -434,6 +472,25 @@ const curriculumMap = {
             ],
             assessment: 'Geometry test, Construction project, Problem-solving portfolio, Practical applications',
             standards: 'MA.7.GR.1.1, MA.7.GR.1.2, MA.7.GR.1.3, MA.7.GR.2.1'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B (3 B days before winter break)
+            code: '7_math_2.3.1',
+            title: 'Data Analysis and Statistics',
+            objectives: [
+                'Calculate measures of central tendency',
+                'Create and interpret data displays',
+                'Understand probability concepts',
+                'Apply statistics to real-world data'
+            ],
+            materials: 'Data sets, graphing tools, probability materials, Khan Academy Statistics',
+            activities: [
+                'Mean, median, mode investigations',
+                'Data display creation project',
+                'Probability experiments',
+                'Real-world data analysis'
+            ],
+            assessment: 'Statistics test, Data project, Probability problems, Khan progress check',
+            standards: 'MA.7.DP.1.1, MA.7.DP.1.2, MA.7.DP.1.3, MA.7.DP.2.1'
         }
     },
 
@@ -645,7 +702,8 @@ const curriculumMap = {
     },
 
     // 7th Grade ELA (A Days, Period 3) - SHIFTED BY 2 DAYS
-    '7th_ela': {
+    // DUPLICATE SECTION - COMMENTED OUT (content already in first 7th_ela section above)
+    /*'7th_ela': {
         '3-7': { // Was 1-5 
             code: '7_ela_1.1.1', 
             title: 'Narrative Elements',
@@ -701,7 +759,7 @@ const curriculumMap = {
             standards: 'LAFS.7.RL.1.2, LAFS.7.RL.2.4, LAFS.7.RL.3.9'
         }
         // Continue with more units...
-    },
+    },*/
 
     // 9th Grade ELA (A Days, Period 1) - Complete Curriculum
     '9th_ela': {
@@ -819,6 +877,63 @@ const curriculumMap = {
             ],
             assessment: 'Comparative analysis essay, Social commentary analysis, Original poetry anthology with performance',
             standards: 'ELA.9.R.1.2, ELA.9.R.1.4, ELA.9.R.3.1, ELA.9.C.1.5'
+        },
+        '20.A-24.A': { // Days 20.A, 22.A, 24.A
+            code: '9_ela_2.3.1',
+            title: 'Technology\'s Impact - "The Veldt"',
+            objectives: [
+                'Analyze technology\'s role in family dynamics',
+                'Examine psychological horror elements',
+                'Evaluate Bradbury\'s warnings about technology',
+                'Connect to modern digital dependency'
+            ],
+            materials: 'Bradbury text, technology impact surveys, digital wellness resources',
+            activities: [
+                'Technology dependency self-assessment',
+                'Psychological elements analysis',
+                'Modern parallels discussion',
+                'Digital wellness action plan'
+            ],
+            assessment: 'Technology impact essay, Literary analysis, Modern application project',
+            standards: 'ELA.9.R.1.1, ELA.9.R.1.2, ELA.9.R.3.1'
+        },
+        '26.A-30.A': { // Days 26.A, 28.A, 30.A
+            code: '9_ela_2.4.1',
+            title: 'Identity and Conformity - "The Scarlet Ibis"',
+            objectives: [
+                'Analyze symbolism and foreshadowing',
+                'Examine pride as character motivation',
+                'Evaluate sibling dynamics and expectations',
+                'Connect to societal pressure themes'
+            ],
+            materials: 'Hurst text, symbolism guides, character motivation maps',
+            activities: [
+                'Symbol tracking throughout story',
+                'Pride consequences debate',
+                'Character motivation analysis',
+                'Personal connection writing'
+            ],
+            assessment: 'Symbolism identification quiz, Character analysis essay, Theme presentation',
+            standards: 'ELA.9.R.1.2, ELA.9.R.1.3, ELA.9.R.3.1'
+        },
+        '32.A-35.A': { // Days 32.A, 34.A, 35.A
+            code: '9_ela_review',
+            title: 'Semester Review and Portfolio',
+            objectives: [
+                'Synthesize semester themes',
+                'Demonstrate growth in analysis skills',
+                'Create comprehensive portfolio',
+                'Prepare for semester assessment'
+            ],
+            materials: 'All semester texts, portfolio rubrics, review materials',
+            activities: [
+                'Theme synthesis discussions',
+                'Portfolio organization workshop',
+                'Peer review sessions',
+                'Semester reflection writing'
+            ],
+            assessment: 'Portfolio presentation, Comprehensive theme essay, Semester exam',
+            standards: 'ELA.9.R.1.1-ELA.9.C.2.1'
         }
     },
 
@@ -960,6 +1075,63 @@ const curriculumMap = {
             ],
             assessment: 'Unit tests, Construction portfolios, Real-world projects, Proof evaluations',
             standards: 'MA.912.GR.1.4-MA.912.GR.7.3, MA.912.T.1.1-MA.912.T.1.2'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B
+            code: '9_geom_4.2.1',
+            title: 'Properties of Triangles',
+            objectives: [
+                'Apply triangle sum theorem',
+                'Use exterior angle theorem',
+                'Classify triangles by sides and angles',
+                'Solve complex triangle problems'
+            ],
+            materials: 'Triangle manipulatives, angle tools, GeoGebra triangles',
+            activities: [
+                'Triangle sum investigations',
+                'Exterior angle explorations',
+                'Triangle classification sort',
+                'Real-world triangle applications'
+            ],
+            assessment: 'Triangle properties test, Problem-solving evaluation, Construction accuracy',
+            standards: 'MA.912.GR.1.1, MA.912.GR.1.2'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B
+            code: '9_geom_5.1.1',
+            title: 'Quadrilaterals and Their Properties',
+            objectives: [
+                'Identify properties of special quadrilaterals',
+                'Prove quadrilateral relationships',
+                'Apply properties to solve problems',
+                'Construct quadrilaterals with given properties'
+            ],
+            materials: 'Quadrilateral kits, property cards, construction tools',
+            activities: [
+                'Quadrilateral hierarchy mapping',
+                'Property investigation stations',
+                'Proof practice workshop',
+                'Construction challenges'
+            ],
+            assessment: 'Quadrilateral test, Proof evaluation, Construction portfolio',
+            standards: 'MA.912.GR.3.1, MA.912.GR.3.2, MA.912.GR.3.4'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B
+            code: '9_geom_review',
+            title: 'Semester Review and Assessment Prep',
+            objectives: [
+                'Review all geometric concepts',
+                'Strengthen proof writing skills',
+                'Apply geometry to complex problems',
+                'Prepare for semester exam'
+            ],
+            materials: 'Review packets, practice tests, construction tools',
+            activities: [
+                'Concept review stations',
+                'Proof writing workshop',
+                'Practice exam sessions',
+                'Peer tutoring groups'
+            ],
+            assessment: 'Practice exams, Proof portfolio, Semester project, Final exam',
+            standards: 'MA.912.GR.1.1-MA.912.GR.5.3'
         }
     },
 
@@ -1043,6 +1215,63 @@ const curriculumMap = {
             ],
             assessment: 'Unit DBQs, Performance tasks, Creative projects, EOC preparation assessments',
             standards: 'SS.912.W.2.1-SS.912.W.8.4'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B
+            code: '9_wh_2.2.1',
+            title: 'Islamic Empires and Culture',
+            objectives: [
+                'Analyze rise of Islamic civilization',
+                'Evaluate cultural and scientific contributions',
+                'Compare with contemporary civilizations',
+                'Assess lasting global impact'
+            ],
+            materials: 'Islamic empire maps, scientific achievement cards, cultural artifacts',
+            activities: [
+                'Empire expansion mapping',
+                'Golden Age achievements gallery',
+                'Cross-cultural comparisons',
+                'Legacy tracking project'
+            ],
+            assessment: 'Empire analysis quiz, Achievements presentation, Comparison essay',
+            standards: 'SS.912.W.3.1, SS.912.W.3.2, SS.912.W.3.3'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B
+            code: '9_wh_3.1.1',
+            title: 'Medieval Europe and Feudalism',
+            objectives: [
+                'Understand feudal system structure',
+                'Analyze role of Catholic Church',
+                'Evaluate knighthood and chivalry',
+                'Connect to modern social structures'
+            ],
+            materials: 'Feudal pyramid models, manor diagrams, knight code documents',
+            activities: [
+                'Feudal hierarchy simulation',
+                'Manor life investigation',
+                'Knighthood ceremony recreation',
+                'Modern parallels discussion'
+            ],
+            assessment: 'Feudalism test, Manor project, Social structure analysis',
+            standards: 'SS.912.W.2.9, SS.912.W.2.10, SS.912.W.2.11'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B
+            code: '9_wh_review',
+            title: 'Semester Review: Ancient to Medieval',
+            objectives: [
+                'Synthesize major historical themes',
+                'Analyze continuity and change',
+                'Prepare comprehensive timeline',
+                'Ready for semester assessment'
+            ],
+            materials: 'Review guides, timeline materials, practice DBQs',
+            activities: [
+                'Civilization comparison charts',
+                'Timeline creation project',
+                'DBQ practice sessions',
+                'Review game tournaments'
+            ],
+            assessment: 'Comprehensive timeline, Thematic essay, Practice EOC, Semester exam',
+            standards: 'SS.912.W.1.1-SS.912.W.3.3'
         }
     },
 
@@ -1083,8 +1312,83 @@ const curriculumMap = {
             ],
             assessment: 'Polynomial quiz, Rational functions test, Graphing assessment',
             standards: 'MAFS.912.A-APR.2.3, MAFS.912.A-APR.3.4, MAFS.912.F-IF.3.7'
+        },
+        '14.A-18.A': { // Days 14.A, 16.A, 18.A
+            code: '11_pc_2.1.1',
+            title: 'Exponential and Logarithmic Functions',
+            objectives: [
+                'Graph exponential and logarithmic functions',
+                'Solve exponential and logarithmic equations',
+                'Apply to compound interest and growth models',
+                'Use properties of logarithms'
+            ],
+            materials: 'Graphing calculators, exponential models, logarithm tables',
+            activities: [
+                'Exponential growth investigations',
+                'Logarithm property explorations',
+                'Compound interest calculations',
+                'Population growth modeling'
+            ],
+            assessment: 'Exponential/log test, Growth model project, Application problems',
+            standards: 'MAFS.912.F-IF.3.7, MAFS.912.F-LE.1.4, MAFS.912.F-BF.2.5'
+        },
+        '20.A-24.A': { // Days 20.A, 22.A, 24.A
+            code: '11_pc_3.1.1',
+            title: 'Trigonometric Functions',
+            objectives: [
+                'Define and graph trig functions',
+                'Use unit circle for exact values',
+                'Apply trig to real-world problems',
+                'Understand periodic behavior'
+            ],
+            materials: 'Unit circles, trig graphing tools, periodic models',
+            activities: [
+                'Unit circle mastery activities',
+                'Trig graph transformations',
+                'Periodic phenomenon modeling',
+                'Real-world trig applications'
+            ],
+            assessment: 'Trig functions test, Unit circle quiz, Application project',
+            standards: 'MAFS.912.F-TF.1.1, MAFS.912.F-TF.1.2, MAFS.912.F-TF.2.5'
+        },
+        '26.A-30.A': { // Days 26.A, 28.A, 30.A
+            code: '11_pc_3.2.1',
+            title: 'Trigonometric Identities and Equations',
+            objectives: [
+                'Prove fundamental trig identities',
+                'Solve trig equations',
+                'Apply double and half-angle formulas',
+                'Use sum and difference formulas'
+            ],
+            materials: 'Identity cards, equation solving guides, formula sheets',
+            activities: [
+                'Identity proof practice',
+                'Equation solving workshop',
+                'Formula derivation exercises',
+                'Application problem sets'
+            ],
+            assessment: 'Identity proofs test, Equation solving quiz, Formula applications',
+            standards: 'MAFS.912.F-TF.3.8, MAFS.912.F-TF.3.9'
+        },
+        '32.A-35.A': { // Days 32.A, 34.A, 35.A
+            code: '11_pc_review',
+            title: 'Semester Review and CLEP Prep',
+            objectives: [
+                'Review all precalculus concepts',
+                'Prepare for CLEP exam',
+                'Strengthen problem-solving skills',
+                'Ready for calculus'
+            ],
+            materials: 'CLEP prep materials, practice exams, review packets',
+            activities: [
+                'Concept review stations',
+                'CLEP practice tests',
+                'Problem-solving marathon',
+                'Peer tutoring sessions'
+            ],
+            assessment: 'Practice CLEP exam, Comprehensive review test, Portfolio',
+            standards: 'All MAFS.912 standards covered'
         }
-        // Continue with more units...
     },
 
     // 11th Grade US Government (A Days, Period 2)
@@ -1124,8 +1428,79 @@ const curriculumMap = {
             ],
             assessment: 'Branches quiz, Balance of power essay, Case study analysis',
             standards: 'SS.912.CG.3.1, SS.912.CG.3.2, SS.912.CG.3.3'
+        },
+        '14.A-18.A': { // Days 14.A, 16.A, 18.A (3 A days)
+            code: '11_gov_1.2.1',
+            title: 'Federalism and State Powers',
+            objectives: [
+                'Analyze federal vs state powers',
+                'Understand concurrent powers',
+                'Evaluate federalism in practice'
+            ],
+            materials: 'Power distribution charts, state constitutions, case studies, current conflicts',
+            activities: [
+                'Federal vs State Powers Sorting',
+                'Tenth Amendment Analysis',
+                'State Rights Debate',
+                'Contemporary Federalism Issues'
+            ],
+            assessment: 'Federalism test, Powers diagram, Case analysis essay',
+            standards: 'SS.912.CG.2.1, SS.912.CG.2.2, SS.912.CG.2.3'
+        },
+        '20.A-24.A': { // Days 20.A, 22.A, 24.A (3 A days)
+            code: '11_gov_1.2.2',
+            title: 'Civil Rights and Civil Liberties',
+            objectives: [
+                'Distinguish rights from liberties',
+                'Analyze Bill of Rights applications',
+                'Evaluate contemporary rights issues'
+            ],
+            materials: 'Bill of Rights copies, court cases, rights scenarios, current events',
+            activities: [
+                'Rights vs Liberties Comparison',
+                'Bill of Rights Case Studies',
+                'Mock Supreme Court',
+                'Rights in the News Analysis'
+            ],
+            assessment: 'Rights quiz, Case brief writing, Liberty application essay',
+            standards: 'SS.912.CG.2.4, SS.912.CG.2.5, SS.912.CG.2.6'
+        },
+        '26.A-30.A': { // Days 26.A, 28.A, 30.A (3 A days)
+            code: '11_gov_1.3.1',
+            title: 'Political Parties and Elections',
+            objectives: [
+                'Analyze party system development',
+                'Understand electoral processes',
+                'Evaluate campaign finance issues'
+            ],
+            materials: 'Party platforms, election maps, campaign materials, voting systems',
+            activities: [
+                'Party Platform Analysis',
+                'Election Simulation',
+                'Campaign Strategy Workshop',
+                'Voting Systems Comparison'
+            ],
+            assessment: 'Party systems test, Election analysis, Campaign project',
+            standards: 'SS.912.CG.3.6, SS.912.CG.3.7, SS.912.CG.3.8'
+        },
+        '32.A-35.A': { // Days 32.A, 34.A, 35.A (last days before winter break)
+            code: '11_gov_1.3.2',
+            title: 'Media and Public Policy',
+            objectives: [
+                'Analyze media influence on politics',
+                'Evaluate policy-making process',
+                'Assess public opinion role'
+            ],
+            materials: 'News sources, policy examples, polling data, media analysis tools',
+            activities: [
+                'Media Bias Detection',
+                'Policy Development Simulation',
+                'Public Opinion Analysis',
+                'News Literacy Workshop'
+            ],
+            assessment: 'Media analysis paper, Policy proposal, Opinion poll project',
+            standards: 'SS.912.CG.3.9, SS.912.CG.3.10, SS.912.CG.3.11'
         }
-        // Continue with more units...
     },
 
     // B Day Subjects
@@ -1330,8 +1705,79 @@ const curriculumMap = {
             ],
             assessment: 'Transcendentalism essay, Literary analysis, Philosophy reflection',
             standards: 'LAFS.1112.RL.1.2, LAFS.1112.RL.2.4, LAFS.1112.RI.1.1'
+        },
+        '13.B-17.B': { // Days 13.B, 15.B, 17.B (3 B days)
+            code: '11_ela_1.2.1',
+            title: 'American Renaissance and Realism',
+            objectives: [
+                'Analyze American Renaissance writers',
+                'Understand shift to realism',
+                'Evaluate literary movements impact'
+            ],
+            materials: 'Renaissance texts, realist literature, movement comparisons, author studies',
+            activities: [
+                'Hawthorne and Melville Analysis',
+                'Realism vs Romanticism Debate',
+                'Literary Movement Timeline',
+                'Mark Twain Regional Study'
+            ],
+            assessment: 'Movement comparison essay, Literary analysis paper, Author study project',
+            standards: 'LAFS.1112.RL.1.3, LAFS.1112.RL.2.5, LAFS.1112.RI.1.2'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B (3 B days)
+            code: '11_ela_1.2.2',
+            title: 'Modernism and the Lost Generation',
+            objectives: [
+                'Analyze modernist techniques',
+                'Understand post-WWI literature',
+                'Evaluate experimental forms'
+            ],
+            materials: 'Modernist texts, Lost Generation works, jazz age materials, experimental poetry',
+            activities: [
+                'Fitzgerald and Hemingway Study',
+                'Modernist Poetry Workshop',
+                'Jazz Age Cultural Context',
+                'Stream of Consciousness Writing'
+            ],
+            assessment: 'Modernism analysis, Lost Generation essay, Creative writing piece',
+            standards: 'LAFS.1112.RL.2.4, LAFS.1112.RL.2.6, LAFS.1112.RI.2.5'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B (3 B days)
+            code: '11_ela_1.3.1',
+            title: 'Harlem Renaissance and Social Justice',
+            objectives: [
+                'Analyze Harlem Renaissance literature',
+                'Understand civil rights themes',
+                'Evaluate literature as social commentary'
+            ],
+            materials: 'Harlem Renaissance texts, civil rights literature, music connections, art prints',
+            activities: [
+                'Langston Hughes Poetry Study',
+                'Jazz and Literature Connections',
+                'Social Justice Theme Analysis',
+                'Cultural Expression Workshop'
+            ],
+            assessment: 'Poetry analysis, Social justice essay, Renaissance presentation',
+            standards: 'LAFS.1112.RL.1.1, LAFS.1112.RI.2.6, LAFS.1112.RI.3.8'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B (last B days before winter break)
+            code: '11_ela_1.3.2',
+            title: 'Contemporary American Voices',
+            objectives: [
+                'Analyze contemporary literature',
+                'Understand diverse perspectives',
+                'Evaluate current literary trends'
+            ],
+            materials: 'Contemporary texts, diverse author anthology, multimedia resources, current reviews',
+            activities: [
+                'Contemporary Author Study',
+                'Diverse Voices Discussion',
+                'Modern Theme Analysis',
+                'Book Club Simulation'
+            ],
+            assessment: 'Contemporary analysis paper, Author comparison, Reading response journal',
+            standards: 'LAFS.1112.RL.1.3, LAFS.1112.RI.1.3, LAFS.1112.W.1.1'
         }
-        // Continue with more units...
     },
 
     // 11th Grade Economics (B Days, alternating with Gov) - SHIFTED BY 2 DAYS
@@ -1371,8 +1817,79 @@ const curriculumMap = {
             ],
             assessment: 'Supply/demand test, Graphing assessment, Market analysis',
             standards: 'SS.912.E.1.3, SS.912.E.1.4, SS.912.E.1.6'
+        },
+        '13.B-17.B': { // Days 13.B, 15.B, 17.B (3 B days)  
+            code: '11_econ_1.2.1',
+            title: 'Market Structures',
+            objectives: [
+                'Compare perfect competition vs monopoly',
+                'Analyze oligopoly and monopolistic competition',
+                'Evaluate market efficiency'
+            ],
+            materials: 'Market structure cards, competition scenarios, efficiency graphs, case studies',
+            activities: [
+                'Market Structure Simulation',
+                'Competition Analysis Lab',
+                'Monopoly Power Investigation',
+                'Efficiency Comparison Project'
+            ],
+            assessment: 'Market structures test, Competition analysis, Efficiency evaluation',
+            standards: 'SS.912.E.1.7, SS.912.E.1.8, SS.912.E.1.9'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B (3 B days)
+            code: '11_econ_1.2.2',
+            title: 'Money and Banking',
+            objectives: [
+                'Understand functions of money',
+                'Analyze banking system structure',
+                'Evaluate monetary policy tools'
+            ],
+            materials: 'Currency examples, banking simulations, Fed materials, interest rate models',
+            activities: [
+                'Money Evolution Timeline',
+                'Banking System Simulation',
+                'Federal Reserve Game',
+                'Interest Rate Workshop'
+            ],
+            assessment: 'Banking test, Monetary policy analysis, Fed simulation results',
+            standards: 'SS.912.E.2.1, SS.912.E.2.2, SS.912.E.2.3'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B (3 B days)
+            code: '11_econ_1.3.1',
+            title: 'GDP and Economic Indicators',
+            objectives: [
+                'Calculate GDP components',
+                'Analyze economic indicators',
+                'Evaluate business cycles'
+            ],
+            materials: 'GDP calculators, indicator charts, cycle graphs, real data sets',
+            activities: [
+                'GDP Calculation Workshop',
+                'Economic Indicators Analysis',
+                'Business Cycle Mapping',
+                'Recession/Expansion Study'
+            ],
+            assessment: 'GDP calculation test, Indicator analysis, Cycle prediction project',
+            standards: 'SS.912.E.2.4, SS.912.E.2.5, SS.912.E.2.6'
+        },
+        '31.B-35.B': { // Days 31.B, 33.B, 35.B (last B days before winter break)
+            code: '11_econ_1.3.2',
+            title: 'International Trade and Finance',
+            objectives: [
+                'Analyze comparative advantage',
+                'Understand exchange rates',
+                'Evaluate trade policies'
+            ],
+            materials: 'Trade simulation materials, exchange rate charts, tariff scenarios, global maps',
+            activities: [
+                'Comparative Advantage Game',
+                'Exchange Rate Trading',
+                'Trade Policy Debate',
+                'Global Economy Simulation'
+            ],
+            assessment: 'Trade analysis paper, Exchange rate test, Policy evaluation essay',
+            standards: 'SS.912.E.3.1, SS.912.E.3.2, SS.912.E.3.3'
         }
-        // Continue with more units...
     }
 };
 

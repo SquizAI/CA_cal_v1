@@ -81,7 +81,8 @@ function getLesson(dayType, dayNum, subjectKey) {
 }
 
 // Create day cell for calendar grid
-function createDayCell(date, currentDayCount, currentACount, currentBCount) {
+function createDayCell(date, runningDayCount, runningACount, runningBCount) {
+    const currentDayCount = runningDayCount; // For compatibility
     const cell = document.createElement('div');
     cell.className = 'day-cell';
     
@@ -125,7 +126,7 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     }
     
     const dayType = scheduleInfo.dayType;
-    const dayNum = dayType === 'A' ? currentACount : currentBCount;
+    const dayNum = dayType === 'A' ? runningACount : runningBCount;
     
     // Add appropriate class
     cell.classList.add(dayType.toLowerCase() + '-day');
@@ -144,7 +145,7 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     // Use the total day count for display
     let cellContent = `
         <div class="day-number">${date.getDate()}</div>
-        <div class="day-label ${dayType.toLowerCase()}-label">${currentDayCount}.${dayType}</div>
+        <div class="day-label ${dayType.toLowerCase()}-label">${Math.ceil(currentDayCount / 2)}.${dayType}</div>
     `;
     
     if (isLastWeek) {
@@ -190,7 +191,7 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     cell.innerHTML = cellContent;
     
     // Add click handler for lesson details - pass the total day count
-    cell.addEventListener('click', () => showLessonDetails(date, dayType, currentDayCount, currentDayCount, isLastWeek));
+    cell.addEventListener('click', () => showLessonDetails(date, dayType, Math.ceil(currentDayCount / 2), Math.ceil(currentDayCount / 2), isLastWeek));
     
     return cell;
 }
@@ -352,6 +353,7 @@ function showLessonDetails(date, dayType, dayNum, totalDayCount, isLastWeek) {
                     else if (selectedGrade === '7' && subject.includes('Civics')) subjectKey = '7th_civics';
                     else if (selectedGrade === '9' && subject.includes('ELA')) subjectKey = '9th_ela';
                     else if (selectedGrade === '9' && subject.includes('History')) subjectKey = '9th_history';
+                    else if (selectedGrade === '9' && subject.includes('Geometry')) subjectKey = '9th_geometry';
                     else if (selectedGrade === '9' && subject.includes('Algebra')) subjectKey = '9th_algebra';
                     else if (selectedGrade === '11' && subject.includes('Pre-Calc')) subjectKey = '11th_precalc';
                     else if (selectedGrade === '11' && subject.includes('Government')) subjectKey = '11th_gov';
@@ -440,14 +442,16 @@ function renderCalendar() {
     let runningACount = 0;
     let runningBCount = 0;
     
-    const sep8 = new Date('2025-09-08');
+    const sep3 = new Date('2025-09-03'); // School starts Sept 3
     const currentMonthStart = new Date(currentYear, currentMonth, 1);
     
-    // Count all school days from Sep 8 up to current month
-    for (let d = new Date(sep8); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
+    // Count all school days from Sep 3 up to current month
+    for (let d = new Date(sep3); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
         const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
         const info = schoolSchedule[dateStr];
-        if (info && info.dayType) {
+        const dayOfWeek = d.getDay();
+        // Count weekdays with school (not weekends or no-school days)
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && info && info.dayType) {
             runningDayCount++;
             if (info.dayType === 'A') runningACount++;
             else if (info.dayType === 'B') runningBCount++;
@@ -460,8 +464,10 @@ function renderCalendar() {
         const dateStr = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
         const scheduleInfo = schoolSchedule[dateStr];
         
-        // Increment counters BEFORE creating cell for correct numbering
-        if (date >= sep8 && scheduleInfo && scheduleInfo.dayType) {
+        // Increment counters BEFORE creating cell if it's a school day
+        const sep3 = new Date('2025-09-03');
+        const dayOfWeek = date.getDay();
+        if (date >= sep3 && dayOfWeek !== 0 && dayOfWeek !== 6 && scheduleInfo && scheduleInfo.dayType) {
             runningDayCount++;
             if (scheduleInfo.dayType === 'A') runningACount++;
             else if (scheduleInfo.dayType === 'B') runningBCount++;
@@ -495,14 +501,16 @@ function renderAccordionView() {
     let tempBCounter = 0;
     
     // Count all days up to current month
-    const startDate = new Date('2025-09-08');
+    const sep3 = new Date('2025-09-03'); // School starts Sept 3
     const currentMonthStart = new Date(currentYear, currentMonth, 1);
     const sep8 = new Date('2025-09-08');
     
-    for (let d = new Date(startDate); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
+    for (let d = new Date(sep3); d < currentMonthStart; d.setDate(d.getDate() + 1)) {
         const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
         const info = schoolSchedule[dateStr];
-        if (info && info.dayType && d >= sep8) {
+        const dayOfWeek = d.getDay();
+        // Count weekdays with school (not weekends or no-school days)
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && info && info.dayType && d >= sep3) {
             tempDayCounter++;
             if (info.dayType === 'A') tempACounter++;
             else if (info.dayType === 'B') tempBCounter++;
@@ -520,7 +528,8 @@ function renderAccordionView() {
             continue;
         }
         
-        if (date >= sep8) {
+        const sep3Again = new Date('2025-09-03');
+        if (date >= sep3Again) {
             tempDayCounter++;
             const dayType = scheduleInfo.dayType;
             if (dayType === 'A') tempACounter++;
@@ -538,7 +547,7 @@ function renderAccordionView() {
         header.innerHTML = `
             <div>
                 <strong>${formatDate(date)}</strong>
-                <div class="text-sm text-gray-600">Day ${tempDayCounter}.${dayType}</div>
+                <div class="text-sm text-gray-600">Day ${Math.ceil(tempDayCounter / 2)}.${dayType}</div>
                 ${scheduleInfo.notes ? `<div class="text-xs text-orange-600">${scheduleInfo.notes}</div>` : ''}
             </div>
             <span>▼</span>
@@ -575,7 +584,7 @@ function renderAccordionView() {
         
         // Add view details button with correct dayCounter
         bodyContent += `<button class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" 
-            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${tempDayCounter}, ${tempDayCounter}, false)">
+            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${Math.ceil(tempDayCounter / 2)}, ${Math.ceil(tempDayCounter / 2)}, false)">
             View Full Lesson Details
         </button>`;
         
