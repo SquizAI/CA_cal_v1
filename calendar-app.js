@@ -103,6 +103,7 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     const isLastWeek = date >= lastWeekStart && date <= lastWeekEnd;
     
     // Build cell content  
+    // Use the total day count for display
     let cellContent = `
         <div class="day-number">${date.getDate()}</div>
         <div class="day-label ${dayType.toLowerCase()}-label">${currentDayCount}.${dayType}</div>
@@ -150,20 +151,20 @@ function createDayCell(date, currentDayCount, currentACount, currentBCount) {
     
     cell.innerHTML = cellContent;
     
-    // Add click handler for lesson details - pass currentDayCount
-    cell.addEventListener('click', () => showLessonDetails(date, dayType, currentDayCount, isLastWeek));
+    // Add click handler for lesson details - pass the total day count
+    cell.addEventListener('click', () => showLessonDetails(date, dayType, currentDayCount, currentDayCount, isLastWeek));
     
     return cell;
 }
 
 // Show lesson details in modal
-function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
+function showLessonDetails(date, dayType, dayNum, totalDayCount, isLastWeek) {
     const modal = document.getElementById('lessonModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalDate = document.getElementById('modalDate');
     const modalBody = document.getElementById('modalBody');
     
-    modalTitle.textContent = `Day ${dayCounter} - ${dayType} Day`;
+    modalTitle.textContent = `Day ${totalDayCount}.${dayType}`;
     modalDate.textContent = formatDate(date);
     
     let content = '';
@@ -206,8 +207,8 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                     // Special handling for AI Awareness Days (Sept 8-9)
                     const isAIAwarenessDay = (date >= new Date('2025-09-08') && date <= new Date('2025-09-09'));
                     
-                    if (isAIAwarenessDay && dayCounter <= 2) {
-                        const aiLesson = curriculumMap['ai_awareness'][dayCounter.toString()];
+                    if (isAIAwarenessDay && totalDayCount <= 2) {
+                        const aiLesson = curriculumMap['ai_awareness'][totalDayCount.toString()];
                         if (aiLesson) {
                             content += `
                                 <div class="lesson-details">
@@ -237,7 +238,7 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                                     <div class="lesson-metadata">
                                         <span>🤖 AI Awareness</span>
                                         <span>📐 ${grade}th Grade</span>
-                                        <span>📅 Day ${dayCounter}</span>
+                                        <span>📅 Day ${totalDayCount}.${dayType}</span>
                                     </div>
                                 </div>
                             `;
@@ -257,8 +258,8 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                         else if (grade === '11' && (subject.includes('Literature') || subject.includes('ELA'))) subjectKey = '11th_ela';
                         else if (grade === '11' && subject.includes('Economics')) subjectKey = '11th_econ';
                         
-                        // Use dayCounter for lesson retrieval since lessons are mapped by total day count
-                        const lesson = getLesson(dayType, dayCounter, subjectKey);
+                        // Use totalDayCount for lesson retrieval since lessons are mapped by total day count
+                        const lesson = getLesson(dayType, totalDayCount, subjectKey);
                         
                         if (lesson) {
                             content += `
@@ -274,19 +275,19 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                                 <div class="lesson-metadata">
                                     <span>📐 ${grade}th Grade</span>
                                     <span>📚 ${subject}</span>
-                                    <span>📅 Day ${dayCounter}</span>
+                                    <span>📅 Day ${totalDayCount}.${dayType}</span>
                                 </div>
                             </div>
                         `;
                         } else {
                             content += `
                                 <div class="lesson-details">
-                                    <p><strong>Day ${dayCounter} Curriculum</strong></p>
+                                    <p><strong>Day ${totalDayCount}.${dayType} Curriculum</strong></p>
                                     <p class="text-gray-600">📚 ${subject}</p>
                                     <p class="text-sm text-gray-500 mt-2">Detailed lesson plan in development</p>
                                     <div class="lesson-metadata">
                                         <span>📐 ${grade}th Grade</span>
-                                        <span>📅 Day ${dayCounter}</span>
+                                        <span>📅 Day ${totalDayCount}.${dayType}</span>
                                     </div>
                                 </div>
                             `;
@@ -317,8 +318,8 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                     else if (selectedGrade === '11' && (subject.includes('Literature') || subject.includes('ELA'))) subjectKey = '11th_ela';
                     else if (selectedGrade === '11' && subject.includes('Economics')) subjectKey = '11th_econ';
                     
-                    // Use dayCounter for single grade view too
-                    const lesson = getLesson(dayType, dayCounter, subjectKey);
+                    // Use totalDayCount for single grade view too
+                    const lesson = getLesson(dayType, totalDayCount, subjectKey);
                     
                     if (lesson) {
                         content += `
@@ -334,7 +335,7 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                                 <div class="lesson-metadata">
                                     <span>📐 ${selectedGrade}th Grade</span>
                                     <span>📚 ${subject}</span>
-                                    <span>📅 Day ${dayCounter}</span>
+                                    <span>📅 Day ${totalDayCount}.${dayType}</span>
                                 </div>
                             </div>
                         `;
@@ -346,7 +347,7 @@ function showLessonDetails(date, dayType, dayCounter, isLastWeek) {
                                 <p class="text-sm text-gray-500 mt-2">Detailed lesson plan in development</p>
                                 <div class="lesson-metadata">
                                     <span>📐 ${selectedGrade}th Grade</span>
-                                    <span>📅 Day ${dayCounter}</span>
+                                    <span>📅 Day ${totalDayCount}.${dayType}</span>
                                 </div>
                             </div>
                         `;
@@ -419,22 +420,15 @@ function renderCalendar() {
         const dateStr = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
         const scheduleInfo = schoolSchedule[dateStr];
         
-        // Create cell with current counts, then increment for next iteration
-        let cellDayCount = runningDayCount;
-        let cellACount = runningACount;  
-        let cellBCount = runningBCount;
-        
-        // Increment counters AFTER getting values for this cell
+        // Increment counters BEFORE creating cell for correct numbering
         if (date >= sep8 && scheduleInfo && scheduleInfo.dayType) {
             runningDayCount++;
             if (scheduleInfo.dayType === 'A') runningACount++;
             else if (scheduleInfo.dayType === 'B') runningBCount++;
-            cellDayCount = runningDayCount;  // Use incremented value for display
-            cellACount = runningACount;
-            cellBCount = runningBCount;
         }
         
-        const cell = createDayCell(date, cellDayCount, cellACount, cellBCount);
+        // Use the incremented counts for this cell
+        const cell = createDayCell(date, runningDayCount, runningACount, runningBCount);
         grid.appendChild(cell);
     }
     
@@ -461,7 +455,7 @@ function renderAccordionView() {
     let tempBCounter = 0;
     
     // Count all days up to current month
-    const startDate = new Date('2025-09-03');
+    const startDate = new Date('2025-09-08');
     const currentMonthStart = new Date(currentYear, currentMonth, 1);
     const sep8 = new Date('2025-09-08');
     
@@ -494,7 +488,6 @@ function renderAccordionView() {
         }
         
         const dayType = scheduleInfo.dayType;
-        const dayNum = dayType === 'A' ? tempACounter : tempBCounter;
         
         // Create accordion item
         const accordionItem = document.createElement('div');
@@ -505,7 +498,7 @@ function renderAccordionView() {
         header.innerHTML = `
             <div>
                 <strong>${formatDate(date)}</strong>
-                <div class="text-sm text-gray-600">Day ${tempDayCounter} - ${dayType} Day</div>
+                <div class="text-sm text-gray-600">Day ${tempDayCounter}.${dayType}</div>
                 ${scheduleInfo.notes ? `<div class="text-xs text-orange-600">${scheduleInfo.notes}</div>` : ''}
             </div>
             <span>▼</span>
@@ -542,7 +535,7 @@ function renderAccordionView() {
         
         // Add view details button with correct dayCounter
         bodyContent += `<button class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" 
-            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${tempDayCounter}, false)">
+            onclick="showLessonDetails(new Date('${date}'), '${dayType}', ${tempDayCounter}, ${tempDayCounter}, false)">
             View Full Lesson Details
         </button>`;
         

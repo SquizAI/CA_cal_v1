@@ -3,9 +3,9 @@
 // Updated to include AI Awareness Days (Sept 8-9)
 
 const curriculumMap = {
-    // AI AWARENESS DAYS - All Grades (First Two Days of School)
+    // AI AWARENESS DAYS - All Grades (First Two Days of AI Academy)
     'ai_awareness': {
-        '1': { // Sept 8 - Day 1.B - FIRST DAY OF SCHOOL
+        '1.B': { // Sept 8 (Monday) - Day 1.B - FIRST DAY OF AI ACADEMY
             code: 'AI_1.B',
             title: 'Welcome to Your AI-Powered Learning Journey',
             objectives: [
@@ -41,7 +41,7 @@ const curriculumMap = {
                 }
             }
         },
-        '2': { // Sept 9 - Day 2.A - SECOND DAY OF SCHOOL
+        '2.A': { // Sept 9 (Tuesday) - Day 2.A - SECOND DAY OF AI ACADEMY
             code: 'AI_2.A',
             title: 'Mastering AI Tools for Academic Excellence',
             objectives: [
@@ -78,9 +78,306 @@ const curriculumMap = {
         }
     },
     
-    // 7th Grade Science (A Days, Period 2) - SHIFTED BY 2 DAYS
+    // 7th Grade Civics (B Days - odd numbers, Period 3) - Complete Curriculum
+    '7th_civics': {
+        '1.B-5.B': { // Days 1.B, 3.B, 5.B (3 B days)
+            code: '7_civ_1.1.1',
+            title: 'Foundations of American Democracy',
+            objectives: [
+                'Identify key Enlightenment thinkers and their influence on American government',
+                'Explain the Declaration of Independence\'s principles',
+                'Analyze the relationship between natural rights and government',
+                'Compare different forms of government'
+            ],
+            materials: 'Showrunner Episode 1.1.1, AI discussion prompts, founding documents, interactive timeline',
+            activities: [
+                'AI-guided Socratic dialogue on natural rights',
+                'Declaration of Independence analysis with NotebookLM',
+                'Government systems comparison chart',
+                'Enlightenment thinkers speed dating simulation'
+            ],
+            assessment: 'AI-evaluated quiz (80% mastery required), Document analysis rubric, Socratic dialogue participation',
+            standards: 'SS.7.C.1.1, SS.7.C.1.2, SS.7.C.1.4, SS.7.CG.1.5'
+        },
+        '7.B-11.B': { // Days 7.B, 9.B, 11.B (3 B days)
+            code: '7_civ_1.1.2',
+            title: 'Articles of Confederation to Constitution',
+            objectives: [
+                'Analyze weaknesses of the Articles of Confederation',
+                'Understand compromises made at Constitutional Convention',
+                'Explain the structure of the Constitution',
+                'Evaluate the ratification debate between Federalists and Anti-Federalists'
+            ],
+            materials: 'Showrunner Episode 1.1.2, Constitutional Convention simulation, compromise cards, ratification debate materials',
+            activities: [
+                'Articles of Confederation failure simulation',
+                'Great Compromise negotiation role-play',
+                'Constitution scavenger hunt with AI assistance',
+                'Federalist vs Anti-Federalist debate'
+            ],
+            assessment: 'Constitutional knowledge test, Compromise negotiation evaluation, Debate performance rubric',
+            standards: 'SS.7.C.1.5, SS.7.C.1.6, SS.7.C.1.7, SS.7.C.1.8'
+        },
+        '13.B-17.B': { // Days 13.B, 15.B, 17.B (3 B days)
+            code: '7_civ_1.1.3',
+            title: 'Bill of Rights and Civil Liberties',
+            objectives: [
+                'Identify and explain each amendment in the Bill of Rights',
+                'Apply Bill of Rights to modern scenarios',
+                'Analyze Supreme Court cases involving civil liberties',
+                'Evaluate the balance between individual rights and public safety'
+            ],
+            materials: 'Showrunner Episode 1.1.3, Bill of Rights scenarios, Supreme Court case summaries, rights ranking activity',
+            activities: [
+                'Bill of Rights matching game with real-world scenarios',
+                'Mock trial on First Amendment case',
+                'Rights ranking pyramid discussion',
+                'Create your own amendment proposal'
+            ],
+            assessment: 'Bill of Rights application test, Case analysis essay, Amendment proposal presentation',
+            standards: 'SS.7.C.2.4, SS.7.C.2.5, SS.7.C.3.6, SS.7.C.3.12'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B (3 B days)
+            code: '7_civ_1.2.1',
+            title: 'Constitutional Principles',
+            objectives: [
+                'Define and explain separation of powers',
+                'Understand checks and balances system',
+                'Analyze federalism and division of powers',
+                'Evaluate how these principles work in practice'
+            ],
+            materials: 'Showrunner Episode 1.2.1, Powers sorting cards, checks and balances flowchart, federalism scenarios',
+            activities: [
+                'Powers and responsibilities sorting activity',
+                'Checks and balances simulation game',
+                'Federal vs state powers debate',
+                'Current events analysis through constitutional lens'
+            ],
+            assessment: 'Principles identification quiz, System diagram creation, Current events analysis',
+            standards: 'SS.7.C.1.7, SS.7.C.3.3, SS.7.C.3.4, SS.7.C.3.14'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B (3 B days)
+            code: '7_civ_1.2.2',
+            title: 'Citizenship and Civic Participation',
+            objectives: [
+                'Define citizenship and paths to citizenship',
+                'Identify rights, responsibilities, and obligations of citizens',
+                'Analyze forms of civic participation',
+                'Develop personal civic action plans'
+            ],
+            materials: 'Showrunner Episode 1.2.2, Citizenship test prep, civic participation menu, action plan templates',
+            activities: [
+                'Citizenship test challenge with AI coach',
+                'Rights and responsibilities balance beam',
+                'Civic participation fair simulation',
+                'Design a community service project'
+            ],
+            assessment: 'Citizenship knowledge test, Participation portfolio, Action plan presentation',
+            standards: 'SS.7.C.2.1, SS.7.C.2.2, SS.7.C.2.3, SS.7.C.2.14'
+        }
+    },
+
+    // 7th Grade ELA (A Days - even numbers, Period 3) - Complete Curriculum
+    '7th_ela': {
+        '2.A-6.A': { // Days 2.A, 4.A, 6.A (3 A days)
+            code: '7_ela_1.1.1',
+            title: 'Introduction to 7th Grade ELA',
+            objectives: [
+                'Establish classroom community and learning expectations',
+                'Assess students\' current reading and writing abilities',
+                'Introduce key literary concepts for the year',
+                'Build foundational vocabulary knowledge'
+            ],
+            materials: 'Interactive notebooks, diagnostic assessments, literary terms handouts, vocabulary journals',
+            activities: [
+                'Learning style assessment and goal setting',
+                'Diagnostic reading and writing evaluations',
+                'Literary terms scavenger hunt',
+                'Vocabulary pre-assessment'
+            ],
+            assessment: 'Diagnostic reading assessment, Writing sample, Vocabulary pre-test, Learning goals reflection',
+            standards: 'ELA.7.R.1.1, ELA.7.C.1.1, ELA.7.V.1.1'
+        },
+        '8.A-12.A': { // Days 8.A, 10.A, 12.A (3 A days)
+            code: '7_ela_1.2.1',
+            title: 'Narrative Elements and Structure',
+            objectives: [
+                'Identify and analyze basic story elements',
+                'Understand different narrative structures',
+                'Recognize how authors use structure for meaning',
+                'Apply knowledge to reading comprehension'
+            ],
+            materials: 'Short story collections, plot diagrams, story mapping tools, narrative texts',
+            activities: [
+                'Story element identification exercises',
+                'Plot diagram creation and analysis',
+                'Narrative structure comparison',
+                'Interactive story mapping'
+            ],
+            assessment: 'Story elements quiz, Plot diagram accuracy, Reading comprehension checks, Structure analysis',
+            standards: 'ELA.7.R.1.2, ELA.7.R.1.3, ELA.7.R.3.1'
+        },
+        '14.A-18.A': { // Days 14.A, 16.A, 18.A (3 A days)
+            code: '7_ela_1.3.1',
+            title: 'Character Development and Analysis',
+            objectives: [
+                'Analyze direct and indirect characterization',
+                'Examine character motivations and conflicts',
+                'Understand character-plot relationships',
+                'Compare characters across texts'
+            ],
+            materials: 'Character analysis worksheets, literary excerpts, tracking sheets, comparison charts',
+            activities: [
+                'Characterization sorting activities',
+                'Character motivation analysis',
+                'Character arc tracking',
+                'Character comparison discussions'
+            ],
+            assessment: 'Character analysis essays, Development timelines, Characterization quiz, Discussion evaluation',
+            standards: 'ELA.7.R.1.3, ELA.7.R.3.1, ELA.7.C.2.1'
+        },
+        '20.A-24.A': { // Days 20.A, 22.A, 24.A (3 A days)
+            code: '7_ela_1.4.1',
+            title: 'Theme and Central Idea',
+            objectives: [
+                'Distinguish between theme and central idea',
+                'Identify universal themes across cultures',
+                'Support theme analysis with evidence',
+                'Connect themes to personal experiences'
+            ],
+            materials: 'Theme worksheets, universal themes chart, evidence sheets, cross-cultural texts',
+            activities: [
+                'Theme vs topic differentiation',
+                'Universal themes exploration',
+                'Textual evidence gathering',
+                'Cross-text theme comparison'
+            ],
+            assessment: 'Theme analysis essays, Evidence-based presentations, Theme identification test, Connection projects',
+            standards: 'ELA.7.R.1.2, ELA.7.R.2.1, ELA.7.R.3.2'
+        },
+        '26.A-30.A': { // Days 26.A, 28.A, 30.A (3 A days)
+            code: '7_ela_2.1.1',
+            title: 'Informational Text Structures',
+            objectives: [
+                'Identify different informational text structures',
+                'Understand how structure affects comprehension',
+                'Analyze author organization for purpose',
+                'Apply structure knowledge to writing'
+            ],
+            materials: 'Informational texts, structure guides, graphic organizers, non-fiction articles',
+            activities: [
+                'Text structure identification practice',
+                'Graphic organizer creation',
+                'Structure effectiveness analysis',
+                'Comprehension strategy development'
+            ],
+            assessment: 'Structure identification quiz, Graphic organizer accuracy, Comprehension assessments, Analysis essays',
+            standards: 'ELA.7.R.2.1, ELA.7.R.2.2, ELA.7.C.1.4'
+        }
+    },
+
+    // 7th Grade Pre-Algebra (B Days - odd numbers, Period 2) - Complete Curriculum
+    '7th_math': {
+        '1.B-5.B': { // Days 1.B, 3.B, 5.B (3 B days)
+            code: '7_math_1.1.1',
+            title: 'Number Systems and Operations',
+            objectives: [
+                'Master operations with integers and rational numbers',
+                'Apply order of operations consistently',
+                'Convert between fractions, decimals, and percents',
+                'Solve real-world problems with rational numbers'
+            ],
+            materials: 'Khan Academy modules, number line manipulatives, fraction bars, decimal squares, calculators',
+            activities: [
+                'Integer operations war card game',
+                'Fraction-decimal-percent conversion relay',
+                'Order of operations escape room',
+                'Real-world problem solving stations'
+            ],
+            assessment: 'Operations quiz, Conversion test, Problem-solving portfolio, Khan Academy progress',
+            standards: 'MA.7.NSO.1.1, MA.7.NSO.1.2, MA.7.NSO.2.1, MA.7.NSO.2.2'
+        },
+        '7.B-11.B': { // Days 7.B, 9.B, 11.B (3 B days)
+            code: '7_math_1.2.1',
+            title: 'Algebraic Expressions and Equations',
+            objectives: [
+                'Translate verbal phrases into algebraic expressions',
+                'Simplify algebraic expressions using properties',
+                'Solve one and two-step equations',
+                'Apply equations to real-world situations'
+            ],
+            materials: 'Algebra tiles, equation balance scales, Khan Academy Algebra Basics, expression cards',
+            activities: [
+                'Expression translation challenge',
+                'Algebra tile simplification',
+                'Equation solving race',
+                'Real-world equation modeling'
+            ],
+            assessment: 'Expression translation test, Equation solving quiz, Application problems, Performance tasks',
+            standards: 'MA.7.AR.1.1, MA.7.AR.1.2, MA.7.AR.2.1, MA.7.AR.2.2'
+        },
+        '13.B-17.B': { // Days 13.B, 15.B, 17.B (3 B days)
+            code: '7_math_1.3.1',
+            title: 'Proportional Relationships',
+            objectives: [
+                'Identify and represent proportional relationships',
+                'Calculate unit rates and constant of proportionality',
+                'Solve proportion problems using multiple methods',
+                'Apply proportions to scale drawings and similar figures'
+            ],
+            materials: 'Ratio tables, proportion wheels, scale models, graphing tools, Khan Academy Ratios',
+            activities: [
+                'Unit rate shopping comparison',
+                'Scale model building project',
+                'Proportion puzzle solving',
+                'Similar figures investigation'
+            ],
+            assessment: 'Proportions test, Scale drawing project, Unit rate problems, Real-world applications',
+            standards: 'MA.7.AR.3.1, MA.7.AR.3.2, MA.7.AR.4.1, MA.7.AR.4.2'
+        },
+        '19.B-23.B': { // Days 19.B, 21.B, 23.B (3 B days)
+            code: '7_math_2.1.1',
+            title: 'Linear Equations and Graphing',
+            objectives: [
+                'Graph linear equations on coordinate plane',
+                'Find slope and y-intercept from equations and graphs',
+                'Write equations in slope-intercept form',
+                'Interpret graphs in real-world contexts'
+            ],
+            materials: 'Graphing calculators, coordinate planes, Desmos activities, linear equation cards',
+            activities: [
+                'Human graphing activity',
+                'Slope investigation lab',
+                'Equation-graph matching game',
+                'Real-world linear modeling'
+            ],
+            assessment: 'Graphing test, Equation writing quiz, Interpretation problems, Desmos activities',
+            standards: 'MA.7.AR.2.2, MA.7.AR.3.3, MA.7.DP.1.1, MA.7.DP.1.2'
+        },
+        '25.B-29.B': { // Days 25.B, 27.B, 29.B (3 B days)
+            code: '7_math_2.2.1',
+            title: 'Geometry Foundations',
+            objectives: [
+                'Calculate area and perimeter of complex figures',
+                'Find surface area and volume of 3D shapes',
+                'Apply angle relationships and properties',
+                'Solve geometric problems in real contexts'
+            ],
+            materials: 'Geometric solids, protractors, area models, 3D printing software, Khan Academy Geometry',
+            activities: [
+                'Area and perimeter scavenger hunt',
+                'Surface area packaging project',
+                'Angle relationships investigation',
+                '3D shape construction challenge'
+            ],
+            assessment: 'Geometry test, Construction project, Problem-solving portfolio, Practical applications',
+            standards: 'MA.7.GR.1.1, MA.7.GR.1.2, MA.7.GR.1.3, MA.7.GR.2.1'
+        }
+    },
+
+    // 7th Grade Science (A Days, Period 2) - Complete Curriculum
     '7th_science': {
-        '3-7': { // Was 1-5, now shifted
+        '2.A-6.A': { // Days 2.A, 4.A, 6.A (3 A days)
             code: '7_sci_1.1.1', 
             title: 'Introduction to Scientific Thinking',
             objectives: [
@@ -98,7 +395,7 @@ const curriculumMap = {
             assessment: 'Exit ticket on scientific thinking, Mystery box lab report, Vocabulary quiz',
             standards: 'SC.7.N.1.1, SC.7.N.1.5, SC.7.N.1.3, SC.7.N.2.1'
         },
-        '8-12': { // Was 6-10
+        '8.A-12.A': { // Days 8.A, 10.A, 12.A (3 A days)
             code: '7_sci_1.1.2', 
             title: 'Scientific Investigation Design',
             objectives: [
@@ -116,7 +413,7 @@ const curriculumMap = {
             assessment: 'Experimental design project, Lab report with data analysis',
             standards: 'SC.7.N.1.1, SC.7.N.1.2, SC.7.N.1.4, SC.7.N.1.6'
         },
-        '13-17': { // Was 11-15
+        '14.A-18.A': { // Days 14.A, 16.A, 18.A (3 A days)
             code: '7_sci_1.1.3', 
             title: 'Data Collection and Analysis',
             objectives: [
@@ -134,7 +431,7 @@ const curriculumMap = {
             assessment: 'Data analysis project, Graph interpretation quiz',
             standards: 'SC.7.N.1.1, SC.7.N.1.5, SC.7.N.3.2'
         },
-        '18-22': { // Was 16-20
+        '20.A-24.A': { // Days 20.A, 22.A, 24.A (3 A days)
             code: '7_sci_1.2.1', 
             title: 'Cell Theory and Microscopy',
             objectives: [
@@ -152,7 +449,7 @@ const curriculumMap = {
             assessment: 'Cell theory quiz, Microscopy practical exam, Cell model project',
             standards: 'SC.7.L.12.1, SC.7.L.12.2, SC.7.L.12.3'
         },
-        '23-27': { // Was 21-25
+        '26.A-30.A': { // Days 26.A, 28.A, 30.A (3 A days)
             code: '7_sci_1.2.2', 
             title: 'Cell Structure and Organelles',
             objectives: [
@@ -170,7 +467,7 @@ const curriculumMap = {
             assessment: 'Organelle function quiz, Cell diagram labeling, Comparative essay',
             standards: 'SC.7.L.12.2, SC.7.L.12.3, SC.7.L.12.4'
         },
-        '28-32': { // Was 26-30
+        '32.A-36.A': { // Days 32.A, 34.A, 36.A (3 A days)
             code: '7_sci_1.2.3', 
             title: 'Cell Membrane and Transport',
             objectives: [
@@ -187,8 +484,102 @@ const curriculumMap = {
             ],
             assessment: 'Transport mechanisms quiz, Lab report, Concept map',
             standards: 'SC.7.L.12.4, SC.7.P.11.2'
+        },
+        '23-27': {
+            code: '7_sci_1.2.2',
+            title: 'Cell Organelles and Functions',
+            objectives: [
+                'Identify major cell organelles and their functions',
+                'Explain how organelles work together as a system',
+                'Compare plant and animal cell structures',
+                'Model cell processes and interactions'
+            ],
+            materials: 'Discovery Box 1.2.2: Cell organelle models, interactive charts, plant/animal cell slides, modeling clay',
+            activities: [
+                'Organelle Function Stations',
+                'Cell City Analogy Project',
+                'Plant vs Animal Cell Investigation',
+                'Cell Process Simulation'
+            ],
+            assessment: 'Organelle functions quiz, Cell comparison lab report, Model presentation',
+            standards: 'SC.7.L.16.1, SC.7.L.16.2, SC.7.L.17.2'
+        },
+        '28-32': {
+            code: '7_sci_1.3.1',
+            title: 'DNA and Heredity',
+            objectives: [
+                'Describe the structure and function of DNA',
+                'Explain how traits are inherited from parents',
+                'Use Punnett squares to predict genetic outcomes',
+                'Analyze patterns of inheritance'
+            ],
+            materials: 'Discovery Box 1.3.1: DNA models, heredity cards, Punnett square templates, trait inventory sheets',
+            activities: [
+                'DNA Model Building Lab',
+                'Trait Inventory Investigation',
+                'Punnett Square Practice',
+                'Genetic Probability Games'
+            ],
+            assessment: 'DNA structure quiz, Punnett square problems, Heredity project',
+            standards: 'SC.7.L.16.1, SC.7.L.16.2, SC.7.L.16.3'
+        },
+        '33-37': {
+            code: '7_sci_1.3.2',
+            title: 'Evolution and Natural Selection',
+            objectives: [
+                'Explain the theory of evolution by natural selection',
+                'Analyze evidence for evolution',
+                'Understand adaptation and survival of the fittest',
+                'Explore speciation and biodiversity'
+            ],
+            materials: 'Discovery Box 1.3.2: Fossil replicas, adaptation cards, natural selection simulation, evolution timeline',
+            activities: [
+                'Fossil Evidence Investigation',
+                'Natural Selection Simulation',
+                'Adaptation Station Rotation',
+                'Evolution Timeline Creation'
+            ],
+            assessment: 'Evolution evidence analysis, Natural selection test, Adaptation project',
+            standards: 'SC.7.L.15.1, SC.7.L.15.2, SC.7.L.15.3'
+        },
+        '38-42': {
+            code: '7_sci_2.1.1',
+            title: 'Ecosystems and Energy Flow',
+            objectives: [
+                'Trace energy flow through ecosystems',
+                'Analyze food chains and food webs',
+                'Understand trophic levels and energy pyramids',
+                'Evaluate human impact on ecosystems'
+            ],
+            materials: 'Discovery Box 2.1.1: Ecosystem cards, energy flow models, food web materials, ecological pyramids',
+            activities: [
+                'Food Web Construction',
+                'Energy Pyramid Building',
+                'Ecosystem Role Play',
+                'Human Impact Investigation'
+            ],
+            assessment: 'Food web analysis, Energy flow diagram, Ecosystem project, Impact assessment',
+            standards: 'SC.7.L.17.1, SC.7.L.17.2, SC.7.L.17.3'
+        },
+        '43-47': {
+            code: '7_sci_2.1.2',
+            title: 'Human Body Systems',
+            objectives: [
+                'Identify major body systems and their functions',
+                'Explain how body systems work together',
+                'Analyze the effects of diseases on body systems',
+                'Investigate homeostasis and feedback loops'
+            ],
+            materials: 'Discovery Box 2.1.2: Body system models, organ cards, health scenarios, homeostasis simulations',
+            activities: [
+                'Body Systems Jigsaw',
+                'Disease Detective Activity',
+                'Homeostasis Lab',
+                'Systems Integration Project'
+            ],
+            assessment: 'Body systems test, Disease case study, Homeostasis lab report',
+            standards: 'SC.7.L.14.1, SC.7.L.14.2, SC.7.L.14.3'
         }
-        // Continue with more units through the year...
     },
 
     // 7th Grade ELA (A Days, Period 3) - SHIFTED BY 2 DAYS
@@ -250,50 +641,352 @@ const curriculumMap = {
         // Continue with more units...
     },
 
-    // 9th Grade ELA (A Days, Period 1) - SHIFTED BY 2 DAYS
+    // 9th Grade ELA (A Days, Period 1) - Complete Curriculum
     '9th_ela': {
-        '3-7': { // Was 1-5 
-            code: '9_ela_1.1.1', 
-            title: 'Literary Analysis Foundations',
+        '2.A-6.A': { // Days 2.A, 4.A, 6.A (3 A days)
+            code: '9_ela_1.1.1',
+            title: 'The Power of Words - Rhetoric Through MLK',
             objectives: [
-                'Master essential literary terminology',
-                'Analyze complex text structures',
-                'Develop critical reading strategies'
+                'Define rhetoric and identify ethos, pathos, logos',
+                'Analyze rhetorical appeals in MLK\'s "I Have a Dream" speech',
+                'Evaluate how rhetorical choices enhance effectiveness',
+                'Connect rhetoric to progress and its costs'
             ],
-            materials: 'Literature anthology, analysis guides, annotation tools, rhetorical devices handbook',
+            materials: 'MLK speech video/text, rhetorical analysis organizers, Showrunner animation, NotebookLM resources',
             activities: [
-                'Close Reading Workshop',
-                'Literary Terms Application',
-                'Text Annotation Practice',
-                'Socratic Seminar Preparation'
+                'Showrunner animation with Professor Rhetoric',
+                'ChatGPT guided rhetorical appeal identification',
+                'NotebookLM deep dive into March on Washington',
+                'Gemini AI writing workshop for analysis essay'
             ],
-            assessment: 'Literary analysis essay, Terms and devices quiz, Annotation portfolio',
-            standards: 'LAFS.9-10.RL.1.1, LAFS.9-10.RL.2.4, LAFS.9-10.RL.2.5'
+            assessment: 'Quick check quiz, Simulation activity, Socratic dialogue prep, Synthesis ticket',
+            standards: 'ELA.9.R.2.1, ELA.9.R.2.3, ELA.9.R.3.1, ELA.9.C.1.3'
         },
-        '8-12': { // Was 6-10
-            code: '9_ela_1.1.2', 
-            title: 'Theme and Symbolism',
+        '8.A-12.A': { // Days 8.A, 10.A, 12.A (3 A days)
+            code: '9_ela_1.2.1',
+            title: 'Dark Communication - "Cask of Amontillado"',
             objectives: [
-                'Identify and analyze complex themes',
-                'Interpret symbols and their significance',
-                'Connect themes to universal human experiences'
+                'Define unreliable narration and identify bias',
+                'Analyze dramatic irony for tension and character',
+                'Evaluate manipulative rhetoric in the story',
+                'Connect to modern toxic communication'
             ],
-            materials: 'Symbolic literature selections, theme journals, visual symbol cards',
+            materials: 'Poe text, unreliable narration guides, character analysis organizers, modern parallels sheets',
             activities: [
-                'Symbol Hunting Exercise',
-                'Theme Development Analysis',
-                'Comparative Theme Study',
-                'Symbolic Art Creation'
+                'Showrunner animation analyzing unreliable narration',
+                'ChatGPT exercises on narrator bias',
+                'NotebookLM Gothic narrator comparisons',
+                'Digital age manipulation parallels'
             ],
-            assessment: 'Theme and symbol essay, Interpretive analysis, Creative project',
-            standards: 'LAFS.9-10.RL.1.2, LAFS.9-10.RL.2.4, LAFS.9-10.RL.3.9'
+            assessment: 'Unreliable narration quiz, Character analysis activity, Modern parallels discussion, Analysis essay',
+            standards: 'ELA.9.R.1.1, ELA.9.R.1.3, ELA.9.R.3.3, ELA.9.R.3.4'
+        },
+        '14.A-18.A': { // Days 14.A, 16.A, 18.A (3 A days)
+            code: '9_ela_2.1.1',
+            title: 'Tradition vs. Progress - "The Lottery"',
+            objectives: [
+                'Analyze symbolism critiquing blind tradition',
+                'Examine mob mentality in harmful practices',
+                'Evaluate costs of maintaining social order',
+                'Connect themes to contemporary harmful traditions'
+            ],
+            materials: 'Jackson text, post-WWII context, reader response materials, symbolism guides',
+            activities: [
+                'Showrunner episode on symbolism and social commentary',
+                'Mob psychology simulation activity',
+                'Contemporary parallels research',
+                'Socratic dialogue on tradition vs progress'
+            ],
+            assessment: 'Symbolism quiz, Group dynamics simulation, Modern parallels analysis, Theme essay',
+            standards: 'ELA.9.R.1.1, ELA.9.R.3.1, ELA.9.R.3.4'
+        },
+        '18-22': {
+            code: '9_ela_2.2.1',
+            title: 'Equality\'s Price - "Harrison Bergeron"',
+            objectives: [
+                'Analyze satirical critique of enforced equality',
+                'Examine individual excellence vs societal stability',
+                'Evaluate approaches to social justice',
+                'Connect dystopian themes to equality debates'
+            ],
+            materials: 'Vonnegut text, satire analysis tools, dystopian archetype frameworks, equality debate resources',
+            activities: [
+                'Philosophical debate simulation',
+                'Character archetype analysis',
+                'Gamified dystopian theme exploration',
+                'AI-assisted equality vs equity research'
+            ],
+            assessment: 'Philosophical debate performance, Character analysis, Contemporary research project, Satirical analysis',
+            standards: 'ELA.9.R.1.2, ELA.9.R.1.3, ELA.9.C.1.3'
+        },
+        '23-62': {
+            code: '9_ela_3_novel',
+            title: 'Ender\'s Game Novel Study (8 weeks)',
+            objectives: [
+                'Analyze complex character development throughout novel',
+                'Evaluate ethics of child soldiers and military training',
+                'Examine isolation, manipulation, and moral responsibility',
+                'Connect to contemporary military and technology ethics'
+            ],
+            materials: 'Complete Ender\'s Game novel, character tracking charts, ethical frameworks, portfolio materials',
+            activities: [
+                'Weekly character development tracking',
+                'Thematic integration across novel',
+                'Contemporary connection research',
+                'Philosophical debate simulations',
+                'Portfolio development with growth documentation'
+            ],
+            assessment: 'Character analysis essay (Week 2), Leadership paper (Week 4), Thematic essay (Week 6), Final portfolio (Week 8)',
+            standards: 'ELA.9.R.1.1, ELA.9.R.1.2, ELA.9.R.1.3, ELA.9.C.1.3, ELA.9.C.2.1'
+        },
+        '63-92': {
+            code: '9_ela_4_poetry',
+            title: 'Poetry Unit - Voice and Social Change (6 weeks)',
+            objectives: [
+                'Analyze diverse poetic forms from traditional to spoken word',
+                'Master advanced poetry analysis techniques',
+                'Create original poetry demonstrating craft understanding',
+                'Connect poetic themes to social change and progress'
+            ],
+            materials: 'Poetry anthology (150+ poems), audio/video performances, creation tools',
+            activities: [
+                'Modern voices analysis (Gorman, Kaur)',
+                'Classic American poetry exploration',
+                'Social change poetry workshops',
+                'Original poetry creation and performance'
+            ],
+            assessment: 'Comparative analysis essay, Social commentary analysis, Original poetry anthology with performance',
+            standards: 'ELA.9.R.1.2, ELA.9.R.1.4, ELA.9.R.3.1, ELA.9.C.1.5'
         }
-        // Continue with more units...
     },
 
-    // 11th Grade Pre-Calculus (A Days, Period 1) - SHIFTED BY 2 DAYS
+    // 9th Grade Geometry (B Days, Period 2) - Complete Curriculum  
+    '9th_geometry': {
+        '1.B-5.B': { // Days 1.B, 3.B, 5.B (3 B days)
+            code: '9_geom_1.1.1',
+            title: 'Points, Lines, and Planes',
+            objectives: [
+                'Define and identify undefined terms: point, line, plane',
+                'Use proper geometric notation',
+                'Identify collinear and coplanar points',
+                'Apply postulates about points, lines, and planes'
+            ],
+            materials: 'GeoGebra 3D, digital manipulatives, compass/straightedge, coordinate plane software',
+            activities: [
+                'Architect\'s Foundation in GeoGebra 3D',
+                'GPS coordinate system exploration',
+                'Virtual manipulation of postulates',
+                'Real-world spatial relationships'
+            ],
+            assessment: 'Interactive Quizizz, Construction evaluation, Exit ticket on undefined terms',
+            standards: 'MA.912.GR.1.1'
+        },
+        '7.B-11.B': { // Days 7.B, 9.B, 11.B (3 B days)
+            code: '9_geom_1.1.2',
+            title: 'Segments, Rays, and Angles',
+            objectives: [
+                'Distinguish segments, rays, and lines',
+                'Measure and calculate segment lengths',
+                'Apply segment and angle addition postulates',
+                'Identify angle relationships'
+            ],
+            materials: 'Digital rulers and protractors, angle measurement apps, GeoGebra angle tools',
+            activities: [
+                'Segment construction challenges',
+                'Midpoint exploration with coordinates',
+                'Angle relationship discovery lab',
+                'Real-world measurement projects'
+            ],
+            assessment: 'Construction portfolio, Measurement accuracy, Angle classification quiz',
+            standards: 'MA.912.GR.1.1'
+        },
+        '13.B-17.B': { // Days 13.B, 15.B, 17.B (3 B days)
+            code: '9_geom_2.1.1',
+            title: 'Reasoning and Proof',
+            objectives: [
+                'Distinguish inductive and deductive reasoning',
+                'Make conjectures based on patterns',
+                'Write conditional statements and converses',
+                'Construct two-column proofs'
+            ],
+            materials: 'Logic reasoning software, proof templates, interactive proof builders, truth tables',
+            activities: [
+                'Pattern Investigation Lab',
+                'Conditional statement workshop',
+                'Two-column proof builder',
+                'Logic puzzle challenges'
+            ],
+            assessment: 'Logic puzzle performance, Proof construction rubric, Truth table accuracy',
+            standards: 'MA.912.LT.4.3, MA.912.LT.4.10, MTR.3.1'
+        },
+        '16-20': {
+            code: '9_geom_3.1.1',
+            title: 'Parallel and Perpendicular Lines',
+            objectives: [
+                'Identify parallel, perpendicular, and skew lines',
+                'Recognize angle relationships with transversals',
+                'Calculate slope and write line equations',
+                'Apply parallel line theorems'
+            ],
+            materials: 'GeoGebra parallel line explorer, Desmos graphing, slope calculators, coordinate geometry tools',
+            activities: [
+                'Parallel Line Angle Explorer',
+                'Interactive angle discovery lab',
+                'Slope family creation',
+                'Real-world parallel applications'
+            ],
+            assessment: 'Angle relationship quiz, Slope calculations, Line equation writing, Problem-solving rubric',
+            standards: 'MA.912.GR.1.1, MA.912.GR.3.3, MA.912.AR.2.3'
+        },
+        '21-25': {
+            code: '9_geom_4.1.1',
+            title: 'Congruent Triangles',
+            objectives: [
+                'Define and identify congruent triangles',
+                'Apply SSS, SAS, ASA, AAS congruence postulates',
+                'Use CPCTC in formal proofs',
+                'Solve problems with overlapping triangles'
+            ],
+            materials: 'Triangle congruence explorers, digital compass/straightedge, proof construction software',
+            activities: [
+                'Triangle Classification Explorer',
+                'SSS/SAS construction challenges',
+                'CPCTC Proof Builder Workshop',
+                'Engineering congruence applications'
+            ],
+            assessment: 'Congruence proof evaluations, Construction accuracy, CPCTC applications, Complex problems',
+            standards: 'MA.912.GR.1.2, MA.912.GR.1.3, MA.912.GR.1.6'
+        },
+        '26-30': {
+            code: '9_geom_5.1.1',
+            title: 'Triangle Relationships',
+            objectives: [
+                'Locate triangle centers (circumcenter, incenter, centroid, orthocenter)',
+                'Apply perpendicular and angle bisector theorems',
+                'Use triangle inequality theorem',
+                'Solve optimization problems with triangle centers'
+            ],
+            materials: 'GeoGebra triangle centers, construction tools, optimization software',
+            activities: [
+                'Dynamic Triangle Centers Explorer',
+                'Center location investigations',
+                'Inscribed/circumscribed circle construction',
+                'Real-world optimization applications'
+            ],
+            assessment: 'Construction accuracy, Center location tests, Optimization solutions, Theorem applications',
+            standards: 'MA.912.GR.5.2, MA.912.GR.5.3'
+        },
+        '31-87': {
+            code: '9_geom_units_6-11',
+            title: 'Quadrilaterals through Transformations',
+            objectives: [
+                'Master properties of special quadrilaterals',
+                'Apply similarity concepts and theorems',
+                'Use right triangle trigonometry',
+                'Master circle theorems and equations',
+                'Calculate areas, surface areas, and volumes',
+                'Apply transformations and symmetry'
+            ],
+            materials: 'GeoGebra suite, 3D modeling software, scientific calculators, construction tools',
+            activities: [
+                'Quadrilateral hierarchy investigations',
+                'Similarity and indirect measurement projects',
+                'Trigonometry real-world applications',
+                'Circle construction and proof challenges',
+                'Volume optimization problems',
+                'Transformation art projects'
+            ],
+            assessment: 'Unit tests, Construction portfolios, Real-world projects, Proof evaluations',
+            standards: 'MA.912.GR.1.4-MA.912.GR.7.3, MA.912.T.1.1-MA.912.T.1.2'
+        }
+    },
+
+    // 9th Grade World History (B Days, Period 1) - Complete Curriculum
+    '9th_worldhistory': {
+        '1-5': {
+            code: '9_wh_1.1.1',
+            title: 'Introduction to Historical Analysis',
+            objectives: [
+                'Distinguish primary and secondary sources with 90% accuracy',
+                'Identify bias and perspective in historical sources',
+                'Apply historical thinking to modern information evaluation',
+                'Create connections between past and present'
+            ],
+            materials: 'Showrunner animated content, NotebookLM guides, Boston Massacre sources, digital timeline tools',
+            activities: [
+                'Historical Detective Simulation',
+                'Bias Busters Debate',
+                'Truth or Trash game',
+                'HistoryTok timeline creation'
+            ],
+            assessment: 'Quick Check Quiz (AI-graded), Moon Landing DBQ, Fact-Check the Feed task, EOC practice',
+            standards: 'SS.912.W.1.1, SS.912.W.1.3, SS.912.W.1.5, SS.912.W.1.6'
+        },
+        '6-10': {
+            code: '9_wh_1.2.1',
+            title: 'Establishing Historical Causation',
+            objectives: [
+                'Distinguish immediate and long-term causes',
+                'Identify unintended consequences in history',
+                'Analyze chain reactions in historical events',
+                'Apply cause-effect analysis to modern events'
+            ],
+            materials: 'Russian Revolution sources, causation organizers, modern cause-effect examples',
+            activities: [
+                'Butterfly Effect Timeline creation',
+                'Causation Detective simulation',
+                'Modern Chain Reaction analysis',
+                'Russian Revolution DBQ'
+            ],
+            assessment: 'Causation analysis quiz, Russian Revolution DBQ, Chain reaction project, EOC practice',
+            standards: 'SS.912.W.1.1, SS.912.W.1.4'
+        },
+        '11-15': {
+            code: '9_wh_2.1.1',
+            title: 'Constantinople and Byzantine Empire',
+            objectives: [
+                'Analyze Constantinople\'s strategic importance',
+                'Evaluate Justinian\'s legal and military achievements',
+                'Compare Byzantine with Western European civilizations',
+                'Connect Byzantine law to modern government'
+            ],
+            materials: 'Showrunner episode, Procopius sources, interactive maps, Hagia Sophia virtual tour',
+            activities: [
+                'TikTok city location simulation',
+                'Justinian power couple analysis',
+                'Virtual Hagia Sophia tour',
+                'Byzantine vs modern law comparison'
+            ],
+            assessment: 'Geographic advantages quiz, Justinian\'s Code DBQ, Empire capital design task',
+            standards: 'SS.912.W.2.1, SS.912.W.2.2, SS.912.W.2.3'
+        },
+        '16-87': {
+            code: '9_wh_units_2-8',
+            title: 'Medieval through Contemporary World',
+            objectives: [
+                'Trace development from medieval to modern era',
+                'Analyze global interconnections and exchanges',
+                'Evaluate impact of revolutions and world wars',
+                'Connect historical patterns to contemporary issues'
+            ],
+            materials: 'Unit-specific Showrunner episodes, primary sources, interactive simulations, NotebookLM discussions',
+            activities: [
+                'Medieval civilization comparisons',
+                'Renaissance art analysis simulations',
+                'Exploration and colonization mapping',
+                'Enlightenment philosophy debates',
+                'Industrial Revolution cause-effect chains',
+                'World War simulations and peace negotiations',
+                'Cold War decision-making scenarios'
+            ],
+            assessment: 'Unit DBQs, Performance tasks, Creative projects, EOC preparation assessments',
+            standards: 'SS.912.W.2.1-SS.912.W.8.4'
+        }
+    },
+
+    // 11th Grade Pre-Calculus (A Days, Period 1)
     '11th_precalc': {
-        '3-7': { // Was 1-5 
+        '2.A-6.A': { // Days 2.A, 4.A, 6.A (3 A days) 
             code: '11_pc_1.1.1', 
             title: 'Functions Review and Analysis',
             objectives: [
@@ -311,7 +1004,7 @@ const curriculumMap = {
             assessment: 'Functions test, Graphing project, Application problems',
             standards: 'MAFS.912.F-IF.2.4, MAFS.912.F-BF.2.3, MAFS.912.F-IF.3.7'
         },
-        '8-12': { // Was 6-10
+        '8.A-12.A': { // Days 8.A, 10.A, 12.A (3 A days)
             code: '11_pc_1.1.2', 
             title: 'Polynomial and Rational Functions',
             objectives: [
@@ -332,9 +1025,9 @@ const curriculumMap = {
         // Continue with more units...
     },
 
-    // 11th Grade US Government (A Days, Period 2) - SHIFTED BY 2 DAYS
+    // 11th Grade US Government (A Days, Period 2)
     '11th_gov': {
-        '3-7': { // Was 1-5 
+        '2.A-6.A': { // Days 2.A, 4.A, 6.A (3 A days) 
             code: '11_gov_1.1.1', 
             title: 'Constitutional Foundations',
             objectives: [
@@ -458,7 +1151,7 @@ const curriculumMap = {
 
     // 9th Grade World History (B Days, Period 1) - SHIFTED BY 2 DAYS
     '9th_history': {
-        '3-7': { // Was 1-5 
+        '1.B-5.B': { // Days 1.B, 3.B, 5.B (3 B days) 
             code: '9_wh_1.1.1', 
             title: 'Ancient Civilizations Overview',
             objectives: [
@@ -476,7 +1169,7 @@ const curriculumMap = {
             assessment: 'Civilization test, Comparison essay, Timeline project',
             standards: 'SS.912.W.1.1, SS.912.W.1.3, SS.912.W.2.1'
         },
-        '8-12': { // Was 6-10
+        '7.B-11.B': { // Days 7.B, 9.B, 11.B (3 B days)
             code: '9_wh_1.1.2', 
             title: 'Greece and Rome',
             objectives: [
