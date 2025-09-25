@@ -78,9 +78,31 @@ const curriculumMap = {
         }
     },
     
-    // 7th Grade Civics (B Days - odd numbers, Period 3) - Complete Curriculum
+    // 7th Grade Civics (B Days, Period 3) - Complete Curriculum
+    // B days: 1.B, 2.B, 3.B, 4.B, 5.B, 6.B...
     '7th_civics': {
-        '3.B-7.B': { // After AI awareness on 2.B, regular curriculum starts
+        '1.B': { // Sept 4 - Regular school day before AI Academy
+            code: '7_civ_intro',
+            title: 'Welcome to Civics Class',
+            objectives: [
+                'Introduction to classroom expectations',
+                'Overview of civics curriculum',
+                'Understanding why civics matters'
+            ],
+            materials: 'Syllabus, classroom rules, civics notebooks',
+            activities: [
+                'Classroom introductions',
+                'Syllabus review',
+                'What is civics? discussion',
+                'Set up civics notebooks'
+            ],
+            assessment: 'Participation in discussions',
+            standards: 'SS.7.CG.1.1'
+        },
+        '2.B': { // Sept 8 - AI Awareness Day - handled by ai_awareness section
+            // AI Awareness content
+        },
+        '3.B': { // Sept 10 - First regular civics lesson after AI Academy starts
             code: '7_civ_1.1.1',
             title: 'Foundations of American Democracy',
             objectives: [
@@ -177,9 +199,49 @@ const curriculumMap = {
         }
     },
 
-    // 7th Grade ELA (A Days - even numbers, Period 3) - Complete Curriculum
+    // 7th Grade ELA (A Days, Period 3) - Complete Curriculum
+    // A days: 1.A, 2.A, 3.A, 4.A, 5.A...
     '7th_ela': {
-        '4.A-8.A': { // After AI awareness on 3.A, regular curriculum starts
+        '1.A': { // Sept 3 - First day of school
+            code: '7_ela_intro',
+            title: 'Welcome to 7th Grade ELA',
+            objectives: [
+                'Introduction to classroom expectations',
+                'Overview of ELA curriculum',
+                'Establish reading and writing goals'
+            ],
+            materials: 'Syllabus, reading journals, name tags',
+            activities: [
+                'Classroom introductions',
+                'Syllabus review',
+                'Reading interest survey',
+                'Set up reading journals'
+            ],
+            assessment: 'Participation and goal setting',
+            standards: 'LAFS.7.SL.1.1'
+        },
+        '2.A': { // Sept 5 - Regular school day before AI Academy
+            code: '7_ela_foundations',
+            title: 'Building Our Reading Community',
+            objectives: [
+                'Establish classroom reading routines',
+                'Introduction to independent reading',
+                'Create classroom library system'
+            ],
+            materials: 'Classroom library books, reading logs',
+            activities: [
+                'Book speed dating activity',
+                'Create reading goals',
+                'Library organization',
+                'Silent reading time'
+            ],
+            assessment: 'Reading goal sheets',
+            standards: 'LAFS.7.RL.1.10'
+        },
+        '3.A': { // Sept 9 - AI Awareness Day - handled by ai_awareness section
+            // AI Awareness content
+        },
+        '4.A': { // Sept 11 - First regular ELA lesson after AI Academy starts
             code: '7_ela_1.1.1',
             title: 'Introduction to 7th Grade ELA',
             objectives: [

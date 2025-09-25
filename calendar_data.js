@@ -72,31 +72,34 @@ function getABDay(dateStr) {
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
-    // Pattern: A, B, A, B, A, B...
+    // Pattern: 1.A, 1.B, 2.A, 2.B, 3.A, 3.B...
+    // Odd school days = A, Even school days = B
     return schoolDayCount > 0 ? (schoolDayCount % 2 === 1 ? 'A' : 'B') : null;
 }
 
-// Get the day number for A or B days
+// Get the day pair number (1.A/1.B = 1, 2.A/2.B = 2, etc.)
 function getDayNumber(dateStr, dayType) {
     const date = new Date(dateStr);
     const startDate = new Date('2025-09-03');
     
-    let dayCount = 0;
+    let totalSchoolDays = 0;
     let currentDate = new Date(startDate);
     
     while (currentDate <= date) {
         const currentStr = currentDate.toISOString().split('T')[0];
-        const currentDayType = getABDay(currentStr);
+        const dayOfWeek = currentDate.getDay();
         
-        if (currentDayType === dayType) {
-            dayCount++;
-            if (currentStr === dateStr) return dayCount;
+        // Skip weekends and no-school days
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !schoolCalendar.noSchoolDays.has(currentStr)) {
+            totalSchoolDays++;
+            if (currentStr === dateStr) break;
         }
         
         currentDate.setDate(currentDate.getDate() + 1);
     }
     
-    return dayCount;
+    // Calculate the pair number: Days 1-2 = pair 1, Days 3-4 = pair 2, etc.
+    return Math.ceil(totalSchoolDays / 2);
 }
 
 // Updated curriculum mapping for 87 A days and 87 B days
