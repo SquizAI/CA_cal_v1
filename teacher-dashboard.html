@@ -1371,6 +1371,7 @@
         <div class="teacher-tools">
             <h2>🛠️ Teacher Tools</h2>
             <div class="tool-buttons">
+                <button class="tool-btn" onclick="window.location.href='curriculum-sequencing.html'" style="background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); color: white; font-weight: 700; border: 3px solid #fed7aa; box-shadow: 0 4px 12px rgba(234,88,12,0.3);">📊 Curriculum Sequencing & AI Assignment Planning ✨</button>
                 <button class="tool-btn" onclick="openCreateAssignment()">📝 Create Assignment</button>
                 <button class="tool-btn" onclick="openGradeSubmissions()">✅ Grade Submissions</button>
                 <button class="tool-btn" onclick="openAttendance()">📋 Take Attendance</button>
@@ -1441,6 +1442,9 @@
             </button>
             <button class="view-tab-btn" data-view="list" onclick="changeViewMode('list')">
                 <span>List View</span>
+            </button>
+            <button class="view-tab-btn" data-view="sequence" onclick="changeViewMode('sequence')">
+                <span>Sequence View</span>
             </button>
         </div>
 
@@ -2127,6 +2131,9 @@
                     break;
                 case 'list':
                     renderListView();
+                    break;
+                case 'sequence':
+                    renderSequenceView();
                     break;
                 case 'month':
                 default:
@@ -5291,6 +5298,261 @@ ${data}
             grid.innerHTML = html;
         }
 
+        // Render Sequence View - Shows curriculum progression with past/present/future indicators
+        function renderSequenceView() {
+            const grid = document.getElementById('calendarGrid');
+            grid.style.display = 'block';
+            grid.style.gridTemplateColumns = 'none';
+
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+
+            document.getElementById('currentMonth').textContent =
+                currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            // Collect all lessons for the month
+            const lessons = [];
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(year, month, day);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayOfWeek = date.getDay();
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+                if (schoolCalendar.noSchoolDays.has(dateStr)) continue;
+
+                const dayType = getABDay(dateStr);
+                if (!dayType) continue;
+
+                const dayNum = getDayNumber(dateStr, dayType);
+                const periods = periodFilter === 'all' ? [1, 2, 3, 4] : [parseInt(periodFilter)];
+                const grades = gradeFilter === 'all' ? [7, 9, 11] : [parseInt(gradeFilter)];
+
+                periods.forEach(period => {
+                    grades.forEach(grade => {
+                        const subj = periodStructure[dayType]?.[period]?.[grade];
+                        if (subj) {
+                            const subjectType = getSubjectType(subj.subject);
+                            if (subjectFilter !== 'all' && subjectType !== subjectFilter) {
+                                return;
+                            }
+
+                            if (!isStudentEnrolledInLesson(subj.key, period, dayType)) {
+                                return;
+                            }
+
+                            const dayKey = `${dayNum}.${dayType}`;
+                            const lesson = window.curriculumData?.getLesson(subj.key, dayKey);
+
+                            if (lesson) {
+                                // Determine lesson status
+                                let status = 'upcoming';
+                                const lessonDate = new Date(date);
+                                lessonDate.setHours(0, 0, 0, 0);
+
+                                if (lessonDate < today) {
+                                    status = 'taught';
+                                } else if (lessonDate.getTime() === today.getTime()) {
+                                    status = 'today';
+                                }
+
+                                lessons.push({
+                                    date,
+                                    dateStr,
+                                    dayType,
+                                    dayNum,
+                                    period,
+                                    grade,
+                                    subj,
+                                    lesson,
+                                    status
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Group lessons by subject
+            const subjectGroups = {};
+            lessons.forEach(l => {
+                const key = `${l.subj.key}_period${l.period}`;
+                if (!subjectGroups[key]) {
+                    subjectGroups[key] = {
+                        subject: l.subj.subject,
+                        subjectKey: l.subj.key,
+                        period: l.period,
+                        grade: l.grade,
+                        lessons: []
+                    };
+                }
+                subjectGroups[key].lessons.push(l);
+            });
+
+            // Sort lessons within each subject by date
+            Object.values(subjectGroups).forEach(group => {
+                group.lessons.sort((a, b) => a.date - b.date);
+            });
+
+            // Calculate overall progress
+            const taughtCount = lessons.filter(l => l.status === 'taught').length;
+            const totalCount = lessons.length;
+            const progressPercent = totalCount > 0 ? Math.round((taughtCount / totalCount) * 100) : 0;
+
+            let html = '<div style="padding: 20px;">';
+            html += '<div style="max-width: 1400px; margin: 0 auto;">';
+
+            // Progress Summary Card
+            html += `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); color: white;">
+                <h2 style="margin: 0 0 20px 0; font-size: 1.5em;">📚 Curriculum Sequence & Progress</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center;">
+                    <div>
+                        <div style="font-size: 2.5em; font-weight: 800; margin-bottom: 5px;">${taughtCount}</div>
+                        <div style="font-size: 0.95em; opacity: 0.9; font-weight: 600;">Lessons Taught</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5em; font-weight: 800; margin-bottom: 5px;">${totalCount - taughtCount}</div>
+                        <div style="font-size: 0.95em; opacity: 0.9; font-weight: 600;">Lessons Remaining</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5em; font-weight: 800; margin-bottom: 5px;">${progressPercent}%</div>
+                        <div style="font-size: 0.95em; opacity: 0.9; font-weight: 600;">Progress</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; background: rgba(255,255,255,0.2); height: 12px; border-radius: 6px; overflow: hidden;">
+                    <div style="width: ${progressPercent}%; height: 100%; background: #10b981; transition: width 0.5s;"></div>
+                </div>
+            </div>`;
+
+            // Legend
+            html += `<div style="display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 24px; height: 24px; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center;">✓</div>
+                    <span style="font-weight: 600; color: #6b7280;">Taught (Past)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white;">📍</div>
+                    <span style="font-weight: 600; color: #F59E0B;">Today</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white;">📅</div>
+                    <span style="font-weight: 600; color: #667eea;">Upcoming</span>
+                </div>
+            </div>`;
+
+            // Render each subject group
+            const sortedGroups = Object.values(subjectGroups).sort((a, b) => {
+                if (a.period !== b.period) return a.period - b.period;
+                return a.subject.localeCompare(b.subject);
+            });
+
+            sortedGroups.forEach(group => {
+                const groupTaught = group.lessons.filter(l => l.status === 'taught').length;
+                const groupTotal = group.lessons.length;
+                const groupPercent = groupTotal > 0 ? Math.round((groupTaught / groupTotal) * 100) : 0;
+
+                html += `<div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`;
+
+                // Subject Header
+                html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.3em; color: #1f2937;">Period ${group.period} - ${group.subject}</h3>
+                        <p style="margin: 4px 0 0 0; color: #6b7280;">Grade ${group.grade}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.5em; font-weight: 700; color: #667eea;">${groupPercent}%</div>
+                        <div style="font-size: 0.9em; color: #6b7280;">${groupTaught}/${groupTotal} lessons</div>
+                    </div>
+                </div>`;
+
+                // Lessons Timeline
+                html += '<div style="position: relative;">';
+
+                group.lessons.forEach((l, index) => {
+                    const isLast = index === group.lessons.length - 1;
+
+                    // Status styling
+                    let bgColor, borderColor, textColor, icon;
+                    if (l.status === 'taught') {
+                        bgColor = '#f9fafb';
+                        borderColor = '#e5e7eb';
+                        textColor = '#6b7280';
+                        icon = '✓';
+                    } else if (l.status === 'today') {
+                        bgColor = 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)';
+                        borderColor = '#F59E0B';
+                        textColor = '#92400e';
+                        icon = '📍';
+                    } else {
+                        bgColor = 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)';
+                        borderColor = '#8B5CF6';
+                        textColor = '#5B21B6';
+                        icon = '📅';
+                    }
+
+                    html += `<div style="position: relative; padding-left: 40px; padding-bottom: ${isLast ? '0' : '24px'};">`;
+
+                    // Timeline connector
+                    if (!isLast) {
+                        html += `<div style="position: absolute; left: 11px; top: 32px; bottom: 0; width: 2px; background: #e5e7eb;"></div>`;
+                    }
+
+                    // Timeline dot
+                    html += `<div style="position: absolute; left: 0; top: 8px; width: 24px; height: 24px; background: ${typeof bgColor === 'string' && bgColor.startsWith('linear') ? bgColor : borderColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8em; font-weight: 700; z-index: 1;">${icon}</div>`;
+
+                    // Lesson card
+                    html += `<div onclick="openDayModal('${l.dateStr}', '${l.dayType}', ${l.dayNum})" style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 8px; padding: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none';">`;
+
+                    // Lesson info
+                    const dateFormatted = l.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    html += `<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <div>
+                            <div style="font-weight: 700; color: ${textColor}; font-size: 1.1em;">${l.lesson.title || 'Lesson ' + l.lesson.code}</div>
+                            <div style="font-size: 0.9em; color: ${textColor}; opacity: 0.8; margin-top: 4px;">Day ${l.dayNum}${l.dayType}</div>
+                        </div>
+                        <div style="text-align: right; color: ${textColor}; font-weight: 600;">
+                            ${dateFormatted}
+                        </div>
+                    </div>`;
+
+                    // Objectives
+                    if (l.lesson.objectives && l.lesson.objectives.length > 0) {
+                        html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid ${borderColor};">
+                            <div style="font-weight: 600; color: ${textColor}; font-size: 0.9em; margin-bottom: 6px;">Learning Objectives:</div>
+                            <ul style="margin: 0; padding-left: 20px; color: ${textColor}; font-size: 0.85em; line-height: 1.5;">`;
+                        l.lesson.objectives.slice(0, 2).forEach(obj => {
+                            html += `<li>${obj}</li>`;
+                        });
+                        if (l.lesson.objectives.length > 2) {
+                            html += `<li style="opacity: 0.7;"><em>+${l.lesson.objectives.length - 2} more objectives...</em></li>`;
+                        }
+                        html += `</ul></div>`;
+                    }
+
+                    html += `</div>`; // Close lesson card
+                    html += `</div>`; // Close timeline item
+                });
+
+                html += '</div>'; // Close timeline
+                html += '</div>'; // Close subject group
+            });
+
+            if (sortedGroups.length === 0) {
+                html += `<div style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                    <div style="font-size: 3em; margin-bottom: 16px;">📚</div>
+                    <h3 style="margin: 0 0 8px 0;">No Lessons Found</h3>
+                    <p>Try adjusting your filters to see lessons.</p>
+                </div>`;
+            }
+
+            html += '</div></div>';
+            grid.innerHTML = html;
+        }
+
         function logout() {
             window.location.href = 'index.html';
         }
@@ -5363,7 +5625,7 @@ ${data}
             updateAttendanceView();
         }
 
-        function updateAttendanceView() {
+        async function updateAttendanceView() {
             const dateInput = document.getElementById('attendanceDate');
             const periodSelect = document.getElementById('attendancePeriod');
             const displayDiv = document.getElementById('attendanceDisplay');
@@ -5401,7 +5663,7 @@ ${data}
             const periods = selectedPeriod === 'all' ? [1, 2, 3, 4] : [parseInt(selectedPeriod)];
             let totalStudents = 0;
 
-            periods.forEach(period => {
+            for (const period of periods) {
                 const subjectsByGrade = {
                     7: periodStructure[dayType]?.[period]?.[7],
                     9: periodStructure[dayType]?.[period]?.[9],
@@ -5416,7 +5678,7 @@ ${data}
                         </h3>
                 `;
 
-                Object.entries(subjectsByGrade).forEach(([grade, subj]) => {
+                for (const [grade, subj] of Object.entries(subjectsByGrade)) {
                     if (subj) {
                         const students = getStudentsByPeriod(period, dayType, subj.key);
                         if (students && students.length > 0) {
@@ -5424,7 +5686,7 @@ ${data}
                             totalStudents += students.length;
 
                             // Load saved attendance if exists
-                            const savedAttendance = loadSavedAttendance(dateStr, period);
+                            const savedAttendance = await loadSavedAttendance(dateStr, period);
 
                             periodHtml += `
                                 <div class="attendance-class" style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px;">
@@ -5484,11 +5746,11 @@ ${data}
                             periodHtml += `</div></div>`;
                         }
                     }
-                });
+                }
 
                 periodHtml += `</div>`;
                 if (hasStudents) html += periodHtml;
-            });
+            }
 
             if (totalStudents === 0) {
                 html += `
@@ -5512,7 +5774,31 @@ ${data}
             displayDiv.innerHTML = html;
         }
 
-        function loadSavedAttendance(date, period) {
+        async function loadSavedAttendance(date, period) {
+            try {
+                // Try to load from Supabase first
+                const { data, error } = await supabase
+                    .from('attendance')
+                    .select('*')
+                    .eq('date', date)
+                    .eq('period', period);
+
+                if (!error && data && data.length > 0) {
+                    const periodRecords = {};
+                    data.forEach(record => {
+                        periodRecords[record.student_id] = {
+                            status: record.status || 'present',
+                            participation: record.participation_grade !== undefined ? record.participation_grade : 3,
+                            effort: record.effort_grade !== undefined ? record.effort_grade : 3
+                        };
+                    });
+                    return periodRecords;
+                }
+            } catch (err) {
+                console.error('Error loading from Supabase, falling back to localStorage:', err);
+            }
+
+            // Fallback to localStorage
             const attendanceData = JSON.parse(localStorage.getItem('attendanceRecords') || '{}');
             const records = attendanceData[date] || [];
             const periodRecords = {};
@@ -5538,8 +5824,10 @@ ${data}
             }
         }
 
-        function saveAttendance() {
+        async function saveAttendance() {
             const currentDate = document.getElementById('attendanceDate').value;
+            const currentUser = supabase.auth.getUser();
+            const teacherEmail = currentUser?.data?.user?.email || 'unknown';
 
             const records = [];
             document.querySelectorAll('.student-attendance-row').forEach(row => {
@@ -5555,40 +5843,73 @@ ${data}
                 const effort = parseInt(effortSlider.value);
 
                 records.push({
-                    studentId,
-                    period,
-                    status,
-                    participation,  // 0-5 scale
-                    effort,         // 0-5 scale
+                    student_id: studentId,
                     date: currentDate,
-                    timestamp: new Date().toISOString()
+                    period: parseInt(period),
+                    status,
+                    participation_grade: participation,
+                    effort_grade: effort,
+                    teacher_email: teacherEmail
                 });
             });
 
-            // Save to localStorage
-            const attendanceData = JSON.parse(localStorage.getItem('attendanceRecords') || '{}');
-            if (!attendanceData[currentDate]) {
-                attendanceData[currentDate] = [];
-            }
+            try {
+                // Save to Supabase (upsert handles insert or update)
+                const { data, error } = await supabase
+                    .from('attendance')
+                    .upsert(records, {
+                        onConflict: 'student_id,date,period'
+                    });
 
-            // Merge new records (update existing ones)
-            records.forEach(newRecord => {
-                const existingIndex = attendanceData[currentDate].findIndex(
-                    r => r.studentId === newRecord.studentId && r.period === newRecord.period
-                );
-
-                if (existingIndex >= 0) {
-                    attendanceData[currentDate][existingIndex] = newRecord;
-                } else {
-                    attendanceData[currentDate].push(newRecord);
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
                 }
-            });
 
-            localStorage.setItem('attendanceRecords', JSON.stringify(attendanceData));
+                console.log('✅ Attendance saved to Supabase:', records.length, 'records');
 
-            console.log('Attendance records saved:', records);
-            alert(`✅ Attendance saved for ${records.length} students on ${currentDate}!`);
-            closeEditModal();
+                // Also save to localStorage as backup
+                const attendanceData = JSON.parse(localStorage.getItem('attendanceRecords') || '{}');
+                if (!attendanceData[currentDate]) {
+                    attendanceData[currentDate] = [];
+                }
+
+                records.forEach(newRecord => {
+                    const existingIndex = attendanceData[currentDate].findIndex(
+                        r => r.studentId === newRecord.student_id && r.period === newRecord.period
+                    );
+
+                    if (existingIndex >= 0) {
+                        attendanceData[currentDate][existingIndex] = {
+                            studentId: newRecord.student_id,
+                            period: newRecord.period,
+                            status: newRecord.status,
+                            participation: newRecord.participation_grade,
+                            effort: newRecord.effort_grade,
+                            date: currentDate,
+                            timestamp: new Date().toISOString()
+                        };
+                    } else {
+                        attendanceData[currentDate].push({
+                            studentId: newRecord.student_id,
+                            period: newRecord.period,
+                            status: newRecord.status,
+                            participation: newRecord.participation_grade,
+                            effort: newRecord.effort_grade,
+                            date: currentDate,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                });
+
+                localStorage.setItem('attendanceRecords', JSON.stringify(attendanceData));
+
+                alert(`✅ Attendance saved for ${records.length} students on ${currentDate}!`);
+                closeEditModal();
+            } catch (err) {
+                console.error('Failed to save attendance:', err);
+                alert(`❌ Failed to save attendance: ${err.message}. Please try again.`);
+            }
         }
 
         // Toggle attendance section in lesson edit modal
@@ -5605,7 +5926,10 @@ ${data}
         }
 
         // Save attendance from lesson edit modal
-        function saveLessonAttendance(dateStr, period) {
+        async function saveLessonAttendance(dateStr, period) {
+            const currentUser = await supabase.auth.getUser();
+            const teacherEmail = currentUser?.data?.user?.email || 'unknown';
+
             const records = [];
             document.querySelectorAll('.student-attendance-row').forEach(row => {
                 if (row.dataset.period == period) {
@@ -5620,43 +5944,76 @@ ${data}
                     const effort = parseInt(effortSlider.value);
 
                     records.push({
-                        studentId,
-                        period,
-                        status,
-                        participation,
-                        effort,
+                        student_id: studentId,
                         date: dateStr,
-                        timestamp: new Date().toISOString()
+                        period: parseInt(period),
+                        status,
+                        participation_grade: participation,
+                        effort_grade: effort,
+                        teacher_email: teacherEmail
                     });
                 }
             });
 
-            // Save to localStorage
-            const attendanceData = JSON.parse(localStorage.getItem('attendanceRecords') || '{}');
-            if (!attendanceData[dateStr]) {
-                attendanceData[dateStr] = [];
-            }
+            try {
+                // Save to Supabase (upsert handles insert or update)
+                const { data, error } = await supabase
+                    .from('attendance')
+                    .upsert(records, {
+                        onConflict: 'student_id,date,period'
+                    });
 
-            // Merge new records (update existing ones)
-            records.forEach(newRecord => {
-                const existingIndex = attendanceData[dateStr].findIndex(
-                    r => r.studentId === newRecord.studentId && r.period === newRecord.period
-                );
-
-                if (existingIndex >= 0) {
-                    attendanceData[dateStr][existingIndex] = newRecord;
-                } else {
-                    attendanceData[dateStr].push(newRecord);
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
                 }
-            });
 
-            localStorage.setItem('attendanceRecords', JSON.stringify(attendanceData));
+                console.log('✅ Lesson attendance saved to Supabase:', records.length, 'records');
 
-            console.log('Lesson attendance saved:', records);
-            alert(`✅ Attendance saved for ${records.length} students!`);
+                // Also save to localStorage as backup
+                const attendanceData = JSON.parse(localStorage.getItem('attendanceRecords') || '{}');
+                if (!attendanceData[dateStr]) {
+                    attendanceData[dateStr] = [];
+                }
 
-            // Refresh the lesson view to show updated data
-            location.reload();
+                records.forEach(newRecord => {
+                    const existingIndex = attendanceData[dateStr].findIndex(
+                        r => r.studentId === newRecord.student_id && r.period === newRecord.period
+                    );
+
+                    if (existingIndex >= 0) {
+                        attendanceData[dateStr][existingIndex] = {
+                            studentId: newRecord.student_id,
+                            period: newRecord.period,
+                            status: newRecord.status,
+                            participation: newRecord.participation_grade,
+                            effort: newRecord.effort_grade,
+                            date: dateStr,
+                            timestamp: new Date().toISOString()
+                        };
+                    } else {
+                        attendanceData[dateStr].push({
+                            studentId: newRecord.student_id,
+                            period: newRecord.period,
+                            status: newRecord.status,
+                            participation: newRecord.participation_grade,
+                            effort: newRecord.effort_grade,
+                            date: dateStr,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                });
+
+                localStorage.setItem('attendanceRecords', JSON.stringify(attendanceData));
+
+                alert(`✅ Attendance saved for ${records.length} students!`);
+
+                // Refresh the lesson view to show updated data
+                location.reload();
+            } catch (err) {
+                console.error('Failed to save lesson attendance:', err);
+                alert(`❌ Failed to save attendance: ${err.message}. Please try again.`);
+            }
         }
 
         function viewAttendanceHistory() {
@@ -5992,11 +6349,11 @@ ${data}
                             periodHtml += `</div></div>`;
                         }
                     }
-                });
+                }
 
                 periodHtml += `</div>`;
                 if (hasStudents) html += periodHtml;
-            });
+            }
 
             html += `
                 </div>

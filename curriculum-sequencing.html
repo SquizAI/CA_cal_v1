@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curriculum Sequencing & Assignment Planning - AI Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #ea580c;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* View Switcher */
+        .view-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background: #ea580c;
+            color: white;
+            border-color: #ea580c;
+        }
+
+        .view-btn:hover:not(.active) {
+            border-color: #ea580c;
+            color: #ea580c;
+        }
+
+        /* Timeline View */
+        .timeline-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .timeline-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .timeline-section {
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .timeline-section.past {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        }
+
+        .timeline-section.present {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
+        }
+
+        .timeline-section.future {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .timeline-section h3 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .lesson-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .lesson-code {
+            font-weight: 700;
+            color: #ea580c;
+            font-size: 0.9em;
+        }
+
+        .lesson-date {
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+
+        .lesson-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .lesson-standards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .standard-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .lesson-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .status-taught {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .status-current {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-upcoming {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-needs-assignment {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Standards Coverage Grid */
+        .standards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .standard-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .standard-card.mastered {
+            border-left-color: #10b981;
+        }
+
+        .standard-card.developing {
+            border-left-color: #f59e0b;
+        }
+
+        .standard-card.needs-work {
+            border-left-color: #ef4444;
+        }
+
+        .standard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .standard-code-large {
+            font-weight: 700;
+            font-size: 0.95em;
+            color: #ea580c;
+        }
+
+        .mastery-indicator {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .mastery-4 { background: #d1fae5; color: #047857; } /* Advanced */
+        .mastery-3 { background: #dcfce7; color: #15803d; } /* Proficient */
+        .mastery-2 { background: #fed7aa; color: #c2410c; } /* Developing */
+        .mastery-1 { background: #fee2e2; color: #dc2626; } /* Beginning */
+        .mastery-0 { background: #f3f4f6; color: #6b7280; } /* Not assessed */
+
+        .standard-progress {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .students-list {
+            margin-top: 12px;
+            font-size: 0.85em;
+        }
+
+        .student-need {
+            padding: 6px 10px;
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+            margin-top: 6px;
+            border-radius: 4px;
+        }
+
+        /* Assignment Planning */
+        .assignment-planning {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .upcoming-lessons-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .ai-generation-panel {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .ai-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .context-summary {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .context-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .context-item:last-child {
+            border-bottom: none;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #7c3aed;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .generate-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .upcoming-lesson-item {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .upcoming-lesson-item:hover {
+            background: #f9fafb;
+        }
+
+        .upcoming-lesson-item.selected {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+            font-size: 0.9em;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #ea580c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-btn:hover {
+            color: #ea580c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Curriculum Sequencing & Assignment Planning</h1>
+        <a href="teacher-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Subject:</label>
+                <select id="subjectFilter" onchange="loadData()">
+                    <option value="">Select a subject...</option>
+                    <option value="7th_civics">7th Grade Civics</option>
+                    <option value="7th_ela">7th Grade ELA</option>
+                    <option value="7th_math">7th Grade Pre-Algebra</option>
+                    <option value="7th_science">7th Grade Life Science</option>
+                    <option value="9th_ela">9th Grade ELA</option>
+                    <option value="9th_world_history">9th Grade World History</option>
+                    <option value="9th_math">9th Grade Geometry</option>
+                    <option value="11th_us_gvmnt">11th Grade U.S. Government</option>
+                    <option value="11th_math">11th Grade Pre-Calculus</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Period:</label>
+                <select id="periodFilter" onchange="loadData()">
+                    <option value="">All Periods</option>
+                    <option value="1">Period 1</option>
+                    <option value="2">Period 2</option>
+                    <option value="3">Period 3</option>
+                    <option value="4">Period 4</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Day Type:</label>
+                <select id="dayTypeFilter" onchange="loadData()">
+                    <option value="">Both A & B Days</option>
+                    <option value="A">A Days Only</option>
+                    <option value="B">B Days Only</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="view-switcher">
+            <button class="view-btn active" onclick="switchView('timeline')">
+                📅 Timeline View
+            </button>
+            <button class="view-btn" onclick="switchView('standards')">
+                🎯 Standards Coverage
+            </button>
+            <button class="view-btn" onclick="switchView('planning')">
+                ✨ Assignment Planning
+            </button>
+        </div>
+
+        <!-- Timeline View -->
+        <div id="timelineView" class="view-content">
+            <div class="timeline-container">
+                <div class="timeline-sections">
+                    <div class="timeline-section past">
+                        <h3>⏮️ Recently Taught (Past 2 Weeks)</h3>
+                        <div id="pastLessons"></div>
+                    </div>
+                    <div class="timeline-section present">
+                        <h3>📍 Current Week</h3>
+                        <div id="currentLessons"></div>
+                    </div>
+                    <div class="timeline-section future">
+                        <h3>⏭️ Coming Up (Next 2 Weeks)</h3>
+                        <div id="futureLessons"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standards Coverage View -->
+        <div id="standardsView" class="view-content hidden">
+            <div class="timeline-container">
+                <h2 style="margin-bottom: 20px;">Standards Mastery Overview</h2>
+                <div id="standardsGrid" class="standards-grid"></div>
+            </div>
+        </div>
+
+        <!-- Assignment Planning View -->
+        <div id="planningView" class="view-content hidden">
+            <div class="assignment-planning">
+                <div class="upcoming-lessons-panel">
+                    <h2 style="margin-bottom: 20px;">Upcoming Lessons Needing Assignments</h2>
+                    <div id="upcomingLessons"></div>
+                </div>
+
+                <div class="ai-generation-panel">
+                    <div class="ai-panel-header">
+                        <div class="ai-icon">🤖</div>
+                        <div>
+                            <h3 style="margin-bottom: 4px;">AI Assignment Generator</h3>
+                            <p style="opacity: 0.9; font-size: 0.9em;">Context-aware assignment creation</p>
+                        </div>
+                    </div>
+
+                    <div class="context-summary">
+                        <div class="context-item">
+                            <span>Selected Lesson:</span>
+                            <strong id="aiSelectedLesson">None</strong>
+                        </div>
+                        <div class="context-item">
+                            <span>Standards Covered:</span>
+                            <strong id="aiStandards">-</strong>
+                        </div>
+                        <div class="context-item">
+                            <span>Students Needing Practice:</span>
+                            <strong id="aiStudentsNeedingPractice">0</strong>
+                        </div>
+                        <div class="context-item">
+                            <span>Recommended Type:</span>
+                            <strong id="aiRecommendedType">-</strong>
+                        </div>
+                    </div>
+
+                    <button class="generate-btn" id="generateBtn" onclick="generateAssignment()" disabled>
+                        ✨ Generate Assignment with AI
+                    </button>
+
+                    <div style="margin-top: 15px; font-size: 0.85em; opacity: 0.9;">
+                        <p>💡 AI will analyze:</p>
+                        <ul style="margin-top: 8px; padding-left: 20px;">
+                            <li>What standards have been taught</li>
+                            <li>Which students need more practice</li>
+                            <li>Lesson objectives and content</li>
+                            <li>Previous assignment patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Generation Modal -->
+    <div id="generationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✨ Generated Assignment</h2>
+                <button class="close-btn" onclick="closeGenerationModal()">×</button>
+            </div>
+            <div id="generatedContent"></div>
+        </div>
+    </div>
+
+    <script src="curriculum-api.js"></script>
+    <script src="dist/schedule-data.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(
+            'https://xgzcxlztoxrcacfskzpr.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnemN4bHp0b3hyY2FjZnNrenByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc2NTAyMDksImV4cCI6MjA0MzIyNjIwOX0.fM73HXPsvqDh7rOkwwLx5VSW2OcA-DvhJBz3VCxP5is'
+        );
+
+        let currentView = 'timeline';
+        let selectedSubject = '';
+        let selectedPeriod = '';
+        let selectedDayType = '';
+        let selectedLesson = null;
+
+        // Load curriculum data
+        async function loadData() {
+            selectedSubject = document.getElementById('subjectFilter').value;
+            selectedPeriod = document.getElementById('periodFilter').value;
+            selectedDayType = document.getElementById('dayTypeFilter').value;
+
+            if (!selectedSubject) {
+                showMessage('Please select a subject first', 'info');
+                return;
+            }
+
+            if (currentView === 'timeline') {
+                await loadTimelineData();
+            } else if (currentView === 'standards') {
+                await loadStandardsData();
+            } else if (currentView === 'planning') {
+                await loadPlanningData();
+            }
+        }
+
+        async function loadTimelineData() {
+            const pastDiv = document.getElementById('pastLessons');
+            const currentDiv = document.getElementById('currentLessons');
+            const futureDiv = document.getElementById('futureLessons');
+
+            pastDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading past lessons...</div>';
+            currentDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading current lessons...</div>';
+            futureDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading upcoming lessons...</div>';
+
+            // Get curriculum for selected subject
+            const subjectData = window.curriculumMap[selectedSubject];
+            if (!subjectData) {
+                pastDiv.innerHTML = '<p>No curriculum data found</p>';
+                currentDiv.innerHTML = '<p>No curriculum data found</p>';
+                futureDiv.innerHTML = '<p>No curriculum data found</p>';
+                return;
+            }
+
+            // Get schedule data
+            const today = new Date();
+            const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+            const twoWeeksAhead = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+            const pastLessons = [];
+            const currentLessons = [];
+            const futureLessons = [];
+
+            // Parse schedule data
+            window.scheduleData.forEach(day => {
+                const dayDate = new Date(day.date);
+                if (!day.isSchoolDay) return;
+
+                const dayKey = `${day.dayNumber}.${day.dayType}`;
+                const lesson = subjectData.lessons[dayKey];
+
+                if (lesson) {
+                    const lessonWithDate = {
+                        ...lesson,
+                        date: day.date,
+                        dayType: day.dayType,
+                        dayNumber: day.dayNumber,
+                        dayKey: dayKey
+                    };
+
+                    if (dayDate < twoWeeksAgo) {
+                        // Skip older lessons
+                    } else if (dayDate >= twoWeeksAgo && dayDate < today) {
+                        pastLessons.push(lessonWithDate);
+                    } else if (dayDate.toDateString() === today.toDateString() ||
+                               (dayDate >= today && dayDate <= new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000))) {
+                        currentLessons.push(lessonWithDate);
+                    } else if (dayDate > new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) && dayDate <= twoWeeksAhead) {
+                        futureLessons.push(lessonWithDate);
+                    }
+                }
+            });
+
+            // Render lessons
+            pastDiv.innerHTML = pastLessons.map(renderLessonCard).join('') ||
+                '<p style="color: #6b7280; text-align: center; padding: 20px;">No recently taught lessons</p>';
+            currentDiv.innerHTML = currentLessons.map(renderLessonCard).join('') ||
+                '<p style="color: #6b7280; text-align: center; padding: 20px;">No current lessons</p>';
+            futureDiv.innerHTML = futureLessons.map(renderLessonCard).join('') ||
+                '<p style="color: #6b7280; text-align: center; padding: 20px;">No upcoming lessons</p>';
+        }
+
+        function renderLessonCard(lesson) {
+            const date = new Date(lesson.date);
+            const status = date < new Date() ? 'taught' :
+                          date.toDateString() === new Date().toDateString() ? 'current' :
+                          'upcoming';
+
+            return `
+                <div class="lesson-card" onclick="viewLesson('${lesson.code}')">
+                    <div class="lesson-card-header">
+                        <div class="lesson-code">${lesson.code}</div>
+                        <div class="lesson-date">${date.toLocaleDateString()}</div>
+                    </div>
+                    <div class="lesson-title">${lesson.title}</div>
+                    <div class="lesson-standards">
+                        ${lesson.standards ? lesson.standards.split(',').map(s =>
+                            `<span class="standard-badge">${s.trim()}</span>`
+                        ).join('') : ''}
+                    </div>
+                    <span class="lesson-status status-${status}">
+                        ${status === 'taught' ? '✅ Taught' : status === 'current' ? '📍 Current' : '📅 Upcoming'}
+                    </span>
+                </div>
+            `;
+        }
+
+        async function loadStandardsData() {
+            const grid = document.getElementById('standardsGrid');
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div>Loading standards mastery data...</div>';
+
+            // Get unique standards from curriculum
+            const subjectData = window.curriculumMap[selectedSubject];
+            if (!subjectData) return;
+
+            const standardsMap = new Map();
+            Object.values(subjectData.lessons).forEach(lesson => {
+                if (lesson.standards) {
+                    lesson.standards.split(',').forEach(standard => {
+                        const s = standard.trim();
+                        if (!standardsMap.has(s)) {
+                            standardsMap.set(s, {
+                                code: s,
+                                lessonCount: 0,
+                                masteryLevel: 0,
+                                studentsNeedingPractice: []
+                            });
+                        }
+                        standardsMap.get(s).lessonCount++;
+                    });
+                }
+            });
+
+            // Fetch mastery data from database
+            try {
+                const { data: masteryData, error } = await supabase
+                    .from('standard_mastery')
+                    .select('*')
+                    .eq('subject_key', selectedSubject);
+
+                if (error) throw error;
+
+                // Update standards with mastery data
+                if (masteryData) {
+                    masteryData.forEach(record => {
+                        if (standardsMap.has(record.standard_code)) {
+                            const std = standardsMap.get(record.standard_code);
+                            std.masteryLevel = record.mastery_level;
+                            if (record.needs_practice) {
+                                std.studentsNeedingPractice.push({
+                                    id: record.student_id,
+                                    level: record.mastery_level
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading mastery data:', error);
+            }
+
+            // Render standards grid
+            const html = Array.from(standardsMap.values()).map(std => {
+                const masteryClass = std.masteryLevel >= 3 ? 'mastered' :
+                                   std.masteryLevel >= 2 ? 'developing' :
+                                   'needs-work';
+
+                return `
+                    <div class="standard-card ${masteryClass}">
+                        <div class="standard-header">
+                            <div class="standard-code-large">${std.code}</div>
+                            <div class="mastery-indicator mastery-${std.masteryLevel}">
+                                ${['Not Assessed', 'Beginning', 'Developing', 'Proficient', 'Advanced'][std.masteryLevel]}
+                            </div>
+                        </div>
+                        <div class="standard-progress">
+                            <div style="font-size: 0.85em; color: #6b7280; margin-bottom: 6px;">
+                                Taught in ${std.lessonCount} lesson${std.lessonCount !== 1 ? 's' : ''}
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${(std.masteryLevel / 4) * 100}%; background: ${
+                                    std.masteryLevel >= 3 ? '#10b981' :
+                                    std.masteryLevel >= 2 ? '#f59e0b' : '#ef4444'
+                                };"></div>
+                            </div>
+                        </div>
+                        ${std.studentsNeedingPractice.length > 0 ? `
+                            <div class="students-list">
+                                <strong>Students needing practice:</strong>
+                                ${std.studentsNeedingPractice.map(s =>
+                                    `<div class="student-need">Student (Level ${s.level})</div>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            grid.innerHTML = html || '<p style="color: #6b7280; text-align: center; padding: 40px;">No standards data available</p>';
+        }
+
+        async function loadPlanningData() {
+            const lessonsDiv = document.getElementById('upcomingLessons');
+            lessonsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading upcoming lessons...</div>';
+
+            // Get upcoming lessons (next 14 days)
+            const subjectData = window.curriculumMap[selectedSubject];
+            if (!subjectData) return;
+
+            const today = new Date();
+            const twoWeeksAhead = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+            const upcomingLessons = [];
+
+            window.scheduleData.forEach(day => {
+                const dayDate = new Date(day.date);
+                if (!day.isSchoolDay || dayDate < today || dayDate > twoWeeksAhead) return;
+
+                const dayKey = `${day.dayNumber}.${day.dayType}`;
+                const lesson = subjectData.lessons[dayKey];
+
+                if (lesson) {
+                    upcomingLessons.push({
+                        ...lesson,
+                        date: day.date,
+                        dayType: day.dayType,
+                        dayNumber: day.dayNumber,
+                        dayKey: dayKey
+                    });
+                }
+            });
+
+            // Render upcoming lessons
+            const html = upcomingLessons.map(lesson => {
+                const date = new Date(lesson.date);
+                return `
+                    <div class="upcoming-lesson-item" onclick="selectLessonForGeneration(${JSON.stringify(lesson).replace(/"/g, '&quot;')})">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <div class="lesson-code">${lesson.code}</div>
+                            <div class="lesson-date">${date.toLocaleDateString()}</div>
+                        </div>
+                        <div class="lesson-title">${lesson.title}</div>
+                        <div class="lesson-standards" style="margin-top: 8px;">
+                            ${lesson.standards ? lesson.standards.split(',').map(s =>
+                                `<span class="standard-badge">${s.trim()}</span>`
+                            ).join('') : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lessonsDiv.innerHTML = html || '<p style="color: #6b7280; text-align: center; padding: 20px;">No upcoming lessons found</p>';
+        }
+
+        function selectLessonForGeneration(lesson) {
+            selectedLesson = lesson;
+
+            // Update UI
+            document.querySelectorAll('.upcoming-lesson-item').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            // Update AI context
+            document.getElementById('aiSelectedLesson').textContent = lesson.code;
+            document.getElementById('aiStandards').textContent = lesson.standards || 'None';
+            document.getElementById('aiStudentsNeedingPractice').textContent = '0'; // TODO: Calculate from mastery data
+            document.getElementById('aiRecommendedType').textContent = 'Practice Quiz';
+
+            // Enable generate button
+            document.getElementById('generateBtn').disabled = false;
+        }
+
+        async function generateAssignment() {
+            if (!selectedLesson) return;
+
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtn').textContent = '⏳ Generating...';
+
+            try {
+                // Call Netlify function to generate assignment
+                const response = await fetch('/.netlify/functions/generate-assignment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lesson: selectedLesson,
+                        subject: selectedSubject,
+                        context: {
+                            standards: selectedLesson.standards,
+                            objectives: selectedLesson.objectives
+                        }
+                    })
+                });
+
+                const result = await response.json();
+
+                // Show generated assignment
+                document.getElementById('generatedContent').innerHTML = marked.parse(result.assignment);
+                document.getElementById('generationModal').classList.add('active');
+
+            } catch (error) {
+                console.error('Error generating assignment:', error);
+                alert('Failed to generate assignment. Please try again.');
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('generateBtn').textContent = '✨ Generate Assignment with AI';
+            }
+        }
+
+        function closeGenerationModal() {
+            document.getElementById('generationModal').classList.remove('active');
+        }
+
+        function switchView(view) {
+            currentView = view;
+
+            // Update buttons
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update views
+            document.getElementById('timelineView').classList.toggle('hidden', view !== 'timeline');
+            document.getElementById('standardsView').classList.toggle('hidden', view !== 'standards');
+            document.getElementById('planningView').classList.toggle('hidden', view !== 'planning');
+
+            // Load data for new view
+            loadData();
+        }
+
+        function viewLesson(code) {
+            // TODO: Open lesson detail modal
+            console.log('View lesson:', code);
+        }
+
+        function showMessage(message, type = 'info') {
+            // TODO: Implement toast notification
+            console.log(`[${type}]`, message);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Curriculum Sequencing page loaded');
+        });
+    </script>
+</body>
+</html>
