@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - AI Academy @ Centner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        /* Calendar Navigation */
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .calendar-nav h2 {
+            color: #495057;
+            font-size: 1.5em;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        /* Calendar Grid */
+        .calendar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: 700;
+            color: #6c757d;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        .calendar-day {
+            min-height: 180px;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .calendar-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .calendar-day.no-school {
+            background: #ffe5e5;
+            border-color: #ff6b6b;
+        }
+
+        .calendar-day.half-day {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .day-number {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .day-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .day-type.a-day {
+            background: #d4edff;
+            color: #0066cc;
+        }
+
+        .day-type.b-day {
+            background: #ffe5d4;
+            color: #cc6600;
+        }
+
+        /* Period Sections with Separators */
+        .period-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .period-section {
+            border-left: 3px solid #dee2e6;
+            padding-left: 8px;
+        }
+
+        .lesson-override {
+            border-left-color: #10b981 !important;
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+        }
+
+        .period-label {
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+
+        .lesson-item {
+            padding: 6px 8px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Subject Colors */
+        .subject-civics { background: #3B82F6; }
+        .subject-ela { background: #8B5CF6; }
+        .subject-math { background: #10B981; }
+        .subject-science { background: #F59E0B; }
+        .subject-history { background: #EF4444; }
+        .subject-government { background: #3B82F6; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 35px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #dc3545;
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .modal-header .day-info {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+
+        .period-detail {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .period-detail h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .lesson-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .lesson-card h4 {
+            margin-bottom: 10px;
+        }
+
+        .lesson-card p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .lesson-meta {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .meta-badge {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        /* Beautiful Markdown Content Styling */
+        .markdown-content {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.7;
+            color: #2d3748;
+        }
+
+        .markdown-content h1 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 1.5em 0 0.75em 0;
+            padding-bottom: 0.3em;
+            border-bottom: 3px solid #4f46e5;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 1.25em 0 0.6em 0;
+            padding-bottom: 0.25em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 1em 0 0.5em 0;
+        }
+
+        .markdown-content h4 {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #718096;
+            margin: 0.8em 0 0.4em 0;
+        }
+
+        .markdown-content p {
+            margin: 0.75em 0;
+            line-height: 1.75;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin: 0.75em 0;
+            padding-left: 2em;
+        }
+
+        .markdown-content li {
+            margin: 0.5em 0;
+            line-height: 1.6;
+        }
+
+        .markdown-content ul li {
+            list-style-type: disc;
+        }
+
+        .markdown-content ul ul li {
+            list-style-type: circle;
+        }
+
+        .markdown-content strong {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .markdown-content em {
+            font-style: italic;
+            color: #4a5568;
+        }
+
+        .markdown-content code {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        .markdown-content pre {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 1em;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            border: none;
+            color: #f7fafc;
+            padding: 0;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #4f46e5;
+            padding-left: 1em;
+            margin: 1em 0;
+            color: #4a5568;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 0.75em 1em;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .markdown-content hr {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 2em 0;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+
+        .markdown-content th {
+            background: #4f46e5;
+            color: white;
+            padding: 0.75em;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .markdown-content td {
+            padding: 0.75em;
+            border: 1px solid #e2e8f0;
+        }
+
+        .markdown-content tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        /* Progress Header */
+        .progress-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255,255,255,0.2);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        /* View Mode Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .view-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Completion Checkbox */
+        .completion-checkbox {
+            position: sticky;
+            top: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .completion-checkbox:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .completion-checkbox.completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+
+        .completion-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .completion-checkbox label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #495057;
+            flex: 1;
+        }
+
+        /* Day View */
+        .day-view {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .day-view-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .day-view-header h2 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .day-view-periods {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .day-view-period {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .day-view-period h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .day-view-lesson {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .day-view-lesson:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .day-view-lesson.completed {
+            opacity: 0.7;
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+        }
+
+        /* Week View */
+        .week-view {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .week-day {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 300px;
+        }
+
+        .week-day-header {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        /* List View */
+        .list-view {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .list-view-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .list-view-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .list-view-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 5px solid #667eea;
+        }
+
+        .list-view-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .list-view-item.completed {
+            opacity: 0.7;
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .list-item-title {
+            font-weight: 700;
+            color: #495057;
+            font-size: 1.1em;
+        }
+
+        .list-item-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .list-item-meta {
+            display: flex;
+            gap: 15px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .completion-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .completion-badge.complete {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .completion-badge.incomplete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>👨‍🎓 Student Dashboard</h1>
+        <div class="user-info">
+            <span id="studentName">Loading...</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Progress Header -->
+        <div class="progress-header">
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="completedCount">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total Lessons</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 0%;">
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label>View:</label>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="calendar">📅 Calendar</button>
+                    <button class="view-btn" data-view="day">📋 Today</button>
+                    <button class="view-btn" data-view="week">📊 Week</button>
+                    <button class="view-btn" data-view="list">📝 List</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="subjectFilter">Subject:</label>
+                <select id="subjectFilter">
+                    <option value="all">All Subjects</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="periodFilter">Period:</label>
+                <select id="periodFilter">
+                    <option value="all">All Periods</option>
+                    <option value="1">Period 1</option>
+                    <option value="2">Period 2</option>
+                    <option value="3">Period 3</option>
+                    <option value="4">Period 4</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Calendar Navigation -->
+        <div class="calendar-nav" id="calendarNav">
+            <button class="nav-btn" id="prevMonth">← Previous</button>
+            <h2 id="currentMonth"></h2>
+            <button class="nav-btn" id="nextMonth">Next →</button>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="calendar" id="calendarView">
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <!-- Day View -->
+        <div class="day-view" id="dayView" style="display: none;"></div>
+
+        <!-- Week View -->
+        <div class="week-view" id="weekView" style="display: none;"></div>
+
+        <!-- List View -->
+        <div class="list-view" id="listView" style="display: none;"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="dayModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="dist/schedule-data.js"></script>
+    <script src="curriculum-api.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://qypmfilbkvxwyznnenge.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cG1maWxia3Z4d3l6bm5lbmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNDY3NTIsImV4cCI6MjA3NTcyMjc1Mn0.3uC16cqBUjjFrAz103yws-E5W45HUh6rexbLBI3KCII';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Store lesson enhancements from database
+        let lessonEnhancements = {};
+
+        // Load all lesson enhancements from Supabase
+        async function loadLessonEnhancements() {
+            try {
+                const { data, error } = await supabase
+                    .from('lesson_enhancements')
+                    .select('*');
+
+                if (error) {
+                    console.error('Error loading lesson enhancements:', error);
+                    return;
+                }
+
+                // Convert array to object keyed by lesson_key
+                lessonEnhancements = {};
+                (data || []).forEach(enhancement => {
+                    lessonEnhancements[enhancement.lesson_key] = {
+                        notes: enhancement.notes,
+                        quiz: enhancement.quiz,
+                        activities: enhancement.activities,
+                        rubric: enhancement.rubric,
+                        videos: enhancement.videos,
+                        docs: enhancement.docs,
+                        links: enhancement.links,
+                        aiExpand: enhancement.ai_expand,
+                        aiSimplify: enhancement.ai_simplify,
+                        aiQuestions: enhancement.ai_questions,
+                        aiActivities: enhancement.ai_activities,
+                        aiAssessment: enhancement.ai_assessment,
+                        aiDifferentiate: enhancement.ai_differentiate
+                    };
+                });
+
+                console.log(`Loaded ${data.length} lesson enhancements from database`);
+            } catch (error) {
+                console.error('Failed to load lesson enhancements:', error);
+            }
+        }
+
+        // Load student data from localStorage
+        let currentStudent = null;
+        let studentGrade = 7;
+        let enrolledSubjects = {
+            1: { A: [], B: [] },
+            2: { A: [], B: [] },
+            3: { A: [], B: [] },
+            4: { A: [], B: [] }
+        };
+        let currentMonth = new Date('2025-09-01');
+        let periodFilter = 'all';
+        let subjectFilter = 'all';
+        let currentView = 'calendar';
+        let listFilter = 'all'; // 'all', 'completed', 'incomplete'
+
+        // Load lesson completions from localStorage
+        let lessonCompletions = JSON.parse(localStorage.getItem('lessonCompletions') || '{}');
+
+        // Save completions to localStorage
+        function saveCompletions() {
+            localStorage.setItem('lessonCompletions', JSON.stringify(lessonCompletions));
+            updateProgressStats();
+        }
+
+        // Legacy function - removed in favor of assignment tracking
+        // Students now complete individual assignments, not just toggle a lesson complete
+
+        // Check if lesson is completed (all assignments done)
+        function isLessonCompleted(lessonKey) {
+            const completion = lessonCompletions[lessonKey];
+            if (!completion || !completion.assignments) return false;
+
+            // Lesson is complete only if all assignments are checked
+            return Object.values(completion.assignments).every(done => done === true);
+        }
+
+        // Generate assignment checklist for a lesson
+        function getAssignmentChecklist(lessonKey, enhancement) {
+            const completion = lessonCompletions[lessonKey] || { assignments: {} };
+            let html = '';
+            let assignmentCount = 0;
+
+            // Assignment 1: Read lesson content
+            const readKey = 'read_content';
+            const isRead = completion.assignments?.[readKey] || false;
+            html += `
+                <div style="background: white; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleAssignment('${lessonKey}', '${readKey}')">
+                    <input type="checkbox" ${isRead ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${readKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label style="flex: 1; cursor: pointer; margin: 0;">📖 Read lesson content and materials</label>
+                </div>
+            `;
+            assignmentCount++;
+
+            // Assignment 2: Complete quiz (if exists)
+            if (enhancement.quiz && enhancement.quiz.questions && enhancement.quiz.questions.length > 0) {
+                const quizKey = 'complete_quiz';
+                const isQuizDone = completion.assignments?.[quizKey] || false;
+                html += `
+                    <div style="background: white; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleAssignment('${lessonKey}', '${quizKey}')">
+                        <input type="checkbox" ${isQuizDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${quizKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="flex: 1; cursor: pointer; margin: 0;">📝 Complete quiz (${enhancement.quiz.questions.length} questions)</label>
+                    </div>
+                `;
+                assignmentCount++;
+            }
+
+            // Assignment 3: Complete activities (if exists)
+            if (enhancement.activities && enhancement.activities.activities && enhancement.activities.activities.length > 0) {
+                const actKey = 'complete_activities';
+                const isActDone = completion.assignments?.[actKey] || false;
+                html += `
+                    <div style="background: white; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleAssignment('${lessonKey}', '${actKey}')">
+                        <input type="checkbox" ${isActDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${actKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="flex: 1; cursor: pointer; margin: 0;">🎯 Complete class activities (${enhancement.activities.activities.length} activities)</label>
+                    </div>
+                `;
+                assignmentCount++;
+            }
+
+            // Assignment 4: Review videos (if exists)
+            if (enhancement.videos && enhancement.videos.length > 0) {
+                const vidKey = 'watch_videos';
+                const isVidDone = completion.assignments?.[vidKey] || false;
+                html += `
+                    <div style="background: white; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleAssignment('${lessonKey}', '${vidKey}')">
+                        <input type="checkbox" ${isVidDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${vidKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="flex: 1; cursor: pointer; margin: 0;">🎥 Watch all videos (${enhancement.videos.length} videos)</label>
+                    </div>
+                `;
+                assignmentCount++;
+            }
+
+            // Assignment 5: Review documents (if exists)
+            if (enhancement.docs && enhancement.docs.length > 0) {
+                const docKey = 'review_docs';
+                const isDocDone = completion.assignments?.[docKey] || false;
+                html += `
+                    <div style="background: white; padding: 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleAssignment('${lessonKey}', '${docKey}')">
+                        <input type="checkbox" ${isDocDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${docKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="flex: 1; cursor: pointer; margin: 0;">📄 Review all documents (${enhancement.docs.length} documents)</label>
+                    </div>
+                `;
+                assignmentCount++;
+            }
+
+            // Show completion status
+            const completedCount = Object.values(completion.assignments || {}).filter(v => v === true).length;
+            const isFullyComplete = isLessonCompleted(lessonKey);
+
+            if (isFullyComplete) {
+                html += `
+                    <div style="background: #d1fae5; border: 2px solid #10b981; padding: 12px; border-radius: 6px; text-align: center; margin-top: 10px;">
+                        <span style="color: #047857; font-weight: 700; font-size: 1.1em;">✓ Lesson Complete!</span>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 12px; border-radius: 6px; text-align: center; margin-top: 10px;">
+                        <span style="color: #92400e; font-weight: 600;">Progress: ${completedCount}/${assignmentCount} assignments completed</span>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Toggle assignment completion
+        function toggleAssignment(lessonKey, assignmentKey) {
+            if (!lessonCompletions[lessonKey]) {
+                lessonCompletions[lessonKey] = {
+                    assignments: {},
+                    studentId: currentStudent.student_id
+                };
+            }
+
+            if (!lessonCompletions[lessonKey].assignments) {
+                lessonCompletions[lessonKey].assignments = {};
+            }
+
+            // Toggle the assignment
+            const currentValue = lessonCompletions[lessonKey].assignments[assignmentKey] || false;
+            lessonCompletions[lessonKey].assignments[assignmentKey] = !currentValue;
+
+            // Check if all assignments are now complete
+            if (isLessonCompleted(lessonKey)) {
+                lessonCompletions[lessonKey].completedAt = new Date().toISOString();
+            } else {
+                delete lessonCompletions[lessonKey].completedAt;
+            }
+
+            saveCompletions();
+
+            // Refresh the assignment checklist
+            const container = document.getElementById(`assignments_${lessonKey}`);
+            if (container) {
+                // Get enhancement data from Supabase-loaded data
+                const enhancement = lessonEnhancements[lessonKey] || {};
+                container.innerHTML = getAssignmentChecklist(lessonKey, enhancement);
+            }
+        }
+
+        // Get all lessons for student
+        function getAllLessons() {
+            const lessons = [];
+            const startDate = new Date('2025-09-01');
+            const endDate = new Date('2026-06-30');
+
+            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                const dayOfWeek = date.getDay();
+                if (dayOfWeek === 0 || dayOfWeek === 6) continue; // Skip weekends
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+
+                if (schoolCalendar.noSchoolDays.has(dateStr)) continue;
+
+                const dayType = getABDay(dateStr);
+                if (!dayType) continue;
+
+                const dayNum = getDayNumber(dateStr, dayType);
+                const dayKey = `${dayNum}.${dayType}`;
+
+                [1, 2, 3, 4].forEach(period => {
+                    const enrolledInPeriod = enrolledSubjects[period][dayType] || [];
+                    enrolledInPeriod.forEach(subjectKey => {
+                        // Apply subject filter
+                        if (subjectFilter !== 'all' && subjectKey !== subjectFilter) {
+                            return;
+                        }
+
+                        const lesson = window.curriculumData.getLesson(subjectKey, dayKey);
+                        if (lesson) {
+                            const lessonKey = `${dateStr}_${subjectKey}_${period}`;
+                            lessons.push({
+                                key: lessonKey,
+                                date: new Date(date),
+                                dateStr: dateStr,
+                                dayType: dayType,
+                                dayNum: dayNum,
+                                period: period,
+                                subjectKey: subjectKey,
+                                lesson: lesson,
+                                completed: isLessonCompleted(lessonKey)
+                            });
+                        }
+                    });
+                });
+            }
+
+            return lessons;
+        }
+
+        // Update progress statistics
+        function updateProgressStats() {
+            const allLessons = getAllLessons();
+            const completed = allLessons.filter(l => l.completed).length;
+            const total = allLessons.length;
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+        }
+
+        // Lesson schedule overrides (same as teacher dashboard)
+        let lessonOverrides = [];
+
+        async function loadLessonOverrides() {
+            try {
+                const { data, error } = await supabase
+                    .from('lesson_schedule_overrides')
+                    .select('*')
+                    .eq('is_active', true);
+
+                if (error) {
+                    console.error('Error loading lesson overrides:', error);
+                    return;
+                }
+
+                lessonOverrides = data || [];
+                console.log(`📚 Loaded ${lessonOverrides.length} lesson override(s) for student view`);
+            } catch (error) {
+                console.error('Failed to load lesson overrides:', error);
+            }
+        }
+
+        function getLessonsForDay(subjectKey, dayKey, period, grade, date) {
+            const curriculumMap = window.curriculumMap || window.curriculumData?.curriculumMap;
+            const subject = curriculumMap?.[subjectKey];
+            const originalLesson = subject?.lessons?.[dayKey];
+
+            const lessons = [];
+
+            // Add original lesson if not moved away
+            if (originalLesson) {
+                const movedAway = lessonOverrides.some(override =>
+                    override.subject_key === subjectKey &&
+                    override.lesson_code === originalLesson.code &&
+                    override.original_day_key === dayKey &&
+                    override.scheduled_date !== date
+                );
+
+                if (!movedAway) {
+                    lessons.push({...originalLesson, isOriginal: true});
+                }
+            }
+
+            // Add overrides scheduled for this day
+            const overridesForDay = lessonOverrides.filter(override =>
+                override.subject_key === subjectKey &&
+                override.scheduled_date === date &&
+                override.period_number === period &&
+                override.grade_level === grade.toString()
+            );
+
+            overridesForDay.forEach(override => {
+                const lessonData = findLessonByCode(subjectKey, override.lesson_code);
+                if (lessonData) {
+                    lessons.push({...lessonData, isOverride: true, overrideId: override.id});
+                }
+            });
+
+            return lessons;
+        }
+
+        function findLessonByCode(subjectKey, lessonCode) {
+            const curriculumMap = window.curriculumMap || window.curriculumData?.curriculumMap;
+            const subject = curriculumMap?.[subjectKey];
+            if (!subject?.lessons) return null;
+
+            for (const [dayKey, lesson] of Object.entries(subject.lessons)) {
+                if (lesson.code === lessonCode) return lesson;
+            }
+            return null;
+        }
+
+        // Check if student is logged in
+        function checkAuth() {
+            const studentData = localStorage.getItem('currentStudent');
+            if (!studentData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentStudent = JSON.parse(studentData);
+            studentGrade = currentStudent.grade_level;
+
+            // Parse enrolled subjects by period and day type (A/B)
+            enrolledSubjects[1].A = currentStudent.period_1_a_day || [];
+            enrolledSubjects[1].B = currentStudent.period_1_b_day || [];
+            enrolledSubjects[2].A = currentStudent.period_2_a_day || [];
+            enrolledSubjects[2].B = currentStudent.period_2_b_day || [];
+            enrolledSubjects[3].A = currentStudent.period_3_a_day || [];
+            enrolledSubjects[3].B = currentStudent.period_3_b_day || [];
+            enrolledSubjects[4].A = currentStudent.period_4_a_day || [];
+            enrolledSubjects[4].B = currentStudent.period_4_b_day || [];
+
+            // Update header with student name
+            document.getElementById('studentName').textContent = `${currentStudent.full_name} - ${studentGrade}th Grade`;
+        }
+
+        // Check auth on page load
+        checkAuth();
+
+        // Populate subject filter dropdown with enrolled subjects
+        function populateSubjectFilter() {
+            const uniqueSubjects = new Set();
+
+            // Extract all unique subject keys from enrolledSubjects
+            Object.values(enrolledSubjects).forEach(periodData => {
+                Object.values(periodData).forEach(subjects => {
+                    subjects.forEach(subjectKey => uniqueSubjects.add(subjectKey));
+                });
+            });
+
+            // Debug logging to help with Giacomo issue
+            console.log('Enrolled Subjects:', enrolledSubjects);
+            console.log('Unique Subjects Found:', Array.from(uniqueSubjects));
+
+            const select = document.getElementById('subjectFilter');
+            // Clear existing options except "All Subjects"
+            select.innerHTML = '<option value="all">All Subjects</option>';
+
+            // Add each unique subject
+            Array.from(uniqueSubjects).sort().forEach(subjectKey => {
+                const subjectInfo = getSubjectInfo(subjectKey);
+                const option = document.createElement('option');
+                option.value = subjectKey;
+                option.textContent = subjectInfo.subject;
+                select.appendChild(option);
+            });
+        }
+
+        // Helper function to get subject display information
+        function getSubjectInfo(subjectKey) {
+            const subjectMap = {
+                '7th_civics': { subject: 'Civics', class: 'subject-civics' },
+                '7th_ela': { subject: 'English Language Arts', class: 'subject-ela' },
+                '7th_math': { subject: 'Pre-Algebra', class: 'subject-math' },
+                '7th_science': { subject: 'Life Science', class: 'subject-science' },
+                '9th_ela': { subject: 'English Language Arts', class: 'subject-ela' },
+                '9th_math': { subject: 'Geometry', class: 'subject-math' },
+                '9th_world_history': { subject: 'World History', class: 'subject-history' },
+                '11th_ela': { subject: 'American Literature', class: 'subject-ela' },
+                '11th_math': { subject: 'Pre-Calculus', class: 'subject-math' },
+                '11th_us_gvmnt': { subject: 'U.S. Government', class: 'subject-government' }
+            };
+            return subjectMap[subjectKey] || { subject: subjectKey, class: 'subject-default' };
+        }
+
+        // Period structure with grade-based subjects
+        const periodStructure = {
+            1: {
+                7: { subject: 'Civics', key: '7th_civics', color: '#3B82F6', class: 'subject-civics' },
+                9: { subject: 'English Language Arts', key: '9th_ela', color: '#8B5CF6', class: 'subject-ela' },
+                11: { subject: 'Pre-Calculus', key: '11th_math', color: '#10B981', class: 'subject-math' }
+            },
+            2: {
+                7: { subject: 'English Language Arts', key: '7th_ela', color: '#8B5CF6', class: 'subject-ela' },
+                9: { subject: 'World History', key: '9th_world_history', color: '#EF4444', class: 'subject-history' },
+                11: { subject: 'U.S. Government', key: '11th_us_gvmnt', color: '#3B82F6', class: 'subject-government' }
+            },
+            3: {
+                7: { subject: 'Pre-Algebra', key: '7th_math', color: '#10B981', class: 'subject-math' },
+                9: { subject: 'Geometry', key: '9th_math', color: '#10B981', class: 'subject-math' }
+            },
+            4: {
+                7: { subject: 'Life Science', key: '7th_science', color: '#F59E0B', class: 'subject-science' }
+            }
+        };
+
+        // Initialize: Load enhancements from database, then render UI
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadLessonEnhancements();
+            await loadLessonOverrides(); // Load teacher schedule modifications
+            populateSubjectFilter();
+            updateProgressStats();
+            renderView();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Subject filter
+            document.getElementById('subjectFilter').addEventListener('change', (e) => {
+                subjectFilter = e.target.value;
+                renderView();
+            });
+
+            // Period filter
+            document.getElementById('periodFilter').addEventListener('change', (e) => {
+                periodFilter = e.target.value;
+                renderView();
+            });
+
+            // Month navigation
+            document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+            document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+
+            // View toggle
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    renderView();
+                });
+            });
+        }
+
+        // Render current view
+        function renderView() {
+            // Hide all views
+            document.getElementById('calendarView').style.display = 'none';
+            document.getElementById('dayView').style.display = 'none';
+            document.getElementById('weekView').style.display = 'none';
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('calendarNav').style.display = 'none';
+
+            // Show appropriate view
+            if (currentView === 'calendar') {
+                document.getElementById('calendarView').style.display = 'block';
+                document.getElementById('calendarNav').style.display = 'flex';
+                renderCalendar();
+            } else if (currentView === 'day') {
+                document.getElementById('dayView').style.display = 'block';
+                renderDayView();
+            } else if (currentView === 'week') {
+                document.getElementById('weekView').style.display = 'block';
+                renderWeekView();
+            } else if (currentView === 'list') {
+                document.getElementById('listView').style.display = 'block';
+                renderListView();
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+
+            document.getElementById('currentMonth').textContent =
+                currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Header row
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            days.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Calendar days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+
+            const startPadding = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+
+            // Previous month padding
+            for (let i = startPadding - 1; i >= 0; i--) {
+                const cell = createDayCell(new Date(year, month - 1, prevLastDay.getDate() - i), true);
+                grid.appendChild(cell);
+            }
+
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = createDayCell(new Date(year, month, day), false);
+                grid.appendChild(cell);
+            }
+
+            // Next month padding
+            const totalCells = grid.children.length - 7;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let day = 1; day <= remainingCells; day++) {
+                const cell = createDayCell(new Date(year, month + 1, day), true);
+                grid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(date, isOtherMonth) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day';
+            if (isOtherMonth) cell.classList.add('other-month');
+
+            // Check if weekend BEFORE any other processing
+            const dayOfWeek = date.getDay();
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+            // Create date string without timezone issues
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+
+            const dayType = isWeekend ? null : getABDay(dateStr);
+            const isNoSchool = schoolCalendar.noSchoolDays.has(dateStr);
+            const isHalfDay = schoolCalendar.noonDismissals.has(dateStr);
+
+            if (isNoSchool) cell.classList.add('no-school');
+            if (isHalfDay) cell.classList.add('half-day');
+
+            let html = `<div class="day-number">${date.getDate()}</div>`;
+
+            if (dayType && !isNoSchool && !isWeekend) {
+                const dayNum = getDayNumber(dateStr, dayType);
+                html += `<div class="day-type ${dayType.toLowerCase()}-day">Day ${dayNum} - ${dayType}</div>`;
+                html += `<div class="period-sections">`;
+
+                // Show only lessons student is enrolled in for this specific day type
+                const periods = periodFilter === 'all' ? [1, 2, 3, 4] : [parseInt(periodFilter)];
+                periods.forEach(period => {
+                    const enrolledInPeriod = enrolledSubjects[period][dayType] || [];
+
+                    if (enrolledInPeriod.length > 0) {
+                        enrolledInPeriod.forEach(subjectKey => {
+                            // Apply subject filter
+                            if (subjectFilter !== 'all' && subjectKey !== subjectFilter) {
+                                return;
+                            }
+
+                            const dayKey = `${dayNum}.${dayType}`;
+                            const lessons = getLessonsForDay(subjectKey, dayKey, period, studentGrade, dateStr);
+
+                            if (lessons.length > 0) {
+                                // Get subject display info
+                                const subjectInfo = getSubjectInfo(subjectKey);
+
+                                lessons.forEach(lesson => {
+                                    const isAdded = lesson.isOverride;
+                                    const badge = isAdded ? ' <span style="background: #10b981; color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6em;">ADDED</span>' : '';
+
+                                    html += `
+                                        <div class="period-section ${isAdded ? 'lesson-override' : ''}">
+                                            <div class="period-label">Period ${period}${badge}</div>
+                                            <div class="lesson-item ${subjectInfo.class}" title="${lesson.title}">
+                                                ${subjectInfo.subject}
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                            }
+                        });
+                    }
+                });
+
+                html += `</div>`;
+            } else if (isNoSchool) {
+                html += `<div style="color: #dc3545; font-weight: 600; margin-top: 10px;">No School</div>`;
+            } else if (isHalfDay) {
+                html += `<div style="color: #ffc107; font-weight: 600; margin-top: 10px;">Half Day</div>`;
+            }
+
+            cell.innerHTML = html;
+
+            if (dayType && !isNoSchool) {
+                cell.addEventListener('click', () => showDayDetails(date, dayType, getDayNumber(dateStr, dayType)));
+            }
+
+            return cell;
+        }
+
+        function showDayDetails(date, dayType, dayNum) {
+            const modal = document.getElementById('dayModal');
+            const modalBody = document.getElementById('modalBody');
+
+            const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const dayKey = `${dayNum}.${dayType}`;
+
+            // Create date key without timezone issues
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+
+            // Teacher enhancements are already loaded from Supabase in the global lessonEnhancements variable
+
+            let html = `
+                <div class="modal-header">
+                    <h2>${dateStr}</h2>
+                    <div class="day-info">Day ${dayNum} - ${dayType} Day</div>
+                </div>
+            `;
+
+            // Track if we need completion checkboxes (collect all lesson keys first)
+            const lessonKeysInModal = [];
+
+            // IMPORTANT: Show ALL lessons for this day regardless of filters
+            // Filters only apply to calendar/week/list views, NOT the day detail modal
+            const periods = [1, 2, 3, 4]; // Always show all periods in modal
+            periods.forEach(period => {
+                const enrolledInPeriod = enrolledSubjects[period][dayType] || [];
+
+                enrolledInPeriod.forEach(subjectKey => {
+                    // NO FILTERING in day modal - students need to see all their classes
+                    const lesson = window.curriculumData.getLesson(subjectKey, dayKey);
+
+                    if (lesson) {
+                        const subjectInfo = getSubjectInfo(subjectKey);
+                        // Get the enhancement key (same format as teacher/admin dashboards)
+                        const enhancementKey = `${dateKey}_${subjectKey}_${period}`;
+                        const enhancement = lessonEnhancements[enhancementKey] || {};
+
+                        // Track lesson completion
+                        const lessonKey = enhancementKey;
+                        const isCompleted = isLessonCompleted(lessonKey);
+                        lessonKeysInModal.push(lessonKey);
+
+                        html += `
+                            <div class="period-detail">
+                                <h3>Period ${period}: ${subjectInfo.subject}</h3>
+
+                                <div class="lesson-card">
+                                    <h4 style="color: #667eea">${lesson.title}</h4>
+
+                                    <!-- Assignment Checklist - Students must complete all to finish lesson -->
+                                    <div style="background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 8px; padding: 15px; margin: 15px 0;">
+                                        <h4 style="color: #0369a1; margin-bottom: 10px;">📋 Assignments to Complete</h4>
+                                        <div id="assignments_${lessonKey}" style="display: flex; flex-direction: column; gap: 8px;">
+                                            ${getAssignmentChecklist(lessonKey, enhancement)}
+                                        </div>
+                                    </div>
+                                    ${lesson.objectives ? `<p><strong>Objectives:</strong> ${lesson.objectives}</p>` : ''}
+                                    ${lesson.materials ? `<p><strong>Materials:</strong> ${lesson.materials}</p>` : ''}
+                                    ${lesson.activities ? `<p><strong>Activities:</strong> ${lesson.activities}</p>` : ''}
+
+                                    ${enhancement.notes ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 2px solid #0ea5e9;">
+                                            <h4 style="color: #0369a1; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>✨</span> Enhanced Content from Your Teacher
+                                            </h4>
+                                            <div id="notes_${enhancementKey}" class="markdown-content"></div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.quiz ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #10b981; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #047857; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>📝</span> Quiz for This Lesson
+                                            </h4>
+                                            <div style="background: #f0fdf4; padding: 15px; border-radius: 8px;">
+                                                ${formatQuizQuestions(enhancement.quiz)}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.activities ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #8b5cf6; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #6d28d9; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>🎯</span> Class Activities
+                                            </h4>
+                                            <div style="background: #faf5ff; padding: 15px; border-radius: 8px;">
+                                                ${formatInClassActivities(enhancement.activities)}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.rubric ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #f59e0b; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #d97706; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>📊</span> Grading Rubric
+                                            </h4>
+                                            <div style="background: #fffbeb; padding: 15px; border-radius: 8px;">
+                                                ${formatGradingRubric(enhancement.rubric)}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${(enhancement.videos && enhancement.videos.length > 0) ? `
+                                        <div style="margin-top: 15px;">
+                                            <h4 style="color: #667eea; margin-bottom: 10px;">🎥 Videos</h4>
+                                            ${enhancement.videos.map(video => `
+                                                <div style="margin-bottom: 8px;">
+                                                    <a href="${video}" target="_blank" style="color: #4f46e5; text-decoration: underline;">${video}</a>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+
+                                    ${(enhancement.docs && enhancement.docs.length > 0) ? `
+                                        <div style="margin-top: 15px;">
+                                            <h4 style="color: #667eea; margin-bottom: 10px;">📄 Documents</h4>
+                                            ${enhancement.docs.map(doc => `
+                                                <div style="margin-bottom: 8px;">
+                                                    <a href="${doc}" target="_blank" style="color: #4f46e5; text-decoration: underline;">${doc}</a>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+
+                                    ${(enhancement.links && enhancement.links.length > 0) ? `
+                                        <div style="margin-top: 15px;">
+                                            <h4 style="color: #667eea; margin-bottom: 10px;">🔗 Additional Resources</h4>
+                                            ${enhancement.links.map(link => `
+                                                <div style="margin-bottom: 8px;">
+                                                    <a href="${link}" target="_blank" style="color: #4f46e5; text-decoration: underline;">${link}</a>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiExpand ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #0ea5e9; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #0369a1; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>📝</span> Expanded Content
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiExpand) : enhancement.aiExpand}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiSimplify ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #3b82f6; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #1e40af; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>✨</span> Simplified Text
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiSimplify) : enhancement.aiSimplify}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiQuestions ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #8b5cf6; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #6d28d9; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>❓</span> Discussion Questions
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiQuestions) : enhancement.aiQuestions}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiActivities ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #10b981; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #047857; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>🎯</span> Suggested Activities
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiActivities) : enhancement.aiActivities}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiAssessment ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #f59e0b; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #d97706; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>📊</span> Quiz Questions
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiAssessment) : enhancement.aiAssessment}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${enhancement.aiDifferentiate ? `
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 12px; border: 2px solid #ec4899; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <h4 style="color: #be185d; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">
+                                                <span>🎓</span> Differentiation Tips
+                                            </h4>
+                                            <div class="markdown-content">${typeof marked !== 'undefined' ? marked.parse(enhancement.aiDifferentiate) : enhancement.aiDifferentiate}</div>
+                                        </div>
+                                    ` : ''}
+
+                                    <div class="lesson-meta">
+                                        <div class="meta-badge" style="background: #667eea; color: white;">
+                                            ${lesson.code || 'Standard'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        // After HTML is inserted, render markdown for notes
+                        setTimeout(() => {
+                            if (enhancement.notes) {
+                                const notesDiv = document.getElementById(`notes_${enhancementKey}`);
+                                if (notesDiv && typeof marked !== 'undefined') {
+                                    try {
+                                        notesDiv.innerHTML = marked.parse(enhancement.notes);
+                                    } catch (error) {
+                                        console.error('Markdown parsing error:', error);
+                                        notesDiv.textContent = enhancement.notes;
+                                    }
+                                }
+                            }
+                        }, 50);
+                    }
+                });
+            });
+
+            modalBody.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('dayModal').classList.remove('active');
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Render Day View (today's schedule)
+        function renderDayView() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+
+            const dayOfWeek = today.getDay();
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            const isNoSchool = schoolCalendar.noSchoolDays.has(dateStr);
+            const dayType = isWeekend ? null : getABDay(dateStr);
+
+            let html = `
+                <div class="day-view-header">
+                    <h2>${today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
+                    ${dayType ? `<div class="day-info">Day ${getDayNumber(dateStr, dayType)} - ${dayType} Day</div>` : ''}
+                </div>
+            `;
+
+            if (isWeekend || isNoSchool || !dayType) {
+                html += `<div style="text-align: center; padding: 60px; color: #6c757d;">
+                    <h3>${isWeekend ? '🎉 Weekend!' : '🏖️ No School Today'}</h3>
+                    <p>Enjoy your day off!</p>
+                </div>`;
+            } else {
+                const dayNum = getDayNumber(dateStr, dayType);
+                const dayKey = `${dayNum}.${dayType}`;
+
+                html += `<div class="day-view-periods">`;
+
+                const periods = periodFilter === 'all' ? [1, 2, 3, 4] : [parseInt(periodFilter)];
+                periods.forEach(period => {
+                    const enrolledInPeriod = enrolledSubjects[period][dayType] || [];
+
+                    if (enrolledInPeriod.length > 0) {
+                        // Filter subjects for this period
+                        const filteredSubjects = enrolledInPeriod.filter(subjectKey =>
+                            subjectFilter === 'all' || subjectKey === subjectFilter
+                        );
+
+                        if (filteredSubjects.length > 0) {
+                            html += `<div class="day-view-period">
+                                <h3>Period ${period}</h3>`;
+
+                            filteredSubjects.forEach(subjectKey => {
+                                const lesson = window.curriculumData.getLesson(subjectKey, dayKey);
+                                if (lesson) {
+                                const subjectInfo = getSubjectInfo(subjectKey);
+                                const lessonKey = `${dateStr}_${subjectKey}_${period}`;
+                                const completed = isLessonCompleted(lessonKey);
+
+                                html += `
+                                    <div class="day-view-lesson ${completed ? 'completed' : ''}" onclick="showLessonDetails('${dateStr}', '${dayType}', ${dayNum}, ${period}, '${subjectKey}')">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <h4 style="margin: 0 0 5px 0; color: #667eea;">${subjectInfo.subject}</h4>
+                                                <p style="margin: 0; color: #6c757d;">${lesson.title}</p>
+                                            </div>
+                                            <span class="completion-badge ${completed ? 'complete' : 'incomplete'}">
+                                                ${completed ? '✓ Complete' : 'Not Started'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+                                }
+                            });
+
+                            html += `</div>`;
+                        }
+                    }
+                });
+
+                html += `</div>`;
+            }
+
+            document.getElementById('dayView').innerHTML = html;
+        }
+
+        // Render Week View (current week's schedule)
+        function renderWeekView() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - dayOfWeek + 1); // Monday
+
+            let html = `
+                <div class="day-view-header">
+                    <h2>Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</h2>
+                </div>
+                <div class="week-grid">
+            `;
+
+            // Render 5 weekdays (Monday-Friday)
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const dayNum = date.getDate();
+                const isNoSchool = schoolCalendar.noSchoolDays.has(dateStr);
+                const dayType = isNoSchool ? null : getABDay(dateStr);
+
+                html += `<div class="week-day">
+                    <div class="week-day-header">
+                        ${dayName} ${dayNum}
+                        ${dayType ? `<br><span style="font-size: 0.8em; color: #667eea;">Day ${getDayNumber(dateStr, dayType)} - ${dayType}</span>` : ''}
+                    </div>`;
+
+                if (isNoSchool || !dayType) {
+                    html += `<div style="text-align: center; padding: 20px; color: #6c757d; font-size: 0.9em;">No School</div>`;
+                } else {
+                    const dayKey = `${getDayNumber(dateStr, dayType)}.${dayType}`;
+                    const periods = periodFilter === 'all' ? [1, 2, 3, 4] : [parseInt(periodFilter)];
+
+                    periods.forEach(period => {
+                        const enrolledInPeriod = enrolledSubjects[period][dayType] || [];
+                        enrolledInPeriod.forEach(subjectKey => {
+                            // Apply subject filter
+                            if (subjectFilter !== 'all' && subjectKey !== subjectFilter) {
+                                return;
+                            }
+
+                            const lesson = window.curriculumData.getLesson(subjectKey, dayKey);
+                            if (lesson) {
+                                const subjectInfo = getSubjectInfo(subjectKey);
+                                const lessonKey = `${dateStr}_${subjectKey}_${period}`;
+                                const completed = isLessonCompleted(lessonKey);
+
+                                html += `
+                                    <div class="day-view-lesson ${completed ? 'completed' : ''}" onclick="showLessonDetails('${dateStr}', '${dayType}', ${getDayNumber(dateStr, dayType)}, ${period}, '${subjectKey}')" style="margin-bottom: 8px; padding: 10px; font-size: 0.85em;">
+                                        <div style="font-weight: 600; margin-bottom: 3px;">P${period}: ${subjectInfo.subject}</div>
+                                        <div style="font-size: 0.9em; color: #6c757d;">${lesson.title.length > 30 ? lesson.title.substring(0, 30) + '...' : lesson.title}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    });
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+            document.getElementById('weekView').innerHTML = html;
+        }
+
+        // Render List View (chronological list of all lessons)
+        function renderListView() {
+            const allLessons = getAllLessons();
+
+            let html = `
+                <div class="day-view-header">
+                    <h2>All Lessons</h2>
+                </div>
+                <div class="list-view-filters">
+                    <button class="filter-btn ${listFilter === 'all' ? 'active' : ''}" onclick="setListFilter('all')">All</button>
+                    <button class="filter-btn ${listFilter === 'completed' ? 'active' : ''}" onclick="setListFilter('completed')">Completed</button>
+                    <button class="filter-btn ${listFilter === 'incomplete' ? 'active' : ''}" onclick="setListFilter('incomplete')">Not Started</button>
+                </div>
+                <div class="list-view-items">
+            `;
+
+            const filteredLessons = allLessons.filter(l => {
+                if (listFilter === 'completed') return l.completed;
+                if (listFilter === 'incomplete') return !l.completed;
+                return true;
+            });
+
+            // Apply period filter
+            const periodFilteredLessons = periodFilter === 'all'
+                ? filteredLessons
+                : filteredLessons.filter(l => l.period === parseInt(periodFilter));
+
+            if (periodFilteredLessons.length === 0) {
+                html += `<div style="text-align: center; padding: 60px; color: #6c757d;">
+                    <h3>No lessons found</h3>
+                    <p>Try changing your filters</p>
+                </div>`;
+            } else {
+                periodFilteredLessons.forEach(l => {
+                    const subjectInfo = getSubjectInfo(l.subjectKey);
+                    html += `
+                        <div class="list-view-item ${l.completed ? 'completed' : ''}" onclick="showLessonDetails('${l.dateStr}', '${l.dayType}', ${l.dayNum}, ${l.period}, '${l.subjectKey}')">
+                            <div class="list-item-header">
+                                <div class="list-item-title">${l.lesson.title}</div>
+                                <span class="completion-badge ${l.completed ? 'complete' : 'incomplete'}">
+                                    ${l.completed ? '✓ Complete' : 'Not Started'}
+                                </span>
+                            </div>
+                            <div class="list-item-meta">
+                                <span class="list-item-date">${l.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                <span>•</span>
+                                <span>Period ${l.period}: ${subjectInfo.subject}</span>
+                                <span>•</span>
+                                <span>Day ${l.dayNum} - ${l.dayType}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+            document.getElementById('listView').innerHTML = html;
+        }
+
+        function setListFilter(filter) {
+            listFilter = filter;
+            renderListView();
+        }
+
+        // Show lesson details in modal (wrapper function for different views)
+        function showLessonDetails(dateStr, dayType, dayNum, period, subjectKey) {
+            const date = new Date(dateStr);
+            showDayDetails(date, dayType, dayNum);
+        }
+
+        function logout() {
+            localStorage.removeItem('currentStudent');
+            window.location.href = 'index.html';
+        }
+
+        // Formatting functions for assessments (copied from teacher dashboard)
+        function formatQuizQuestions(data) {
+            if (data.rawContent) {
+                return `<div style="background: #fef2f2; padding: 15px; border-radius: 8px; border: 2px solid #fca5a5;">
+                    <p style="color: #991b1b; font-weight: 600; margin-bottom: 10px;">⚠️ Unable to parse structured data</p>
+                    <pre style="background: white; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.85em;">${data.rawContent}</pre>
+                </div>`;
+            }
+
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #047857; margin-bottom: 10px;">${data.quizTitle || 'Quiz'}</h3>
+                    <div style="display: flex; gap: 20px; margin-bottom: 15px; font-size: 0.9em; color: #065f46;">
+                        <span><strong>Total Points:</strong> ${data.totalPoints || 'N/A'}</span>
+                        <span><strong>Time:</strong> ${data.estimatedTime || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+
+            if (data.questions && data.questions.length > 0) {
+                data.questions.forEach((q, index) => {
+                    html += `
+                        <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #10b981;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <h4 style="color: #047857; margin: 0;">Question ${index + 1} (${q.type})</h4>
+                                <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">${q.points} pts</span>
+                            </div>
+                            <p style="color: #1f2937; margin-bottom: 10px; line-height: 1.6;"><strong>${q.question}</strong></p>
+                    `;
+
+                    if (q.type === 'multiple-choice') {
+                        html += `<div style="margin-left: 15px; margin-bottom: 10px;">`;
+                        q.options.forEach(option => {
+                            const isCorrect = option.startsWith(q.correctAnswer);
+                            html += `<div style="padding: 6px; ${isCorrect ? 'background: #d1fae5; border-radius: 4px; font-weight: 600;' : ''}">${option}</div>`;
+                        });
+                        html += `</div>`;
+                        if (q.explanation) {
+                            html += `<div style="background: #e0f2fe; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9em;">
+                                <strong style="color: #0369a1;">Explanation:</strong> ${q.explanation}
+                            </div>`;
+                        }
+                    } else if (q.type === 'short-answer') {
+                        if (q.sampleAnswer) {
+                            html += `<div style="margin-top: 10px;"><strong style="color: #059669;">Sample Answer:</strong> ${q.sampleAnswer}</div>`;
+                        }
+                        if (q.keyPoints) {
+                            html += `<div style="margin-top: 10px;"><strong>Key Points to Look For:</strong><ul style="margin: 5px 0 0 20px;">`;
+                            q.keyPoints.forEach(point => {
+                                html += `<li style="color: #374151;">${point}</li>`;
+                            });
+                            html += `</ul></div>`;
+                        }
+                    } else if (q.type === 'essay') {
+                        if (q.promptGuidance) {
+                            html += `<div style="margin-top: 10px;"><strong>Guidance:</strong> ${q.promptGuidance}</div>`;
+                        }
+                        if (q.requiredLength) {
+                            html += `<div style="margin-top: 5px;"><strong>Required Length:</strong> ${q.requiredLength}</div>`;
+                        }
+                    } else if (q.type === 'drawing-diagram') {
+                        if (q.diagramType) {
+                            html += `<div style="margin-top: 10px;"><strong>Type:</strong> ${q.diagramType}</div>`;
+                        }
+                        if (q.requiredElements) {
+                            html += `<div style="margin-top: 10px;"><strong>Required Elements:</strong><ul style="margin: 5px 0 0 20px;">`;
+                            q.requiredElements.forEach(el => {
+                                html += `<li style="color: #374151;">${el}</li>`;
+                            });
+                            html += `</ul></div>`;
+                        }
+                    } else if (q.type === 'external-activity') {
+                        if (q.activityType) {
+                            html += `<div style="margin-top: 10px;"><strong>Activity Type:</strong> ${q.activityType}</div>`;
+                        }
+                        if (q.instructions) {
+                            html += `<div style="margin-top: 10px;"><strong>Instructions:</strong> ${q.instructions}</div>`;
+                        }
+                        if (q.submissionFormat) {
+                            html += `<div style="margin-top: 10px;"><strong>Submission Format:</strong> ${q.submissionFormat}</div>`;
+                        }
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            return html;
+        }
+
+        function formatGradingRubric(data) {
+            if (data.rawContent) {
+                return `<div style="background: #fef2f2; padding: 15px; border-radius: 8px; border: 2px solid #fca5a5;">
+                    <p style="color: #991b1b; font-weight: 600; margin-bottom: 10px;">⚠️ Unable to parse structured data</p>
+                    <pre style="background: white; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.85em;">${data.rawContent}</pre>
+                </div>`;
+            }
+
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #c2410c; margin-bottom: 10px;">${data.rubricTitle || 'Grading Rubric'}</h3>
+                    <div style="display: flex; gap: 20px; margin-bottom: 15px; font-size: 0.9em; color: #9a3412;">
+                        <span><strong>Assessment Type:</strong> ${data.assessmentType || 'N/A'}</span>
+                        <span><strong>Total Points:</strong> ${data.totalPoints || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+
+            if (data.criteria && data.criteria.length > 0) {
+                data.criteria.forEach((criterion, index) => {
+                    html += `
+                        <div style="background: #fffbeb; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4 style="color: #c2410c; margin: 0;">${criterion.category}</h4>
+                                <span style="background: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">${criterion.weight}</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    `;
+
+                    if (criterion.levels) {
+                        criterion.levels.forEach(level => {
+                            const levelColors = {
+                                'Exemplary': '#10b981',
+                                'Proficient': '#3b82f6',
+                                'Developing': '#f59e0b',
+                                'Beginning': '#ef4444'
+                            };
+                            const color = levelColors[level.level] || '#6b7280';
+                            html += `
+                                <div style="background: white; padding: 12px; border-radius: 6px; border: 2px solid ${color};">
+                                    <div style="font-weight: 600; color: ${color}; margin-bottom: 5px;">${level.level}</div>
+                                    <div style="font-size: 0.85em; color: #6b7280; margin-bottom: 8px;">${level.points}</div>
+                                    <div style="font-size: 0.9em; color: #374151; line-height: 1.4;">${level.description}</div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    html += `</div></div>`;
+                });
+            }
+
+            if (data.gradingGuidelines && data.gradingGuidelines.length > 0) {
+                html += `
+                    <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <h4 style="color: #0369a1; margin-bottom: 10px;">Grading Guidelines</h4>
+                        <ul style="margin: 0 0 0 20px; color: #374151;">
+                `;
+                data.gradingGuidelines.forEach(guideline => {
+                    html += `<li style="margin-bottom: 5px;">${guideline}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+
+            if (data.feedbackPrompts) {
+                html += `<div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <h4 style="color: #059669; margin-bottom: 10px;">Feedback Prompts</h4>
+                `;
+                if (data.feedbackPrompts.strengths) {
+                    html += `<div style="margin-bottom: 10px;"><strong>Strengths:</strong><ul style="margin: 5px 0 0 20px; color: #374151;">`;
+                    data.feedbackPrompts.strengths.forEach(s => html += `<li>${s}</li>`);
+                    html += `</ul></div>`;
+                }
+                if (data.feedbackPrompts.improvements) {
+                    html += `<div style="margin-bottom: 10px;"><strong>Areas for Improvement:</strong><ul style="margin: 5px 0 0 20px; color: #374151;">`;
+                    data.feedbackPrompts.improvements.forEach(i => html += `<li>${i}</li>`);
+                    html += `</ul></div>`;
+                }
+                if (data.feedbackPrompts.nextSteps) {
+                    html += `<div><strong>Next Steps:</strong><ul style="margin: 5px 0 0 20px; color: #374151;">`;
+                    data.feedbackPrompts.nextSteps.forEach(n => html += `<li>${n}</li>`);
+                    html += `</ul></div>`;
+                }
+                html += `</div>`;
+            }
+
+            return html;
+        }
+
+        function formatInClassActivities(data) {
+            if (data.rawContent) {
+                return `<div style="background: #fef2f2; padding: 15px; border-radius: 8px; border: 2px solid #fca5a5;">
+                    <p style="color: #991b1b; font-weight: 600; margin-bottom: 10px;">⚠️ Unable to parse structured data</p>
+                    <pre style="background: white; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.85em;">${data.rawContent}</pre>
+                </div>`;
+            }
+
+            let html = `<div style="margin-bottom: 20px;">
+                <h3 style="color: #7c3aed; margin-bottom: 5px;">${data.lessonTitle || 'In-Class Activities'}</h3>
+            </div>`;
+
+            // Warm-up
+            if (data.warmUp) {
+                html += `
+                    <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #1e40af; margin-bottom: 8px;">🔥 Warm-Up (${data.warmUp.duration})</h4>
+                        <div style="font-weight: 600; color: #1f2937; margin-bottom: 5px;">${data.warmUp.title}</div>
+                        <div style="color: #374151;">${data.warmUp.activity}</div>
+                    </div>
+                `;
+            }
+
+            // Main Activities
+            if (data.activities && data.activities.length > 0) {
+                data.activities.forEach((activity, index) => {
+                    html += `
+                        <div style="background: #faf5ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #8b5cf6;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <h4 style="color: #6d28d9; margin: 0;">Activity ${index + 1}: ${activity.title}</h4>
+                                <span style="background: #8b5cf6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">${activity.duration}</span>
+                            </div>
+                            <div style="margin-bottom: 8px;"><strong>Type:</strong> <span style="text-transform: capitalize;">${activity.type}</span></div>
+                            <div style="margin-bottom: 8px;"><strong>Objective:</strong> ${activity.objective}</div>
+                            ${activity.materials && activity.materials.length > 0 ? `<div style="margin-bottom: 8px;"><strong>Materials:</strong> ${activity.materials.join(', ')}</div>` : ''}
+                            ${activity.setup ? `<div style="margin-bottom: 8px;"><strong>Setup:</strong> ${activity.setup}</div>` : ''}
+                            ${activity.procedure && activity.procedure.length > 0 ? `
+                                <div style="margin: 10px 0;">
+                                    <strong>Procedure:</strong>
+                                    <ol style="margin: 5px 0 0 20px;">
+                                        ${activity.procedure.map(step => `<li style="margin-bottom: 5px; color: #374151;">${step}</li>`).join('')}
+                                    </ol>
+                                </div>
+                            ` : ''}
+                            ${activity.differentiation ? `
+                                <div style="background: white; padding: 12px; border-radius: 6px; margin-top: 10px;">
+                                    <strong style="color: #059669;">Differentiation:</strong>
+                                    <div style="margin-top: 8px; font-size: 0.9em;">
+                                        ${activity.differentiation.support ? `<div style="margin-bottom: 5px;"><strong>Support:</strong> ${activity.differentiation.support}</div>` : ''}
+                                        ${activity.differentiation.extension ? `<div style="margin-bottom: 5px;"><strong>Extension:</strong> ${activity.differentiation.extension}</div>` : ''}
+                                        ${activity.differentiation.ell ? `<div><strong>ELL:</strong> ${activity.differentiation.ell}</div>` : ''}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${activity.assessment ? `<div style="margin-top: 8px;"><strong>Assessment:</strong> ${activity.assessment}</div>` : ''}
+                            ${activity.digitalTools && activity.digitalTools.length > 0 ? `<div style="margin-top: 8px;"><strong>Digital Tools:</strong> ${activity.digitalTools.join(', ')}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            // Closure
+            if (data.closure) {
+                html += `
+                    <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; border-left: 4px solid #6366f1;">
+                        <h4 style="color: #4338ca; margin-bottom: 8px;">🎯 Closure (${data.closure.duration})</h4>
+                        <div style="font-weight: 600; color: #1f2937; margin-bottom: 5px;">${data.closure.title}</div>
+                        <div style="color: #374151; margin-bottom: 8px;">${data.closure.activity}</div>
+                        ${data.closure.exitTicket ? `<div style="background: white; padding: 10px; border-radius: 6px; margin-top: 10px;">
+                            <strong style="color: #6366f1;">Exit Ticket:</strong> ${data.closure.exitTicket}
+                        </div>` : ''}
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Legacy function - removed in favor of assignment tracking
+
+        // Close modal on outside click
+        document.getElementById('dayModal').addEventListener('click', (e) => {
+            if (e.target.id === 'dayModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
