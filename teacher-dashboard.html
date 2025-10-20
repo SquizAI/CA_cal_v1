@@ -2371,7 +2371,7 @@
                             <div id="attendance-section-${period}-${subj.key.replace(/[^a-z0-9]/gi, '')}" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 2px solid #bae6fd;">
                                 <div style="display: grid; gap: 12px;">
                                     ${enrolledStudents.map(student => {
-                                        const savedAttendance = loadSavedAttendance('${dateStr}', ${period});
+                                        const savedAttendance = loadSavedAttendance(dateStr, period);
                                         const savedData = savedAttendance[student.id] || { status: 'present', participation: 3, effort: 3 };
                                         return `
                                             <div class="student-attendance-row" data-period="${period}" data-student-id="${student.id}"
