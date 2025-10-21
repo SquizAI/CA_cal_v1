@@ -6206,6 +6206,30 @@ ${data}
             grid.innerHTML = html;
         }
 
+        // Get Florida CPALMS course URL for a subject
+        function getCPALMSUrl(subjectKey) {
+            const cpalmsMap = {
+                // 7th Grade
+                '7th_math': 'https://www.cpalms.org/PreviewCourse/Preview/23071',  // Pre-Algebra
+                '7th_science': 'https://www.cpalms.org/search/Standard',  // Life Science (general search)
+                '7th_ela': 'https://www.cpalms.org/search/Standard',  // ELA 7 (general search)
+                '7th_civics': 'https://www.cpalms.org/public/search/Standard',  // Civics & Government
+
+                // 9th Grade
+                '9th_math': 'https://www.cpalms.org/PreviewCourse/Preview/23375',  // Geometry
+                '9th_ela': 'https://www.cpalms.org/PreviewCourse/Preview/23457',  // English I
+                '9th_world_history': 'https://www.cpalms.org/PreviewCourse/Preview/22644',  // World History
+
+                // 11th Grade
+                '11th_math': 'https://www.cpalms.org/PreviewCourse/Preview/15',  // PreCalculus Honors
+                '11th_ela': 'https://www.cpalms.org/PreviewCourse/Preview/1676',  // ELA III
+                '11th_us_gvmnt': 'https://www.cpalms.org/PreviewCourse/Preview/633',  // US Government
+                '11th_economics': 'https://www.cpalms.org/PreviewCourse/Preview/4430'  // Economics
+            };
+
+            return cpalmsMap[subjectKey] || null;
+        }
+
         // Render Sequence View - Shows curriculum progression with past/present/future indicators
         function renderSequenceView() {
             const grid = document.getElementById('calendarGrid');
@@ -6366,9 +6390,11 @@ ${data}
                 html += `<div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`;
 
                 // Subject Header
+                const cpalmsUrl = getCPALMSUrl(group.subjectKey);
+                const cpalmsLink = cpalmsUrl ? ` <a href="${cpalmsUrl}" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: none; font-size: 0.85em; margin-left: 8px; white-space: nowrap;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" title="View Florida CPALMS Course Standards">📋 FL Standards</a>` : '';
                 html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
                     <div>
-                        <h3 style="margin: 0; font-size: 1.3em; color: #1f2937;">Period ${group.period} - ${group.subject}</h3>
+                        <h3 style="margin: 0; font-size: 1.3em; color: #1f2937;">Period ${group.period} - ${group.subject}${cpalmsLink}</h3>
                         <p style="margin: 4px 0 0 0; color: #6b7280;">Grade ${group.grade}</p>
                     </div>
                     <div style="text-align: right;">
