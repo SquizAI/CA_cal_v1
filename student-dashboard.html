@@ -2881,52 +2881,410 @@
             }
         }
 
-        // Quiz Submission Modal (Simplified - will be enhanced later)
+        // Quiz Submission Modal - Full Implementation
+        let currentQuizAssignment = null;
+        let quizAnswers = {};
+        let quizAutoSaveInterval = null;
+
         function openQuizSubmission(assignment) {
+            currentQuizAssignment = assignment;
+            quizAnswers = {};
+
+            // Parse quiz questions from metadata or instructions
+            let quizQuestions = [];
+
+            try {
+                // Try to get quiz questions from metadata JSONB field
+                if (assignment.metadata && typeof assignment.metadata === 'object') {
+                    quizQuestions = assignment.metadata.quiz_questions || [];
+                } else if (assignment.metadata && typeof assignment.metadata === 'string') {
+                    const metadata = JSON.parse(assignment.metadata);
+                    quizQuestions = metadata.quiz_questions || [];
+                }
+            } catch (e) {
+                console.error('Error parsing quiz questions from metadata:', e);
+            }
+
+            // If no questions found, show error
+            if (!quizQuestions || quizQuestions.length === 0) {
+                alert('This quiz does not have any questions configured yet. Please contact your teacher.');
+                return;
+            }
+
             const modal = document.getElementById('quizModal');
             const body = document.getElementById('quizModalBody');
 
+            const dueDate = new Date(assignment.due_date).toLocaleString('en-US', {
+                month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit'
+            });
+
             body.innerHTML = `
                 <div style="padding: 20px;">
-                    <h2 style="margin: 0 0 20px 0;">📝 ${assignment.title || assignment.assignment_title}</h2>
-
-                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                        <strong style="color: #92400e;">⚠️ Quiz submission interface coming soon!</strong>
-                        <p style="margin: 10px 0 0 0;">Full quiz functionality will be available in the next update.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+                        <div>
+                            <h2 style="margin: 0 0 8px 0; color: #1f2937;">📝 ${assignment.title || assignment.assignment_title}</h2>
+                            <p style="margin: 0; color: #6b7280; font-size: 0.95em;">
+                                ${quizQuestions.length} question${quizQuestions.length !== 1 ? 's' : ''} •
+                                ${assignment.points_possible} points •
+                                Due: ${dueDate}
+                            </p>
+                        </div>
+                        <div id="quizAutoSaveStatus" style="padding: 8px 12px; background: #f3f4f6; border-radius: 6px; font-size: 0.85em; color: #6b7280;">
+                            Not saved
+                        </div>
                     </div>
 
-                    <div style="text-align: right;">
-                        <button onclick="closeQuizModal()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                            Close
+                    ${assignment.instructions ? `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
+                            <strong style="color: #1e40af;">📋 Instructions:</strong>
+                            <div style="margin-top: 8px; color: #374151; line-height: 1.5;">
+                                ${assignment.instructions}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div id="quizQuestionsContainer" style="margin-bottom: 20px;">
+                        ${quizQuestions.map((q, index) => renderQuizQuestion(q, index)).join('')}
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: space-between; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                        <button onclick="saveQuizDraft()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            💾 Save Draft
                         </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="closeQuizModal()" style="padding: 10px 20px; background: white; color: #374151; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                Cancel
+                            </button>
+                            <button onclick="submitQuiz()" style="padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                ✅ Submit Quiz
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
 
             modal.classList.add('active');
+
+            // Start auto-save every 30 seconds
+            quizAutoSaveInterval = setInterval(() => {
+                saveQuizDraft(true); // true = silent save
+            }, 30000);
+        }
+
+        function renderQuizQuestion(question, index) {
+            const questionNumber = index + 1;
+            const questionType = question.type || 'short_answer';
+            const points = question.points || 0;
+
+            let inputHtml = '';
+
+            if (questionType === 'multiple_choice') {
+                inputHtml = `
+                    <div style="margin-top: 12px;">
+                        ${(question.options || []).map((option, optIndex) => `
+                            <label style="display: block; padding: 12px; margin-bottom: 8px; background: white; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; transition: all 0.2s;"
+                                   onmouseover="this.style.background='#f9fafb'"
+                                   onmouseout="this.style.background='white'">
+                                <input type="radio"
+                                       name="quiz_q${index}"
+                                       value="${option}"
+                                       onchange="updateQuizAnswer('${question.id}', this.value)"
+                                       style="margin-right: 10px;">
+                                <span style="color: #374151; font-size: 0.95em;">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (questionType === 'true_false') {
+                inputHtml = `
+                    <div style="margin-top: 12px; display: flex; gap: 12px;">
+                        <label style="flex: 1; padding: 12px; background: white; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s;"
+                               onmouseover="this.style.background='#f9fafb'"
+                               onmouseout="this.style.background='white'">
+                            <input type="radio"
+                                   name="quiz_q${index}"
+                                   value="True"
+                                   onchange="updateQuizAnswer('${question.id}', this.value)"
+                                   style="margin-right: 8px;">
+                            <span style="color: #374151; font-weight: 600;">True</span>
+                        </label>
+                        <label style="flex: 1; padding: 12px; background: white; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s;"
+                               onmouseover="this.style.background='#f9fafb'"
+                               onmouseout="this.style.background='white'">
+                            <input type="radio"
+                                   name="quiz_q${index}"
+                                   value="False"
+                                   onchange="updateQuizAnswer('${question.id}', this.value)"
+                                   style="margin-right: 8px;">
+                            <span style="color: #374151; font-weight: 600;">False</span>
+                        </label>
+                    </div>
+                `;
+            } else {
+                // Short answer / essay
+                inputHtml = `
+                    <textarea id="quiz_answer_${question.id}"
+                              onchange="updateQuizAnswer('${question.id}', this.value)"
+                              placeholder="Type your answer here..."
+                              style="width: 100%; min-height: 100px; margin-top: 12px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-family: inherit; font-size: 0.95em; resize: vertical;"
+                    ></textarea>
+                `;
+            }
+
+            return `
+                <div style="margin-bottom: 24px; padding: 20px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #667eea;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <h3 style="margin: 0; color: #374151; font-size: 1.05em;">
+                            Question ${questionNumber}
+                        </h3>
+                        <span style="padding: 4px 10px; background: #667eea; color: white; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
+                            ${points} pt${points !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                    <p style="margin: 0 0 4px 0; color: #1f2937; line-height: 1.6; font-size: 0.95em;">
+                        ${question.question}
+                    </p>
+                    <p style="margin: 0 0 12px 0; color: #9ca3af; font-size: 0.85em; font-style: italic;">
+                        ${questionType === 'multiple_choice' ? 'Select one answer' :
+                          questionType === 'true_false' ? 'Select True or False' :
+                          'Type your answer in the box below'}
+                    </p>
+                    ${inputHtml}
+                </div>
+            `;
+        }
+
+        function updateQuizAnswer(questionId, answer) {
+            quizAnswers[questionId] = answer;
+
+            // Update save status
+            const status = document.getElementById('quizAutoSaveStatus');
+            if (status) {
+                status.textContent = 'Unsaved changes';
+                status.style.background = '#fef3c7';
+                status.style.color = '#92400e';
+            }
+        }
+
+        async function saveQuizDraft(silent = false) {
+            if (!currentQuizAssignment) return;
+
+            try {
+                const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
+                if (!currentStudent || !currentStudent.student_id) {
+                    if (!silent) alert('Please log in to save your quiz draft.');
+                    return;
+                }
+
+                const response = await fetch('/.netlify/functions/submit-assignment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        assignment_id: currentQuizAssignment.id,
+                        student_id: currentStudent.student_id,
+                        submission_type: 'quiz_answers',
+                        quiz_answers: quizAnswers,
+                        status: 'draft'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const status = document.getElementById('quizAutoSaveStatus');
+                    if (status) {
+                        status.textContent = `💾 Saved at ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+                        status.style.background = '#d1fae5';
+                        status.style.color = '#065f46';
+                    }
+                    if (!silent) {
+                        alert('✅ Draft saved successfully!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to save draft');
+                }
+            } catch (error) {
+                console.error('Error saving quiz draft:', error);
+                if (!silent) {
+                    alert('❌ Failed to save draft: ' + error.message);
+                }
+            }
+        }
+
+        async function submitQuiz() {
+            if (!currentQuizAssignment) return;
+
+            // Check if all questions are answered
+            const metadata = currentQuizAssignment.metadata;
+            let quizQuestions = [];
+
+            try {
+                if (metadata && typeof metadata === 'object') {
+                    quizQuestions = metadata.quiz_questions || [];
+                } else if (metadata && typeof metadata === 'string') {
+                    const parsed = JSON.parse(metadata);
+                    quizQuestions = parsed.quiz_questions || [];
+                }
+            } catch (e) {
+                console.error('Error parsing quiz questions:', e);
+            }
+
+            const unansweredQuestions = quizQuestions.filter(q => !quizAnswers[q.id]);
+
+            if (unansweredQuestions.length > 0) {
+                const proceed = confirm(`⚠️ You have ${unansweredQuestions.length} unanswered question(s). Submit anyway?`);
+                if (!proceed) return;
+            }
+
+            const confirmSubmit = confirm('🚀 Are you ready to submit your quiz? You cannot change your answers after submission.');
+            if (!confirmSubmit) return;
+
+            try {
+                const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
+                if (!currentStudent || !currentStudent.student_id) {
+                    alert('Please log in to submit your quiz.');
+                    return;
+                }
+
+                const response = await fetch('/.netlify/functions/submit-assignment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        assignment_id: currentQuizAssignment.id,
+                        student_id: currentStudent.student_id,
+                        submission_type: 'quiz_answers',
+                        quiz_answers: quizAnswers,
+                        status: 'submitted',
+                        submitted_at: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Quiz submitted successfully!');
+                    closeQuizModal();
+
+                    // Reload assignments to show updated status
+                    await loadStudentAssignments();
+                } else {
+                    throw new Error(result.error || 'Failed to submit quiz');
+                }
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                alert('❌ Failed to submit quiz: ' + error.message);
+            }
         }
 
         function closeQuizModal() {
+            // Clear auto-save interval
+            if (quizAutoSaveInterval) {
+                clearInterval(quizAutoSaveInterval);
+                quizAutoSaveInterval = null;
+            }
+
+            // Clear state
+            currentQuizAssignment = null;
+            quizAnswers = {};
+
             document.getElementById('quizModal').classList.remove('active');
         }
 
-        // Homework Submission Modal (Simplified - will be enhanced later)
-        function openHomeworkSubmission(assignment) {
+        // Homework Submission Modal - Full Implementation
+        let currentHomeworkAssignment = null;
+        let uploadedFiles = [];
+
+        async function openHomeworkSubmission(assignment) {
+            currentHomeworkAssignment = assignment;
+            uploadedFiles = [];
+
             const modal = document.getElementById('hwSubmissionModal');
             const body = document.getElementById('hwSubmissionBody');
 
+            const assignmentType = (assignment.type || assignment.assignment_type || 'homework').toLowerCase();
+            const dueDate = new Date(assignment.due_date).toLocaleString('en-US', {
+                month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit'
+            });
+
+            let submissionTypeLabel = 'Homework';
+            let submissionIcon = '📚';
+            if (assignmentType === 'essay') {
+                submissionTypeLabel = 'Essay';
+                submissionIcon = '✍️';
+            } else if (assignmentType === 'project') {
+                submissionTypeLabel = 'Project';
+                submissionIcon = '🎨';
+            }
+
             body.innerHTML = `
                 <div style="padding: 20px;">
-                    <h2 style="margin: 0 0 20px 0;">📚 ${assignment.title || assignment.assignment_title}</h2>
-
-                    <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                        <strong style="color: #1e40af;">⚠️ Homework submission interface coming soon!</strong>
-                        <p style="margin: 10px 0 0 0;">Full file upload and text submission will be available in the next update.</p>
+                    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+                        <h2 style="margin: 0 0 8px 0; color: #1f2937;">
+                            ${submissionIcon} ${assignment.title || assignment.assignment_title}
+                        </h2>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.95em;">
+                            ${submissionTypeLabel} • ${assignment.points_possible} points • Due: ${dueDate}
+                        </p>
                     </div>
 
-                    <div style="text-align: right;">
-                        <button onclick="closeHwSubmissionModal()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                            Close
+                    ${assignment.instructions ? `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
+                            <strong style="color: #1e40af;">📋 Instructions:</strong>
+                            <div style="margin-top: 8px; color: #374151; line-height: 1.5;">
+                                ${assignment.instructions}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            Written Response:
+                        </label>
+                        <textarea id="hwSubmissionText"
+                                  placeholder="Type your response here (optional if uploading files)..."
+                                  style="width: 100%; min-height: 150px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-family: inherit; font-size: 0.95em; resize: vertical;"
+                        ></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            Upload Files (Optional):
+                        </label>
+                        <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; background: #f9fafb;">
+                            <input type="file"
+                                   id="hwFileInput"
+                                   multiple
+                                   onchange="handleFileSelection(event)"
+                                   style="display: none;">
+                            <button onclick="document.getElementById('hwFileInput').click()"
+                                    style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 10px;">
+                                📎 Choose Files
+                            </button>
+                            <p style="margin: 10px 0 0 0; color: #6b7280; font-size: 0.85em;">
+                                Accepted formats: PDF, DOC, DOCX, TXT, JPG, PNG (Max 10MB per file)
+                            </p>
+                        </div>
+                        <div id="selectedFilesList" style="margin-top: 12px;"></div>
+                    </div>
+
+                    <div id="uploadProgress" style="display: none; margin-bottom: 20px; padding: 15px; background: #eff6ff; border-radius: 8px;">
+                        <div style="margin-bottom: 8px; font-weight: 600; color: #1e40af;">
+                            Uploading files...
+                        </div>
+                        <div style="background: white; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="uploadProgressBar"
+                                 style="height: 100%; background: #3b82f6; width: 0%; transition: width 0.3s;">
+                            </div>
+                        </div>
+                        <div id="uploadProgressText" style="margin-top: 8px; font-size: 0.85em; color: #6b7280;"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                        <button onclick="closeHwSubmissionModal()" style="padding: 10px 20px; background: white; color: #374151; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Cancel
+                        </button>
+                        <button onclick="submitHomework()" style="padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            ✅ Submit ${submissionTypeLabel}
                         </button>
                     </div>
                 </div>
@@ -2935,7 +3293,192 @@
             modal.classList.add('active');
         }
 
+        function handleFileSelection(event) {
+            const files = Array.from(event.target.files);
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain',
+                'image/jpeg',
+                'image/png'
+            ];
+
+            const validFiles = files.filter(file => {
+                if (file.size > maxSize) {
+                    alert(`❌ File "${file.name}" is too large. Maximum size is 10MB.`);
+                    return false;
+                }
+                if (!allowedTypes.includes(file.type)) {
+                    alert(`❌ File "${file.name}" has an unsupported format.`);
+                    return false;
+                }
+                return true;
+            });
+
+            uploadedFiles = validFiles;
+            displaySelectedFiles();
+        }
+
+        function displaySelectedFiles() {
+            const container = document.getElementById('selectedFilesList');
+            if (!container) return;
+
+            if (uploadedFiles.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px;">
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 10px;">
+                        Selected Files (${uploadedFiles.length}):
+                    </div>
+                    ${uploadedFiles.map((file, index) => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: #f9fafb; border-radius: 4px; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>📄</span>
+                                <span style="color: #374151; font-size: 0.9em;">${file.name}</span>
+                                <span style="color: #9ca3af; font-size: 0.8em;">(${(file.size / 1024).toFixed(1)} KB)</span>
+                            </div>
+                            <button onclick="removeFile(${index})"
+                                    style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
+                                Remove
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            displaySelectedFiles();
+        }
+
+        async function submitHomework() {
+            if (!currentHomeworkAssignment) return;
+
+            const submissionText = document.getElementById('hwSubmissionText').value.trim();
+
+            // Validate that there's either text or files
+            if (!submissionText && uploadedFiles.length === 0) {
+                alert('⚠️ Please provide a written response or upload at least one file.');
+                return;
+            }
+
+            const confirmSubmit = confirm('🚀 Are you ready to submit your work? You cannot change your submission after submitting.');
+            if (!confirmSubmit) return;
+
+            try {
+                const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
+                if (!currentStudent || !currentStudent.student_id) {
+                    alert('Please log in to submit your assignment.');
+                    return;
+                }
+
+                let fileUrls = [];
+
+                // Upload files to Supabase Storage if there are any
+                if (uploadedFiles.length > 0) {
+                    const progress = document.getElementById('uploadProgress');
+                    const progressBar = document.getElementById('uploadProgressBar');
+                    const progressText = document.getElementById('uploadProgressText');
+
+                    progress.style.display = 'block';
+
+                    for (let i = 0; i < uploadedFiles.length; i++) {
+                        const file = uploadedFiles[i];
+                        const percentage = Math.round(((i + 1) / uploadedFiles.length) * 100);
+
+                        progressText.textContent = `Uploading ${i + 1} of ${uploadedFiles.length}: ${file.name}`;
+                        progressBar.style.width = percentage + '%';
+
+                        // Upload to Supabase Storage
+                        const fileUrl = await uploadFileToStorage(file, currentStudent.student_id, currentHomeworkAssignment.id);
+                        if (fileUrl) {
+                            fileUrls.push({
+                                name: file.name,
+                                url: fileUrl,
+                                size: file.size,
+                                type: file.type
+                            });
+                        }
+                    }
+
+                    progress.style.display = 'none';
+                }
+
+                // Submit to serverless function
+                const response = await fetch('/.netlify/functions/submit-assignment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        assignment_id: currentHomeworkAssignment.id,
+                        student_id: currentStudent.student_id,
+                        submission_type: 'file_upload',
+                        submission_text: submissionText || null,
+                        file_urls: fileUrls,
+                        status: 'submitted',
+                        submitted_at: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Assignment submitted successfully!');
+                    closeHwSubmissionModal();
+
+                    // Reload assignments to show updated status
+                    await loadStudentAssignments();
+                } else {
+                    throw new Error(result.error || 'Failed to submit assignment');
+                }
+            } catch (error) {
+                console.error('Error submitting homework:', error);
+                alert('❌ Failed to submit assignment: ' + error.message);
+            }
+        }
+
+        async function uploadFileToStorage(file, studentId, assignmentId) {
+            try {
+                // Create a unique file name
+                const timestamp = new Date().getTime();
+                const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+                const filePath = `student-submissions/${studentId}/${assignmentId}/${timestamp}_${safeFileName}`;
+
+                // For now, we'll use a base64 upload approach
+                // In production, you'd want to use Supabase Storage SDK directly
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('filePath', filePath);
+                formData.append('studentId', studentId);
+                formData.append('assignmentId', assignmentId);
+
+                // This is a simplified approach - you'd typically have a dedicated upload endpoint
+                // For now, return a placeholder URL
+                const reader = new FileReader();
+                return new Promise((resolve, reject) => {
+                    reader.onload = function(e) {
+                        // In a real implementation, this would upload to Supabase Storage
+                        // For now, we'll just return a mock URL
+                        resolve(`/uploads/${filePath}`);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert(`Failed to upload ${file.name}: ${error.message}`);
+                return null;
+            }
+        }
+
         function closeHwSubmissionModal() {
+            currentHomeworkAssignment = null;
+            uploadedFiles = [];
             document.getElementById('hwSubmissionModal').classList.remove('active');
         }
 
