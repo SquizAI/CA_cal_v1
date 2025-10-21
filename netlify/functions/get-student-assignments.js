@@ -1,12 +1,9 @@
-// Converted from TypeScript to JavaScript for Netlify deployment
-import { createClient } from "@supabase/supabase-js";
-
 /**
  * Netlify Serverless Function: Get Student Assignments
- *
- * Purpose: Retrieves student assignments with flexible filtering for dashboard display
+ * Securely fetches student assignments from Supabase
  *
  * Query Parameters:
+ * - student_id: Required - The student's UUID
  * - status: Filter by status ('assigned', 'submitted', 'graded', 'overdue') - optional
  * - class_id: Filter by subject like '9th_ela' - optional
  * - limit: Number of results (default: 50) - optional
@@ -15,8 +12,7 @@ import { createClient } from "@supabase/supabase-js";
  * Returns: JSON array of assignments with related data (submission, grade, time remaining)
  */
 
-// TypeScript interfaces removed for JavaScript compatibility
-// AssignmentRecord and FormattedAssignment types are implicit
+const { createClient } = require('@supabase/supabase-js');
 
 /**
  * Calculate days and hours until due date
@@ -60,84 +56,87 @@ function formatAssignment(assignment) {
   };
 }
 
-export default async (req, context) => {
+exports.handler = async (event, context) => {
+  // Set CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
   // Only allow GET requests
-  if (req.method !== "GET") {
-    return new Response(
-      JSON.stringify({ error: "Method not allowed" }),
-      {
-        status: 405,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+  if (event.httpMethod !== 'GET') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
   }
 
   try {
     // Get Supabase credentials from environment variables
-    const supabaseUrl = Netlify.env.get("VITE_SUPABASE_URL") || Netlify.env.get("SUPABASE_URL");
-    const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return new Response(
-        JSON.stringify({
-          error: "Server configuration error",
-          message: "Missing Supabase credentials"
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: 'Server configuration error',
+          message: 'Missing Supabase credentials'
+        })
+      };
     }
 
     // Initialize Supabase client with service role key
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Parse query parameters from URL
-    const url = new URL(req.url);
-    const status = url.searchParams.get("status");
-    const classId = url.searchParams.get("class_id");
-    const limitParam = url.searchParams.get("limit");
-    const sortParam = url.searchParams.get("sort");
-    const studentId = url.searchParams.get("student_id");
+    // Parse query parameters
+    const params = event.queryStringParameters || {};
+    const { student_id, status, class_id, limit: limitParam, sort: sortParam } = params;
 
     // Validate student_id (required for security)
-    if (!studentId) {
-      return new Response(
-        JSON.stringify({
-          error: "Bad Request",
-          message: "student_id is required"
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
+    if (!student_id) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: 'Bad Request',
+          message: 'student_id is required'
+        })
+      };
     }
 
     // Parse limit (default: 50, max: 100)
     const limit = limitParam ? Math.min(parseInt(limitParam, 10), 100) : 50;
 
     // Parse sort (default: due_date)
-    const sortBy = sortParam === "assigned_date" ? "assigned_date" : "due_date";
+    const sortBy = sortParam === 'assigned_date' ? 'assigned_date' : 'due_date';
 
     // Build query
     let query = supabase
-      .from("student_assignments")
-      .select("*")
-      .eq("student_id", studentId);
+      .from('student_assignments')
+      .select('*')
+      .eq('student_id', student_id);
 
     // Apply status filter if provided
     if (status) {
-      const validStatuses = ["assigned", "submitted", "graded", "overdue"];
+      const validStatuses = ['assigned', 'submitted', 'graded', 'overdue'];
       if (validStatuses.includes(status)) {
-        query = query.eq("status", status);
+        query = query.eq('status', status);
       }
     }
 
     // Apply class_id (subject_key) filter if provided
-    if (classId) {
-      query = query.eq("subject_key", classId);
+    if (class_id) {
+      query = query.eq('subject_key', class_id);
     }
 
     // Apply sorting
@@ -150,56 +149,46 @@ export default async (req, context) => {
     const { data, error } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
-      return new Response(
-        JSON.stringify({
-          error: "Database error",
+      console.error('Supabase error:', error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: 'Database error',
           message: error.message
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
+        })
+      };
     }
 
     // Format response data
     const assignments = data.map(formatAssignment);
 
     // Return successful response
-    return new Response(
-      JSON.stringify({
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
         success: true,
         assignments,
         total: assignments.length,
         filters: {
-          status: status || "all",
-          class_id: classId || "all",
+          status: status || 'all',
+          class_id: class_id || 'all',
           sort: sortBy,
           limit
         }
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+      })
+    };
 
   } catch (error) {
-    console.error("Function error:", error);
-    return new Response(
-      JSON.stringify({
-        error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error"
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+    console.error('Function error:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      })
+    };
   }
-};
-
-export const config = {
-  path: "/api/student-assignments"
 };
