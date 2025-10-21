@@ -1504,6 +1504,17 @@
             background: #d97706;
         }
 
+        .assignment-action-btn.secondary {
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .assignment-action-btn.secondary:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
         .assignments-tabs {
             display: flex;
             gap: 8px;
@@ -2271,6 +2282,38 @@
         </div>
     </div>
 
+    <!-- Assignment Details Modal -->
+    <div id="assignmentDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="modal-close" onclick="closeAssignmentDetailsModal()">&times;</span>
+            <div id="assignmentDetailsBody"></div>
+        </div>
+    </div>
+
+    <!-- Grade View Modal -->
+    <div id="gradeModal" class="modal">
+        <div class="modal-content" style="max-width: 650px;">
+            <span class="modal-close" onclick="closeGradeModal()">&times;</span>
+            <div id="gradeModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Quiz Submission Modal -->
+    <div id="quizModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="modal-close" onclick="closeQuizModal()">&times;</span>
+            <div id="quizModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Homework Submission Modal -->
+    <div id="hwSubmissionModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="modal-close" onclick="closeHwSubmissionModal()">&times;</span>
+            <div id="hwSubmissionBody"></div>
+        </div>
+    </div>
+
     <script src="dist/schedule-data.js"></script>
     <script src="curriculum-api.js"></script>
     <!-- Supabase Client -->
@@ -2506,33 +2549,87 @@
                              typeLower === 'homework' ? 'homework' :
                              typeLower === 'test' ? 'test' : 'project';
 
-            // Points display
+            // Points and grade display
             let pointsText = '';
-            if (assignment.status === 'graded' && assignment.grade !== null) {
-                const percentage = Math.round((assignment.grade / assignment.points_possible) * 100);
-                pointsText = `<span class="assignment-points graded">${assignment.grade}/${assignment.points_possible} pts (${percentage}%)</span>`;
+            let letterGrade = '';
+            if (assignment.status === 'graded' && (assignment.points_earned !== null || assignment.grade !== null)) {
+                const pointsEarned = assignment.points_earned || assignment.grade || 0;
+                const percentage = Math.round((pointsEarned / assignment.points_possible) * 100);
+
+                // Calculate letter grade
+                if (percentage >= 90) letterGrade = 'A';
+                else if (percentage >= 80) letterGrade = 'B';
+                else if (percentage >= 70) letterGrade = 'C';
+                else if (percentage >= 60) letterGrade = 'D';
+                else letterGrade = 'F';
+
+                pointsText = `<span class="assignment-points graded" style="font-weight: 700; color: #10b981;">${pointsEarned}/${assignment.points_possible} pts (${percentage}% - ${letterGrade})</span>`;
             } else {
-                pointsText = `<span class="assignment-points">${assignment.points_possible} pts possible</span>`;
+                pointsText = `<span class="assignment-points">🎯 ${assignment.points_possible} pts possible</span>`;
             }
 
-            // Action button
-            let actionButton = '';
+            // Instructions preview (first 150 chars)
+            let instructionsPreview = '';
+            if (assignment.instructions) {
+                const plainText = assignment.instructions.replace(/<[^>]*>/g, '').substring(0, 150);
+                instructionsPreview = `<p style="margin-top: 8px; color: #6b7280; font-size: 0.9em; line-height: 1.5;">📋 ${plainText}${assignment.instructions.length > 150 ? '...' : ''}</p>`;
+            } else if (assignment.description) {
+                const plainText = assignment.description.substring(0, 150);
+                instructionsPreview = `<p style="margin-top: 8px; color: #6b7280; font-size: 0.9em; line-height: 1.5;">📋 ${plainText}${assignment.description.length > 150 ? '...' : ''}</p>`;
+            }
+
+            // Submission status
+            let submissionInfo = '';
+            if (assignment.status === 'submitted' && assignment.submitted_at) {
+                const submittedDate = new Date(assignment.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+                submissionInfo = `<p style="margin-top: 8px; padding: 8px 12px; background: #dbeafe; border-radius: 6px; font-size: 0.85em; color: #1e40af;"><strong>✅ Submitted:</strong> ${submittedDate}</p>`;
+            }
+
+            // Action buttons
+            let actionButtons = '';
             if (assignment.status === 'graded') {
-                actionButton = `<button class="assignment-action-btn view" onclick="viewAssignment('${assignment.id}')">View Grade</button>`;
+                actionButtons = `
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="assignment-action-btn view" onclick="event.stopPropagation(); viewGrade('${assignment.id}')" style="flex: 1;">
+                            👁️ View Grade & Feedback
+                        </button>
+                        <button class="assignment-action-btn secondary" onclick="event.stopPropagation(); viewAssignmentDetails('${assignment.id}')" style="flex: 0 0 auto;">
+                            📄 Details
+                        </button>
+                    </div>
+                `;
             } else if (assignment.status === 'submitted') {
-                actionButton = `<button class="assignment-action-btn view" onclick="viewAssignment('${assignment.id}')">View Submission</button>`;
+                actionButtons = `
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="assignment-action-btn view" onclick="event.stopPropagation(); viewSubmission('${assignment.id}')" style="flex: 1;">
+                            👁️ View Submission
+                        </button>
+                        <button class="assignment-action-btn secondary" onclick="event.stopPropagation(); viewAssignmentDetails('${assignment.id}')" style="flex: 0 0 auto;">
+                            📄 Details
+                        </button>
+                    </div>
+                `;
             } else {
-                actionButton = `<button class="assignment-action-btn start" onclick="startAssignment('${assignment.id}')">Start Assignment</button>`;
+                actionButtons = `
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="assignment-action-btn start" onclick="event.stopPropagation(); startAssignment('${assignment.id}')" style="flex: 1;">
+                            🚀 Start Assignment
+                        </button>
+                        <button class="assignment-action-btn secondary" onclick="event.stopPropagation(); viewAssignmentDetails('${assignment.id}')" style="flex: 0 0 auto;">
+                            📄 Details
+                        </button>
+                    </div>
+                `;
             }
 
             return `
-                <div class="assignment-card ${statusClass}" onclick="viewAssignment('${assignment.id}')">
+                <div class="assignment-card ${statusClass}">
                     <div class="assignment-card-header">
                         <div class="assignment-title-group">
                             <div>
-                                <span class="assignment-type-badge ${typeClass}">${assignment.type}</span>
+                                <span class="assignment-type-badge ${typeClass}">${assignment.type || assignment.assignment_type || 'Assignment'}</span>
                             </div>
-                            <div class="assignment-card-title">${assignment.title}</div>
+                            <div class="assignment-card-title">${assignment.title || assignment.assignment_title || 'Untitled Assignment'}</div>
                         </div>
                         ${statusBadge}
                     </div>
@@ -2541,30 +2638,305 @@
                         <span>📅 ${dueDateText}</span>
                         <span>${pointsText}</span>
                     </div>
-                    ${assignment.description ? `<p style="margin-top: 8px; color: #6b7280; font-size: 0.9em;">${assignment.description}</p>` : ''}
-                    ${assignment.feedback && assignment.status === 'graded' ? `<p style="margin-top: 8px; padding: 10px; background: #fef3c7; border-radius: 6px; font-size: 0.9em;"><strong>Feedback:</strong> ${assignment.feedback}</p>` : ''}
-                    ${actionButton}
+                    ${instructionsPreview}
+                    ${submissionInfo}
+                    ${assignment.feedback && assignment.status === 'graded' ? `<p style="margin-top: 8px; padding: 10px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; font-size: 0.9em; line-height: 1.5;"><strong>💬 Teacher Feedback:</strong> ${assignment.feedback}</p>` : ''}
+                    ${actionButtons}
                 </div>
             `;
         }
 
-        // Placeholder functions for assignment actions
-        function startAssignment(assignmentId) {
+        // Assignment Details Modal
+        function viewAssignmentDetails(assignmentId) {
             const assignment = studentAssignments.find(a => a.id === assignmentId);
-            if (!assignment) return;
+            if (!assignment) {
+                alert('Assignment not found');
+                return;
+            }
 
-            // TODO: Implement assignment start logic
-            alert(`Starting assignment: ${assignment.title}\n\nThis will open the assignment interface.`);
-            event.stopPropagation();
+            const subjectInfo = getSubjectInfo(assignment.subject_key) || { subject: assignment.subject_key, emoji: '📚' };
+            const dueDate = new Date(assignment.due_date).toLocaleString('en-US', {
+                weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
+            });
+
+            const modal = document.getElementById('assignmentDetailsModal');
+            const body = document.getElementById('assignmentDetailsBody');
+
+            body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 1.8em;">
+                        ${assignment.type || assignment.assignment_type || 'Assignment'} - ${assignment.title || assignment.assignment_title}
+                    </h2>
+
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <strong style="color: #6b7280;">Subject:</strong><br>
+                                ${subjectInfo.emoji} ${subjectInfo.subject}
+                            </div>
+                            <div>
+                                <strong style="color: #6b7280;">Type:</strong><br>
+                                ${assignment.type || assignment.assignment_type || 'Assignment'}
+                            </div>
+                            <div>
+                                <strong style="color: #6b7280;">Status:</strong><br>
+                                <span style="text-transform: capitalize;">${assignment.status}</span>
+                            </div>
+                            <div>
+                                <strong style="color: #6b7280;">Points:</strong><br>
+                                ${assignment.points_possible} points
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                            <strong style="color: #6b7280;">Due Date:</strong><br>
+                            📅 ${dueDate}
+                        </div>
+                    </div>
+
+                    ${assignment.description ? `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #374151; margin-bottom: 10px;">Description:</h3>
+                            <p style="color: #6b7280; line-height: 1.6;">${assignment.description}</p>
+                        </div>
+                    ` : ''}
+
+                    ${assignment.instructions ? `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #374151; margin-bottom: 10px;">Instructions:</h3>
+                            <div style="color: #6b7280; line-height: 1.6; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                ${assignment.instructions}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button onclick="closeAssignmentDetailsModal()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                        ${assignment.status !== 'graded' && assignment.status !== 'submitted' ? `
+                            <button onclick="closeAssignmentDetailsModal(); startAssignment('${assignment.id}')" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                🚀 Start Assignment
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
         }
 
-        function viewAssignment(assignmentId) {
-            const assignment = studentAssignments.find(a => a.id === assignmentId);
-            if (!assignment) return;
+        function closeAssignmentDetailsModal() {
+            document.getElementById('assignmentDetailsModal').classList.remove('active');
+        }
 
-            // TODO: Implement view assignment logic
-            console.log('Viewing assignment:', assignment);
-            event.stopPropagation();
+        // Grade Viewing Modal
+        function viewGrade(assignmentId) {
+            const assignment = studentAssignments.find(a => a.id === assignmentId);
+            if (!assignment) {
+                alert('Assignment not found');
+                return;
+            }
+
+            const pointsEarned = assignment.points_earned || assignment.grade || 0;
+            const percentage = Math.round((pointsEarned / assignment.points_possible) * 100);
+
+            let letterGrade = '';
+            if (percentage >= 90) letterGrade = 'A';
+            else if (percentage >= 80) letterGrade = 'B';
+            else if (percentage >= 70) letterGrade = 'C';
+            else if (percentage >= 60) letterGrade = 'D';
+            else letterGrade = 'F';
+
+            const submittedDate = assignment.submitted_at ? new Date(assignment.submitted_at).toLocaleString() : 'N/A';
+            const gradedDate = assignment.graded_at ? new Date(assignment.graded_at).toLocaleString() : 'N/A';
+
+            const modal = document.getElementById('gradeModal');
+            const body = document.getElementById('gradeModalBody');
+
+            body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin: 0 0 20px 0; color: #1f2937; text-align: center;">
+                        🎯 ${assignment.title || assignment.assignment_title} - Grade Report
+                    </h2>
+
+                    <div style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="font-size: 3em; font-weight: 700; margin-bottom: 10px;">
+                            ${pointsEarned}/${assignment.points_possible}
+                        </div>
+                        <div style="font-size: 2em; font-weight: 600; margin-bottom: 5px;">
+                            ${percentage}%
+                        </div>
+                        <div style="font-size: 1.5em; font-weight: 600; background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 20px;">
+                            Letter Grade: ${letterGrade}
+                        </div>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <strong style="color: #6b7280;">Submitted:</strong><br>
+                                ${submittedDate}
+                            </div>
+                            <div>
+                                <strong style="color: #6b7280;">Graded:</strong><br>
+                                ${gradedDate}
+                            </div>
+                        </div>
+                    </div>
+
+                    ${assignment.feedback ? `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #374151; margin-bottom: 10px;">📝 Teacher Feedback:</h3>
+                            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; line-height: 1.6;">
+                                ${assignment.feedback}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${assignment.rubric_scores ? `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #374151; margin-bottom: 10px;">Rubric Breakdown:</h3>
+                            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                ${Object.entries(JSON.parse(assignment.rubric_scores)).map(([key, value]) => `
+                                    <div style="margin-bottom: 8px;">
+                                        <strong>${key}:</strong> ${value} pts
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button onclick="closeGradeModal()" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeGradeModal() {
+            document.getElementById('gradeModal').classList.remove('active');
+        }
+
+        // View Submission
+        function viewSubmission(assignmentId) {
+            const assignment = studentAssignments.find(a => a.id === assignmentId);
+            if (!assignment) {
+                alert('Assignment not found');
+                return;
+            }
+
+            const submittedDate = assignment.submitted_at ? new Date(assignment.submitted_at).toLocaleString() : 'N/A';
+
+            const modal = document.getElementById('assignmentDetailsModal');
+            const body = document.getElementById('assignmentDetailsBody');
+
+            body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin: 0 0 20px 0; color: #1f2937;">
+                        📄 Submission - ${assignment.title || assignment.assignment_title}
+                    </h2>
+
+                    <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                        <strong style="color: #1e40af;">✅ Submitted on ${submittedDate}</strong>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="margin: 0 0 10px 0; color: #374151;">Your Submission:</h3>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                            ${assignment.submission_text || 'Your submission has been recorded.'}
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button onclick="closeAssignmentDetailsModal()" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        // Start Assignment - Route to appropriate submission interface
+        function startAssignment(assignmentId) {
+            const assignment = studentAssignments.find(a => a.id === assignmentId);
+            if (!assignment) {
+                alert('Assignment not found');
+                return;
+            }
+
+            const assignmentType = (assignment.type || assignment.assignment_type || '').toLowerCase();
+
+            if (assignmentType === 'quiz') {
+                openQuizSubmission(assignment);
+            } else if (assignmentType === 'homework' || assignmentType === 'essay' || assignmentType === 'project') {
+                openHomeworkSubmission(assignment);
+            } else {
+                openHomeworkSubmission(assignment); // Default to homework submission
+            }
+        }
+
+        // Quiz Submission Modal (Simplified - will be enhanced later)
+        function openQuizSubmission(assignment) {
+            const modal = document.getElementById('quizModal');
+            const body = document.getElementById('quizModalBody');
+
+            body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin: 0 0 20px 0;">📝 ${assignment.title || assignment.assignment_title}</h2>
+
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                        <strong style="color: #92400e;">⚠️ Quiz submission interface coming soon!</strong>
+                        <p style="margin: 10px 0 0 0;">Full quiz functionality will be available in the next update.</p>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button onclick="closeQuizModal()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quizModal').classList.remove('active');
+        }
+
+        // Homework Submission Modal (Simplified - will be enhanced later)
+        function openHomeworkSubmission(assignment) {
+            const modal = document.getElementById('hwSubmissionModal');
+            const body = document.getElementById('hwSubmissionBody');
+
+            body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2 style="margin: 0 0 20px 0;">📚 ${assignment.title || assignment.assignment_title}</h2>
+
+                    <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                        <strong style="color: #1e40af;">⚠️ Homework submission interface coming soon!</strong>
+                        <p style="margin: 10px 0 0 0;">Full file upload and text submission will be available in the next update.</p>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button onclick="closeHwSubmissionModal()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeHwSubmissionModal() {
+            document.getElementById('hwSubmissionModal').classList.remove('active');
         }
 
         // Load all lesson enhancements from Supabase
