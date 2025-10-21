@@ -1,4 +1,4 @@
-import type { Context, Config } from "@netlify/functions";
+// Converted from TypeScript to JavaScript for Netlify deployment
 import { createClient } from "@supabase/supabase-js";
 
 /**
@@ -15,47 +15,13 @@ import { createClient } from "@supabase/supabase-js";
  * Returns: JSON array of assignments with related data (submission, grade, time remaining)
  */
 
-interface AssignmentRecord {
-  id: string;
-  title: string;
-  assignment_type: string;
-  due_date: string;
-  assigned_date: string;
-  status: string;
-  points_possible: number;
-  points_earned: number | null;
-  subject_key: string;
-  lesson_key: string;
-  description: string | null;
-  instructions: string | null;
-  submitted_at: string | null;
-  graded_at: string | null;
-  feedback: string | null;
-}
-
-interface FormattedAssignment {
-  id: string;
-  title: string;
-  type: string;
-  due_date: string;
-  assigned_date: string;
-  status: string;
-  points_possible: number;
-  grade: number | null;
-  subject_key: string;
-  lesson_key: string;
-  description: string | null;
-  is_late: boolean;
-  days_until_due: number;
-  hours_until_due: number;
-  feedback: string | null;
-  submitted_at: string | null;
-}
+// TypeScript interfaces removed for JavaScript compatibility
+// AssignmentRecord and FormattedAssignment types are implicit
 
 /**
  * Calculate days and hours until due date
  */
-function getTimeUntilDue(dueDate: string): { days: number; hours: number; isLate: boolean } {
+function getTimeUntilDue(dueDate) {
   const due = new Date(dueDate);
   const now = new Date();
   const diffMs = due.getTime() - now.getTime();
@@ -71,7 +37,7 @@ function getTimeUntilDue(dueDate: string): { days: number; hours: number; isLate
 /**
  * Format assignment data for response
  */
-function formatAssignment(assignment: AssignmentRecord): FormattedAssignment {
+function formatAssignment(assignment) {
   const timeInfo = getTimeUntilDue(assignment.due_date);
 
   return {
@@ -94,7 +60,7 @@ function formatAssignment(assignment: AssignmentRecord): FormattedAssignment {
   };
 }
 
-export default async (req: Request, context: Context) => {
+export default async (req, context) => {
   // Only allow GET requests
   if (req.method !== "GET") {
     return new Response(
