@@ -1166,6 +1166,32 @@
             line-height: 1.4;
         }
 
+        .lesson-assignment-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .lesson-assignment-badge.assigned {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .lesson-assignment-badge.overdue {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .lesson-assignment-badge.graded {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
         /* Upcoming Assignments */
         .assignment-item {
             padding: 15px;
@@ -1285,6 +1311,626 @@
             font-size: 3em;
             margin-bottom: 15px;
             opacity: 0.5;
+        }
+
+        /* My Assignments Section - New Styles */
+        .assignments-section {
+            margin-bottom: 30px;
+        }
+
+        .assignment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .assignment-card.status-assigned {
+            border-left-color: #3b82f6;
+        }
+
+        .assignment-card.status-overdue {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .assignment-card.status-submitted {
+            border-left-color: #f59e0b;
+        }
+
+        .assignment-card.status-graded {
+            border-left-color: #10b981;
+        }
+
+        .assignment-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .assignment-title-group {
+            flex: 1;
+        }
+
+        .assignment-card-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .assignment-type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+
+        .assignment-type-badge.quiz {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .assignment-type-badge.homework {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .assignment-type-badge.test {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .assignment-type-badge.project {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .assignment-status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .assignment-status-badge.not-started {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .assignment-status-badge.in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .assignment-status-badge.overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .assignment-status-badge.submitted {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        .assignment-status-badge.graded {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .assignment-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .assignment-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .assignment-due-date {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .assignment-due-date.urgent {
+            color: #dc2626;
+        }
+
+        .assignment-points {
+            font-weight: 600;
+        }
+
+        .assignment-points.graded {
+            color: #059669;
+        }
+
+        .assignment-action-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .assignment-action-btn.start {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .assignment-action-btn.start:hover {
+            background: #2563eb;
+        }
+
+        .assignment-action-btn.view {
+            background: #10b981;
+            color: white;
+        }
+
+        .assignment-action-btn.view:hover {
+            background: #059669;
+        }
+
+        .assignment-action-btn.continue {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .assignment-action-btn.continue:hover {
+            background: #d97706;
+        }
+
+        .assignments-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0;
+        }
+
+        .assignments-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .assignments-tab:hover {
+            color: #374151;
+        }
+
+        .assignments-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .assignments-tab .count {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            margin-left: 6px;
+        }
+
+        .assignments-tab.active .count {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Homework Submission Modal Styles */
+        .hw-modal-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .hw-modal-title {
+            font-size: 1.8em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .hw-modal-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .hw-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f0f9ff;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #0369a1;
+        }
+
+        .hw-meta-item.due-soon {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .hw-meta-item.past-due {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .hw-instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 25px;
+        }
+
+        .hw-instructions h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .hw-instructions p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .hw-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .hw-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .hw-tab:hover {
+            color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .hw-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .hw-tab-content {
+            display: none;
+        }
+
+        .hw-tab-content.active {
+            display: block;
+        }
+
+        .hw-dropzone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .hw-dropzone:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .hw-dropzone.dragging {
+            border-color: #667eea;
+            background: #e0e7ff;
+            border-style: solid;
+        }
+
+        .hw-dropzone-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #a0aec0;
+        }
+
+        .hw-dropzone-text {
+            font-size: 1.1em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .hw-dropzone-hint {
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .hw-file-list {
+            margin-top: 20px;
+        }
+
+        .hw-file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .hw-file-icon {
+            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f9ff;
+            border-radius: 6px;
+            color: #0ea5e9;
+        }
+
+        .hw-file-info {
+            flex: 1;
+        }
+
+        .hw-file-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .hw-file-size {
+            font-size: 0.85em;
+            color: #718096;
+        }
+
+        .hw-file-remove {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .hw-file-remove:hover {
+            background: #fecaca;
+            transform: scale(1.1);
+        }
+
+        .hw-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .hw-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hw-char-counter {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .hw-url-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .hw-url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hw-link-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .hw-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .hw-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .hw-progress-text {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .hw-form-section {
+            margin-bottom: 25px;
+        }
+
+        .hw-form-label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .hw-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .hw-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .hw-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .hw-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .hw-btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hw-btn-secondary {
+            background: #e9ecef;
+            color: #4a5568;
+        }
+
+        .hw-btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .hw-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .hw-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e9ecef;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hw-loading-text {
+            color: white;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .hw-success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            margin-bottom: 20px;
+        }
+
+        .hw-error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc2626;
+            margin-bottom: 20px;
+        }
+
+        .hw-warning {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+            margin-bottom: 20px;
         }
 
         @media (max-width: 768px) {
@@ -1410,6 +2056,38 @@
             </div>
         </div>
 
+        <!-- My Assignments Section -->
+        <div class="dashboard-card assignments-section">
+            <div class="dashboard-card-header">
+                <span class="dashboard-card-icon">📝</span>
+                <h3>My Assignments</h3>
+            </div>
+
+            <!-- Assignment Tabs -->
+            <div class="assignments-tabs">
+                <button class="assignments-tab active" data-tab="upcoming" onclick="switchAssignmentTab('upcoming')">
+                    Upcoming <span class="count" id="upcomingCount">0</span>
+                </button>
+                <button class="assignments-tab" data-tab="overdue" onclick="switchAssignmentTab('overdue')">
+                    Overdue <span class="count" id="overdueCount">0</span>
+                </button>
+                <button class="assignments-tab" data-tab="submitted" onclick="switchAssignmentTab('submitted')">
+                    Submitted <span class="count" id="submittedCount">0</span>
+                </button>
+                <button class="assignments-tab" data-tab="graded" onclick="switchAssignmentTab('graded')">
+                    Graded <span class="count" id="gradedCount">0</span>
+                </button>
+            </div>
+
+            <!-- Assignment Content -->
+            <div id="myAssignmentsContent">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <p>Loading your assignments...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- New Dashboard Sections -->
         <div class="dashboard-grid">
             <!-- Today's Lessons Card -->
@@ -1515,10 +2193,20 @@
         </div>
     </div>
 
+    <!-- Homework Submission Modal -->
+    <div id="homeworkModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="modal-close" onclick="closeHomeworkModal()">&times;</span>
+            <div id="homeworkModalBody"></div>
+        </div>
+    </div>
+
     <script src="dist/schedule-data.js"></script>
     <script src="curriculum-api.js"></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Homework Submission Module -->
+    <script src="homework-submission.js"></script>
     <script>
         // Initialize Supabase
         const SUPABASE_URL = 'https://qypmfilbkvxwyznnenge.supabase.co';
@@ -1527,6 +2215,232 @@
 
         // Store lesson enhancements from database
         let lessonEnhancements = {};
+
+        // Store student assignments from database
+        let studentAssignments = [];
+        let currentAssignmentTab = 'upcoming';
+
+        // Load student assignments from serverless function
+        async function loadStudentAssignments() {
+            if (!currentStudent || !currentStudent.student_id) {
+                console.error('No student logged in');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/.netlify/functions/get-student-assignments?student_id=${currentStudent.student_id}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success && result.assignments) {
+                    studentAssignments = result.assignments;
+                    console.log(`Loaded ${studentAssignments.length} assignments for student`);
+                    renderMyAssignments();
+                    updateAssignmentCounts();
+                } else {
+                    console.error('Failed to load assignments:', result);
+                    studentAssignments = [];
+                }
+            } catch (error) {
+                console.error('Error loading student assignments:', error);
+                studentAssignments = [];
+                renderMyAssignments();
+            }
+        }
+
+        // Update assignment counts in tabs
+        function updateAssignmentCounts() {
+            const now = new Date();
+
+            const upcoming = studentAssignments.filter(a => {
+                const dueDate = new Date(a.due_date);
+                return a.status === 'assigned' && dueDate >= now;
+            });
+
+            const overdue = studentAssignments.filter(a => {
+                const dueDate = new Date(a.due_date);
+                return a.status === 'assigned' && dueDate < now;
+            });
+
+            const submitted = studentAssignments.filter(a => a.status === 'submitted');
+            const graded = studentAssignments.filter(a => a.status === 'graded');
+
+            document.getElementById('upcomingCount').textContent = upcoming.length;
+            document.getElementById('overdueCount').textContent = overdue.length;
+            document.getElementById('submittedCount').textContent = submitted.length;
+            document.getElementById('gradedCount').textContent = graded.length;
+        }
+
+        // Switch assignment tab
+        function switchAssignmentTab(tab) {
+            currentAssignmentTab = tab;
+
+            // Update tab styles
+            document.querySelectorAll('.assignments-tab').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('active');
+                }
+            });
+
+            renderMyAssignments();
+        }
+
+        // Render My Assignments section
+        function renderMyAssignments() {
+            const container = document.getElementById('myAssignmentsContent');
+            const now = new Date();
+
+            let filteredAssignments = [];
+
+            if (currentAssignmentTab === 'upcoming') {
+                filteredAssignments = studentAssignments.filter(a => {
+                    const dueDate = new Date(a.due_date);
+                    return a.status === 'assigned' && dueDate >= now;
+                }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+            } else if (currentAssignmentTab === 'overdue') {
+                filteredAssignments = studentAssignments.filter(a => {
+                    const dueDate = new Date(a.due_date);
+                    return a.status === 'assigned' && dueDate < now;
+                }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+            } else if (currentAssignmentTab === 'submitted') {
+                filteredAssignments = studentAssignments.filter(a => a.status === 'submitted')
+                    .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+            } else if (currentAssignmentTab === 'graded') {
+                filteredAssignments = studentAssignments.filter(a => a.status === 'graded')
+                    .sort((a, b) => new Date(b.due_date) - new Date(a.due_date));
+            }
+
+            if (filteredAssignments.length === 0) {
+                const emptyMessages = {
+                    upcoming: 'No upcoming assignments. You\'re all caught up!',
+                    overdue: 'No overdue assignments. Great job staying on track!',
+                    submitted: 'No submitted assignments yet.',
+                    graded: 'No graded assignments yet.'
+                };
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p>${emptyMessages[currentAssignmentTab]}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = filteredAssignments.map(assignment => createAssignmentCard(assignment)).join('');
+            container.innerHTML = html;
+        }
+
+        // Create assignment card HTML
+        function createAssignmentCard(assignment) {
+            const now = new Date();
+            const dueDate = new Date(assignment.due_date);
+            const isOverdue = dueDate < now && assignment.status === 'assigned';
+
+            // Get subject info
+            const subjectInfo = getSubjectInfo(assignment.subject_key) || { subject: assignment.subject_key, emoji: '📚' };
+
+            // Format due date
+            let dueDateText = '';
+            if (assignment.days_until_due === 0) {
+                dueDateText = `<span class="assignment-due-date urgent">Due Today</span>`;
+            } else if (assignment.days_until_due === 1) {
+                dueDateText = `<span class="assignment-due-date urgent">Due Tomorrow</span>`;
+            } else if (isOverdue) {
+                const daysOverdue = Math.abs(assignment.days_until_due);
+                dueDateText = `<span class="assignment-due-date urgent">${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue</span>`;
+            } else {
+                dueDateText = `<span class="assignment-due-date">Due in ${assignment.days_until_due} days</span>`;
+            }
+
+            // Determine status badge
+            let statusBadge = '';
+            let statusClass = '';
+            if (assignment.status === 'graded') {
+                statusBadge = `<span class="assignment-status-badge graded">Graded</span>`;
+                statusClass = 'status-graded';
+            } else if (assignment.status === 'submitted') {
+                statusBadge = `<span class="assignment-status-badge submitted">Submitted</span>`;
+                statusClass = 'status-submitted';
+            } else if (isOverdue) {
+                statusBadge = `<span class="assignment-status-badge overdue">Overdue</span>`;
+                statusClass = 'status-overdue';
+            } else {
+                statusBadge = `<span class="assignment-status-badge not-started">Not Started</span>`;
+                statusClass = 'status-assigned';
+            }
+
+            // Determine type badge class
+            const typeLower = assignment.type.toLowerCase();
+            const typeClass = typeLower === 'quiz' ? 'quiz' :
+                             typeLower === 'homework' ? 'homework' :
+                             typeLower === 'test' ? 'test' : 'project';
+
+            // Points display
+            let pointsText = '';
+            if (assignment.status === 'graded' && assignment.grade !== null) {
+                const percentage = Math.round((assignment.grade / assignment.points_possible) * 100);
+                pointsText = `<span class="assignment-points graded">${assignment.grade}/${assignment.points_possible} pts (${percentage}%)</span>`;
+            } else {
+                pointsText = `<span class="assignment-points">${assignment.points_possible} pts possible</span>`;
+            }
+
+            // Action button
+            let actionButton = '';
+            if (assignment.status === 'graded') {
+                actionButton = `<button class="assignment-action-btn view" onclick="viewAssignment('${assignment.id}')">View Grade</button>`;
+            } else if (assignment.status === 'submitted') {
+                actionButton = `<button class="assignment-action-btn view" onclick="viewAssignment('${assignment.id}')">View Submission</button>`;
+            } else {
+                actionButton = `<button class="assignment-action-btn start" onclick="startAssignment('${assignment.id}')">Start Assignment</button>`;
+            }
+
+            return `
+                <div class="assignment-card ${statusClass}" onclick="viewAssignment('${assignment.id}')">
+                    <div class="assignment-card-header">
+                        <div class="assignment-title-group">
+                            <div>
+                                <span class="assignment-type-badge ${typeClass}">${assignment.type}</span>
+                            </div>
+                            <div class="assignment-card-title">${assignment.title}</div>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="assignment-card-meta">
+                        <span>${subjectInfo.emoji} ${subjectInfo.subject}</span>
+                        <span>📅 ${dueDateText}</span>
+                        <span>${pointsText}</span>
+                    </div>
+                    ${assignment.description ? `<p style="margin-top: 8px; color: #6b7280; font-size: 0.9em;">${assignment.description}</p>` : ''}
+                    ${assignment.feedback && assignment.status === 'graded' ? `<p style="margin-top: 8px; padding: 10px; background: #fef3c7; border-radius: 6px; font-size: 0.9em;"><strong>Feedback:</strong> ${assignment.feedback}</p>` : ''}
+                    ${actionButton}
+                </div>
+            `;
+        }
+
+        // Placeholder functions for assignment actions
+        function startAssignment(assignmentId) {
+            const assignment = studentAssignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+
+            // TODO: Implement assignment start logic
+            alert(`Starting assignment: ${assignment.title}\n\nThis will open the assignment interface.`);
+            event.stopPropagation();
+        }
+
+        function viewAssignment(assignmentId) {
+            const assignment = studentAssignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+
+            // TODO: Implement view assignment logic
+            console.log('Viewing assignment:', assignment);
+            event.stopPropagation();
+        }
 
         // Load all lesson enhancements from Supabase
         async function loadLessonEnhancements() {
@@ -1675,6 +2589,48 @@
             // Show completion status
             const completedCount = Object.values(completion.assignments || {}).filter(v => v === true).length;
             const isFullyComplete = isLessonCompleted(lessonKey);
+
+            // Add homework submission button (if homework is available)
+            // Extract date and subject info from lessonKey: YYYY-MM-DD_subjectKey_period
+            const keyParts = lessonKey.split('_');
+            const dateKey = keyParts[0];
+            const subjectKey = keyParts.slice(1, -1).join('_');
+            const period = keyParts[keyParts.length - 1];
+
+            // Check if there's homework to submit (if rubric or quiz exists, or teacher notes)
+            const hasHomework = enhancement.quiz || enhancement.rubric || enhancement.notes;
+
+            if (hasHomework) {
+                const subjectInfo = getSubjectInfo(subjectKey);
+                const homeworkKey = 'submit_homework';
+                const isHomeworkDone = completion.assignments?.[homeworkKey] || false;
+
+                html += `
+                    <div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <input type="checkbox" ${isHomeworkDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleAssignment('${lessonKey}', '${homeworkKey}')" style="width: 20px; height: 20px; cursor: pointer;">
+                            <label style="color: white; font-weight: 600; margin: 0;">📝 Submit Homework Assignment</label>
+                        </div>
+                        <button
+                            onclick="event.stopPropagation(); openHomeworkModal({
+                                id: '${lessonKey}_homework',
+                                title: '${enhancement.quiz?.title || 'Homework Assignment'}',
+                                subject: '${subjectInfo.subject}',
+                                dueDate: '${dateKey}',
+                                period: ${period},
+                                points: ${enhancement.quiz?.totalPoints || 100},
+                                instructions: \`${(enhancement.notes || 'Complete the assigned work').replace(/`/g, '').replace(/"/g, '&quot;')}\`
+                            })"
+                            style="width: 100%; padding: 10px; background: white; color: #667eea; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+                        >
+                            📤 ${isHomeworkDone ? 'View Submission' : 'Start Assignment'}
+                        </button>
+                    </div>
+                `;
+                assignmentCount++;
+            }
 
             if (isFullyComplete) {
                 html += `
@@ -1969,6 +2925,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadLessonEnhancements();
             await loadLessonOverrides(); // Load teacher schedule modifications
+            await loadStudentAssignments(); // Load student assignments from database
             populateSubjectFilter();
             populateCourseList(); // Populate sidebar course list
             updateProgressStats();
@@ -2080,6 +3037,18 @@
                         const totalCount = assignments.length;
                         const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+                        // Check if this lesson has an assigned assignment
+                        const assignedWork = getAssignmentForLesson(enhancementKey);
+                        let assignmentBadge = '';
+                        if (assignedWork) {
+                            const dueDate = new Date(assignedWork.due_date);
+                            const formattedDue = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            const isOverdue = dueDate < new Date() && assignedWork.status === 'assigned';
+                            const badgeClass = isOverdue ? 'overdue' : assignedWork.status === 'graded' ? 'graded' : 'assigned';
+                            const icon = assignedWork.type.toLowerCase() === 'quiz' ? '📝' : '📖';
+                            assignmentBadge = `<div class="lesson-assignment-badge ${badgeClass}">${icon} ${assignedWork.type} Due ${formattedDue}</div>`;
+                        }
+
                         // Format objectives as bullet list
                         const objectivesHtml = lesson.objectives && lesson.objectives.length > 0
                             ? `<div class="lesson-objectives">
@@ -2098,6 +3067,7 @@
                                 </div>
                                 <div class="today-lesson-title">${subjectInfo.subject}</div>
                                 <div style="font-size: 0.9em; margin-bottom: 10px; opacity: 0.9;">${lesson.title || 'Lesson ' + lesson.code}</div>
+                                ${assignmentBadge}
                                 ${objectivesHtml}
                                 ${totalCount > 0 ? `
                                     <div class="today-lesson-progress">
@@ -2123,6 +3093,14 @@
             } else {
                 container.innerHTML = lessonsHtml.join('');
             }
+        }
+
+        // Helper function to find assigned work for a specific lesson
+        function getAssignmentForLesson(lessonKey) {
+            if (!studentAssignments || studentAssignments.length === 0) return null;
+
+            // Find assignments that match this lesson_key
+            return studentAssignments.find(a => a.lesson_key === lessonKey);
         }
 
         // Helper to get list of all assignments for a lesson
