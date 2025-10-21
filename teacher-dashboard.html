@@ -6366,14 +6366,15 @@ ${data}
 
                     // Objectives
                     if (l.lesson.objectives && l.lesson.objectives.length > 0) {
+                        const objectivesId = `objectives-${l.lesson.code.replace(/\./g, '-')}-${l.dateStr}`;
                         html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid ${borderColor};">
                             <div style="font-weight: 600; color: ${textColor}; font-size: 0.9em; margin-bottom: 6px;">Learning Objectives:</div>
-                            <ul style="margin: 0; padding-left: 20px; color: ${textColor}; font-size: 0.85em; line-height: 1.5;">`;
+                            <ul id="${objectivesId}" style="margin: 0; padding-left: 20px; color: ${textColor}; font-size: 0.85em; line-height: 1.5;">`;
                         l.lesson.objectives.slice(0, 2).forEach(obj => {
                             html += `<li>${obj}</li>`;
                         });
                         if (l.lesson.objectives.length > 2) {
-                            html += `<li style="opacity: 0.7;"><em>+${l.lesson.objectives.length - 2} more objectives...</em></li>`;
+                            html += `<li style="opacity: 0.7; cursor: pointer; color: #3b82f6; text-decoration: underline;" onclick="event.stopPropagation(); toggleObjectives('${objectivesId}', ${JSON.stringify(l.lesson.objectives).replace(/"/g, '&quot;')}, '${textColor}', '${l.dateStr}', '${l.dayType}', ${l.dayNum})" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'"><em>+${l.lesson.objectives.length - 2} more objectives... (click to expand)</em></li>`;
                         }
                         html += `</ul></div>`;
                     }
@@ -6403,6 +6404,30 @@ ${data}
             // This can be enhanced later with assignment-specific features
             renderWeekView();
         }
+
+        window.toggleObjectives = function(objectivesId, allObjectives, textColor, dateStr, dayType, dayNum) {
+            const ul = document.getElementById(objectivesId);
+            if (!ul) return;
+
+            // Clear current content
+            ul.innerHTML = '';
+
+            // Show all objectives
+            allObjectives.forEach(obj => {
+                ul.innerHTML += `<li>${obj}</li>`;
+            });
+
+            // Add "View Full Lesson" link
+            ul.innerHTML += `<li style="margin-top: 8px; list-style: none; margin-left: -20px;">
+                <a href="javascript:void(0)"
+                   onclick="event.stopPropagation(); openDayModal('${dateStr}', '${dayType}', ${dayNum})"
+                   style="color: #3b82f6; text-decoration: underline; cursor: pointer; font-weight: 600; font-size: 0.95em;"
+                   onmouseover="this.style.color='#2563eb'"
+                   onmouseout="this.style.color='#3b82f6'">
+                   📖 View Full Lesson Details
+                </a>
+            </li>`;
+        };
 
         function logout() {
             window.location.href = 'index.html';
