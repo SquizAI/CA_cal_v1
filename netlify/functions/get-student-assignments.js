@@ -164,7 +164,7 @@ export default async (req, context) => {
     }
 
     // Format response data
-    const assignments = (data as AssignmentRecord[]).map(formatAssignment);
+    const assignments = data.map(formatAssignment);
 
     // Return successful response
     return new Response(
