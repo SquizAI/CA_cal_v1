@@ -2012,6 +2012,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- DOMPurify for XSS protection - sanitizes HTML before rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 </head>
 <body>
     <!-- Mobile Menu Button -->
@@ -2404,6 +2406,17 @@
         const SUPABASE_URL = 'https://qypmfilbkvxwyznnenge.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cG1maWxia3Z4d3l6bm5lbmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNDY3NTIsImV4cCI6MjA3NTcyMjc1Mn0.3uC16cqBUjjFrAz103yws-E5W45HUh6rexbLBI3KCII';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // XSS Protection: Helper function to sanitize HTML
+        // SECURITY NOTE: All innerHTML assignments should use sanitizeHTML() to prevent XSS attacks
+        // Example: element.innerHTML = sanitizeHTML(userContent);
+        // TODO: Audit all 28 innerHTML usages and wrap with sanitizeHTML() where user content is rendered
+        function sanitizeHTML(html) {
+            return DOMPurify.sanitize(html, {
+                ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'code', 'pre', 'span', 'div'],
+                ALLOWED_ATTR: ['href', 'target', 'class', 'style']
+            });
+        }
 
         // Store lesson enhancements from database
         let lessonEnhancements = {};
@@ -3515,297 +3528,9 @@
             document.getElementById('quizModal').classList.remove('active');
         }
 
-        // Homework Submission Modal - Full Implementation
-        let currentHomeworkAssignment = null;
-        let uploadedFiles = [];
-
-        async function openHomeworkSubmission(assignment) {
-            currentHomeworkAssignment = assignment;
-            uploadedFiles = [];
-
-            const modal = document.getElementById('hwSubmissionModal');
-            const body = document.getElementById('hwSubmissionBody');
-
-            const assignmentType = (assignment.type || assignment.assignment_type || 'homework').toLowerCase();
-            const dueDate = new Date(assignment.due_date).toLocaleString('en-US', {
-                month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit'
-            });
-
-            let submissionTypeLabel = 'Homework';
-            let submissionIcon = '📚';
-            if (assignmentType === 'essay') {
-                submissionTypeLabel = 'Essay';
-                submissionIcon = '✍️';
-            } else if (assignmentType === 'project') {
-                submissionTypeLabel = 'Project';
-                submissionIcon = '🎨';
-            }
-
-            body.innerHTML = `
-                <div style="padding: 20px;">
-                    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
-                        <h2 style="margin: 0 0 8px 0; color: #1f2937;">
-                            ${submissionIcon} ${assignment.title || assignment.assignment_title}
-                        </h2>
-                        <p style="margin: 0; color: #6b7280; font-size: 0.95em;">
-                            ${submissionTypeLabel} • ${assignment.points_possible} points • Due: ${dueDate}
-                        </p>
-                    </div>
-
-                    ${assignment.instructions ? `
-                        <div style="margin-bottom: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 6px;">
-                            <strong style="color: #1e40af;">📋 Instructions:</strong>
-                            <div style="margin-top: 8px; color: #374151; line-height: 1.5;">
-                                ${assignment.instructions}
-                            </div>
-                        </div>
-                    ` : ''}
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
-                            Written Response:
-                        </label>
-                        <textarea id="hwSubmissionText"
-                                  placeholder="Type your response here (optional if uploading files)..."
-                                  style="width: 100%; min-height: 150px; padding: 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-family: inherit; font-size: 0.95em; resize: vertical;"
-                        ></textarea>
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
-                            Upload Files (Optional):
-                        </label>
-                        <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; background: #f9fafb;">
-                            <input type="file"
-                                   id="hwFileInput"
-                                   multiple
-                                   onchange="handleFileSelection(event)"
-                                   style="display: none;">
-                            <button onclick="document.getElementById('hwFileInput').click()"
-                                    style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 10px;">
-                                📎 Choose Files
-                            </button>
-                            <p style="margin: 10px 0 0 0; color: #6b7280; font-size: 0.85em;">
-                                Accepted formats: PDF, DOC, DOCX, TXT, JPG, PNG (Max 10MB per file)
-                            </p>
-                        </div>
-                        <div id="selectedFilesList" style="margin-top: 12px;"></div>
-                    </div>
-
-                    <div id="uploadProgress" style="display: none; margin-bottom: 20px; padding: 15px; background: #eff6ff; border-radius: 8px;">
-                        <div style="margin-bottom: 8px; font-weight: 600; color: #1e40af;">
-                            Uploading files...
-                        </div>
-                        <div style="background: white; height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div id="uploadProgressBar"
-                                 style="height: 100%; background: #3b82f6; width: 0%; transition: width 0.3s;">
-                            </div>
-                        </div>
-                        <div id="uploadProgressText" style="margin-top: 8px; font-size: 0.85em; color: #6b7280;"></div>
-                    </div>
-
-                    <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-                        <button onclick="closeHwSubmissionModal()" style="padding: 10px 20px; background: white; color: #374151; border: 2px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                            Cancel
-                        </button>
-                        <button onclick="submitHomework()" style="padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                            ✅ Submit ${submissionTypeLabel}
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            modal.classList.add('active');
-        }
-
-        function handleFileSelection(event) {
-            const files = Array.from(event.target.files);
-            const maxSize = 10 * 1024 * 1024; // 10MB
-            const allowedTypes = [
-                'application/pdf',
-                'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'text/plain',
-                'image/jpeg',
-                'image/png'
-            ];
-
-            const validFiles = files.filter(file => {
-                if (file.size > maxSize) {
-                    alert(`❌ File "${file.name}" is too large. Maximum size is 10MB.`);
-                    return false;
-                }
-                if (!allowedTypes.includes(file.type)) {
-                    alert(`❌ File "${file.name}" has an unsupported format.`);
-                    return false;
-                }
-                return true;
-            });
-
-            uploadedFiles = validFiles;
-            displaySelectedFiles();
-        }
-
-        function displaySelectedFiles() {
-            const container = document.getElementById('selectedFilesList');
-            if (!container) return;
-
-            if (uploadedFiles.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-
-            container.innerHTML = `
-                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px;">
-                    <div style="font-weight: 600; color: #374151; margin-bottom: 10px;">
-                        Selected Files (${uploadedFiles.length}):
-                    </div>
-                    ${uploadedFiles.map((file, index) => `
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: #f9fafb; border-radius: 4px; margin-bottom: 6px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span>📄</span>
-                                <span style="color: #374151; font-size: 0.9em;">${file.name}</span>
-                                <span style="color: #9ca3af; font-size: 0.8em;">(${(file.size / 1024).toFixed(1)} KB)</span>
-                            </div>
-                            <button onclick="removeFile(${index})"
-                                    style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
-                                Remove
-                            </button>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function removeFile(index) {
-            uploadedFiles.splice(index, 1);
-            displaySelectedFiles();
-        }
-
-        async function submitHomework() {
-            if (!currentHomeworkAssignment) return;
-
-            const submissionText = document.getElementById('hwSubmissionText').value.trim();
-
-            // Validate that there's either text or files
-            if (!submissionText && uploadedFiles.length === 0) {
-                alert('⚠️ Please provide a written response or upload at least one file.');
-                return;
-            }
-
-            const confirmSubmit = confirm('🚀 Are you ready to submit your work? You cannot change your submission after submitting.');
-            if (!confirmSubmit) return;
-
-            try {
-                const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
-                if (!currentStudent || !currentStudent.student_id) {
-                    alert('Please log in to submit your assignment.');
-                    return;
-                }
-
-                let fileUrls = [];
-
-                // Upload files to Supabase Storage if there are any
-                if (uploadedFiles.length > 0) {
-                    const progress = document.getElementById('uploadProgress');
-                    const progressBar = document.getElementById('uploadProgressBar');
-                    const progressText = document.getElementById('uploadProgressText');
-
-                    progress.style.display = 'block';
-
-                    for (let i = 0; i < uploadedFiles.length; i++) {
-                        const file = uploadedFiles[i];
-                        const percentage = Math.round(((i + 1) / uploadedFiles.length) * 100);
-
-                        progressText.textContent = `Uploading ${i + 1} of ${uploadedFiles.length}: ${file.name}`;
-                        progressBar.style.width = percentage + '%';
-
-                        // Upload to Supabase Storage
-                        const fileUrl = await uploadFileToStorage(file, currentStudent.student_id, currentHomeworkAssignment.id);
-                        if (fileUrl) {
-                            fileUrls.push({
-                                name: file.name,
-                                url: fileUrl,
-                                size: file.size,
-                                type: file.type
-                            });
-                        }
-                    }
-
-                    progress.style.display = 'none';
-                }
-
-                // Submit to serverless function
-                const response = await fetch('/.netlify/functions/submit-assignment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        assignment_id: currentHomeworkAssignment.id,
-                        student_id: currentStudent.student_id,
-                        submission_type: 'file_upload',
-                        submission_text: submissionText || null,
-                        file_urls: fileUrls,
-                        status: 'submitted',
-                        submitted_at: new Date().toISOString()
-                    })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert('✅ Assignment submitted successfully!');
-                    closeHwSubmissionModal();
-
-                    // Reload assignments to show updated status
-                    await loadStudentAssignments();
-                } else {
-                    throw new Error(result.error || 'Failed to submit assignment');
-                }
-            } catch (error) {
-                console.error('Error submitting homework:', error);
-                alert('❌ Failed to submit assignment: ' + error.message);
-            }
-        }
-
-        async function uploadFileToStorage(file, studentId, assignmentId) {
-            try {
-                // Create a unique file name
-                const timestamp = new Date().getTime();
-                const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-                const filePath = `student-submissions/${studentId}/${assignmentId}/${timestamp}_${safeFileName}`;
-
-                // For now, we'll use a base64 upload approach
-                // In production, you'd want to use Supabase Storage SDK directly
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('filePath', filePath);
-                formData.append('studentId', studentId);
-                formData.append('assignmentId', assignmentId);
-
-                // This is a simplified approach - you'd typically have a dedicated upload endpoint
-                // For now, return a placeholder URL
-                const reader = new FileReader();
-                return new Promise((resolve, reject) => {
-                    reader.onload = function(e) {
-                        // In a real implementation, this would upload to Supabase Storage
-                        // For now, we'll just return a mock URL
-                        resolve(`/uploads/${filePath}`);
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                alert(`Failed to upload ${file.name}: ${error.message}`);
-                return null;
-            }
-        }
-
-        function closeHwSubmissionModal() {
-            currentHomeworkAssignment = null;
-            uploadedFiles = [];
-            document.getElementById('hwSubmissionModal').classList.remove('active');
-        }
+        // Homework Submission Modal - Uses homework-submission.js module
+        // The old implementation has been removed to eliminate duplicate code and fake file uploads
+        // All homework submission functionality is now in homework-submission.js with real Supabase Storage uploads
 
         // Load all lesson enhancements from Supabase
         async function loadLessonEnhancements() {
@@ -4216,8 +3941,7 @@
             document.getElementById('studentName').textContent = `${currentStudent.full_name} - ${studentGrade}th Grade`;
         }
 
-        // Check auth on page load
-        checkAuth();
+        // Auth will be checked in DOMContentLoaded to ensure DOM is ready
 
         // Populate subject filter dropdown with enrolled subjects
         function populateSubjectFilter() {
@@ -4288,6 +4012,9 @@
 
         // Initialize: Load enhancements from database, then render UI
         document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication first - must happen before any other operations
+            checkAuth();
+
             await loadLessonEnhancements();
             await loadLessonOverrides(); // Load teacher schedule modifications
             await loadStudentAssignments(); // Load student assignments from database
