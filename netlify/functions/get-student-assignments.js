@@ -200,6 +200,6 @@ export default async (req, context) => {
   }
 };
 
-export const config: Config = {
+export const config = {
   path: "/api/student-assignments"
 };
