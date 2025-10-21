@@ -2925,8 +2925,8 @@
             renderView();
         }
 
-        // View mode switching
-        function changeViewMode(mode) {
+        // View mode switching - must be global for onclick handlers
+        window.changeViewMode = function(mode) {
             currentViewMode = mode;
 
             // Update button styles using class-based approach
@@ -2948,7 +2948,7 @@
                 document.getElementById('gradingView').style.display = 'none';
                 renderView();
             }
-        }
+        };
 
         // Main render function that delegates to the appropriate view
         function renderView() {
