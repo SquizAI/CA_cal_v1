@@ -2067,13 +2067,102 @@
 }
 
 .loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 5px solid #e0f2fe;
+    width: 80px;
+    height: 80px;
+    border: 6px solid #e0f2fe;
     border-top-color: #0ea5e9;
+    border-right-color: #8b5cf6;
+    border-bottom-color: #06b6d4;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite, pulse 2s ease-in-out infinite;
     margin: 0 auto 20px;
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(14, 165, 233, 0.3); }
+    50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(14, 165, 233, 0.5); }
+}
+
+/* AI Brain Animation */
+.ai-brain-loader {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 25px;
+}
+
+.ai-brain {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+}
+
+.brain-core {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 50%;
+    animation: glow 2s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(102, 126, 234, 0.6);
+}
+
+.brain-particle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+    box-shadow: 0 0 15px currentColor;
+}
+
+.particle-1 { top: 10%; left: 20%; animation: orbit 3s linear infinite; }
+.particle-2 { top: 20%; right: 15%; animation: orbit 2.5s linear infinite 0.5s; }
+.particle-3 { bottom: 15%; left: 25%; animation: orbit 3.5s linear infinite 1s; }
+.particle-4 { bottom: 20%; right: 20%; animation: orbit 2.8s linear infinite 1.5s; }
+.particle-5 { top: 50%; left: 5%; animation: orbit 3.2s linear infinite 0.3s; }
+.particle-6 { top: 50%; right: 5%; animation: orbit 2.7s linear infinite 0.8s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6), 0 0 80px rgba(139, 92, 246, 0.4); }
+    50% { box-shadow: 0 0 60px rgba(102, 126, 234, 0.8), 0 0 120px rgba(139, 92, 246, 0.6); }
+}
+
+@keyframes orbit {
+    0% { transform: rotate(0deg) translateX(50px) rotate(0deg); opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); opacity: 0.3; }
+}
+
+/* Sparkle effects */
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: sparkle 1.5s ease-in-out infinite;
+    box-shadow: 0 0 10px #fff, 0 0 20px #0ea5e9;
+}
+
+.sparkle:nth-child(1) { top: 15%; left: 30%; animation-delay: 0s; }
+.sparkle:nth-child(2) { top: 25%; right: 25%; animation-delay: 0.3s; }
+.sparkle:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 0.6s; }
+.sparkle:nth-child(4) { bottom: 30%; right: 30%; animation-delay: 0.9s; }
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1.5); }
 }
 
 </style>
@@ -4092,14 +4181,27 @@
 
             const originalNotes = document.getElementById(`notes_${enhancementKey}`).value;
 
-            // Show loading indicator
+            // Show loading indicator with animated AI brain
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'ai-loading';
-            loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 50px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 10001; text-align: center;';
+            loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); padding: 40px 60px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 10001; text-align: center; border: 2px solid rgba(102, 126, 234, 0.2);';
             loadingDiv.innerHTML = `
-                <div style="font-size: 3em; margin-bottom: 15px;">🤖</div>
-                <div style="font-size: 1.2em; color: #0369a1; font-weight: 600;">${loadingMsg[improvementType]}</div>
-                <div style="margin-top: 15px; color: #64748b;">This may take a few moments...</div>
+                <div class="ai-brain-loader">
+                    <div class="ai-brain">
+                        <div class="brain-core"></div>
+                        <div class="brain-particle particle-1"></div>
+                        <div class="brain-particle particle-2"></div>
+                        <div class="brain-particle particle-3"></div>
+                        <div class="brain-particle particle-4"></div>
+                        <div class="brain-particle particle-5"></div>
+                        <div class="brain-particle particle-6"></div>
+                    </div>
+                </div>
+                <div style="font-size: 1.4em; color: #667eea; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    AI Working Its Magic ✨
+                </div>
+                <div style="font-size: 1.1em; color: #0369a1; font-weight: 600; margin-bottom: 12px;">${loadingMsg[improvementType]}</div>
+                <div style="color: #64748b; font-size: 0.95em;">Analyzing your lesson content...</div>
             `;
             document.body.appendChild(loadingDiv);
 
@@ -9274,9 +9376,13 @@ ${data}
             loadingOverlay.innerHTML = `
                 <div class="loading-content">
                     <div class="loading-spinner"></div>
-                    <div style="font-size: 1.2em; color: #0369a1; font-weight: 600; margin-bottom: 8px;">
+                    <div style="font-size: 1.4em; color: #667eea; font-weight: 700; margin-bottom: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        📤 Creating Assignments
+                    </div>
+                    <div style="font-size: 1.1em; color: #0369a1; font-weight: 600; margin-bottom: 8px;">
                         Assigning to ${selectedStudents.length} student${selectedStudents.length !== 1 ? 's' : ''}...
                     </div>
+                    <div style="color: #64748b; font-size: 0.95em;">Setting up assignments and notifications...</div>
                 </div>
             `;
             document.body.appendChild(loadingOverlay);
