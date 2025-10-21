@@ -2309,11 +2309,30 @@
                             <option value="submitted" selected>Pending Review</option>
                             <option value="graded">Graded</option>
                         </select>
+                        <select id="gradingGradeLevelFilter" class="filter-select">
+                            <option value="all">All Grade Levels</option>
+                            <option value="7th">7th Grade</option>
+                            <option value="9th">9th Grade</option>
+                            <option value="11th">11th Grade</option>
+                        </select>
                         <select id="gradingSubjectFilter" class="filter-select">
                             <option value="all">All Subjects</option>
-                            <option value="7th_civics">7th Civics</option>
-                            <option value="9th_ela">9th ELA</option>
-                            <option value="11th_government">11th Government</option>
+                            <optgroup label="7th Grade">
+                                <option value="7th_civics">Civics</option>
+                                <option value="7th_ela">English Language Arts</option>
+                                <option value="7th_science">Life Science</option>
+                                <option value="7th_math">Pre-Algebra</option>
+                            </optgroup>
+                            <optgroup label="9th Grade">
+                                <option value="9th_ela">English Language Arts</option>
+                                <option value="9th_math">Geometry</option>
+                                <option value="9th_world_history">World History</option>
+                            </optgroup>
+                            <optgroup label="11th Grade">
+                                <option value="11th_ela">American Literature</option>
+                                <option value="11th_math">Pre-Calculus</option>
+                                <option value="11th_us_gvmnt">U.S. Government</option>
+                            </optgroup>
                         </select>
                         <select id="gradingTypeFilter" class="filter-select">
                             <option value="all">All Types</option>
@@ -2886,6 +2905,39 @@
                 periodFilter = e.target.value;
                 renderView();
             });
+
+            // Grading filter event listeners
+            const gradingStatusFilter = document.getElementById('gradingStatusFilter');
+            const gradingGradeLevelFilter = document.getElementById('gradingGradeLevelFilter');
+            const gradingSubjectFilter = document.getElementById('gradingSubjectFilter');
+            const gradingTypeFilter = document.getElementById('gradingTypeFilter');
+            const gradingSortFilter = document.getElementById('gradingSortFilter');
+
+            if (gradingStatusFilter) {
+                gradingStatusFilter.addEventListener('change', () => {
+                    if (currentViewMode === 'grading') loadSubmissions();
+                });
+            }
+            if (gradingGradeLevelFilter) {
+                gradingGradeLevelFilter.addEventListener('change', () => {
+                    if (currentViewMode === 'grading') loadSubmissions();
+                });
+            }
+            if (gradingSubjectFilter) {
+                gradingSubjectFilter.addEventListener('change', () => {
+                    if (currentViewMode === 'grading') loadSubmissions();
+                });
+            }
+            if (gradingTypeFilter) {
+                gradingTypeFilter.addEventListener('change', () => {
+                    if (currentViewMode === 'grading') loadSubmissions();
+                });
+            }
+            if (gradingSortFilter) {
+                gradingSortFilter.addEventListener('change', () => {
+                    if (currentViewMode === 'grading') loadSubmissions();
+                });
+            }
         }
 
         // Date picker functions
@@ -8974,6 +9026,7 @@ ${data}
             try {
                 // Get filter values
                 const status = document.getElementById('gradingStatusFilter').value;
+                const gradeLevel = document.getElementById('gradingGradeLevelFilter')?.value || 'all';
                 const subject = document.getElementById('gradingSubjectFilter').value;
                 const type = document.getElementById('gradingTypeFilter').value;
                 const sort = document.getElementById('gradingSortFilter').value;
@@ -8992,7 +9045,8 @@ ${data}
                         students:student_id (
                             first_name,
                             last_name,
-                            email
+                            email,
+                            grade_level
                         )
                     `);
 
@@ -9015,7 +9069,16 @@ ${data}
 
                 if (error) throw error;
 
-                currentSubmissions = data || [];
+                let filteredData = data || [];
+
+                // Apply grade-level filter client-side (since it's on the joined student table)
+                if (gradeLevel !== 'all') {
+                    filteredData = filteredData.filter(submission => {
+                        return submission.students?.grade_level === gradeLevel;
+                    });
+                }
+
+                currentSubmissions = filteredData;
 
                 // Update stats
                 updateGradingStats(currentSubmissions);
@@ -9051,7 +9114,7 @@ ${data}
             document.getElementById('lateCount').textContent = late;
         }
 
-        // Render submissions list
+        // Render submissions list - ORGANIZED BY STUDENT, THEN BY SUBJECT
         function renderSubmissions(submissions) {
             const container = document.getElementById('submissionsList');
 
@@ -9066,59 +9129,143 @@ ${data}
                 return;
             }
 
-            container.innerHTML = submissions.map(submission => {
-                const student = submission.students;
-                const studentName = student ? `${student.first_name} ${student.last_name}` : 'Unknown Student';
-                const isLate = submission.submitted_at && submission.due_date &&
-                               new Date(submission.submitted_at) > new Date(submission.due_date);
-                const submittedDate = submission.submitted_at ?
-                    new Date(submission.submitted_at).toLocaleDateString() : 'Not submitted';
-                const dueDate = submission.due_date ?
-                    new Date(submission.due_date).toLocaleDateString() : 'No due date';
+            // GROUP BY STUDENT FIRST
+            const studentGroups = {};
 
-                return `
-                    <div class="submission-card ${isLate ? 'late' : ''}" onclick="openGradingModal('${submission.id}')">
-                        <div class="submission-header">
+            submissions.forEach(submission => {
+                const student = submission.students;
+                const studentId = submission.student_id;
+                const studentName = student ? `${student.first_name} ${student.last_name}` : 'Unknown Student';
+
+                if (!studentGroups[studentId]) {
+                    studentGroups[studentId] = {
+                        name: studentName,
+                        email: student?.email || '',
+                        gradeLevel: student?.grade_level || '',
+                        subjects: {},
+                        totalSubmissions: 0,
+                        pendingCount: 0,
+                        gradedCount: 0
+                    };
+                }
+
+                // GROUP BY SUBJECT WITHIN EACH STUDENT
+                const subjectKey = submission.subject_key || 'No subject';
+                if (!studentGroups[studentId].subjects[subjectKey]) {
+                    studentGroups[studentId].subjects[subjectKey] = [];
+                }
+
+                studentGroups[studentId].subjects[subjectKey].push(submission);
+                studentGroups[studentId].totalSubmissions++;
+
+                if (submission.status === 'submitted') {
+                    studentGroups[studentId].pendingCount++;
+                } else if (submission.status === 'graded') {
+                    studentGroups[studentId].gradedCount++;
+                }
+            });
+
+            // RENDER STUDENT GROUPS
+            let html = '';
+
+            Object.keys(studentGroups).sort((a, b) => {
+                const nameA = studentGroups[a].name;
+                const nameB = studentGroups[b].name;
+                return nameA.localeCompare(nameB);
+            }).forEach(studentId => {
+                const group = studentGroups[studentId];
+
+                html += `
+                    <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <!-- STUDENT HEADER -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
                             <div>
-                                <div class="submission-title">${submission.title || 'Untitled Assignment'}</div>
-                                <div class="submission-student">👤 ${studentName}</div>
+                                <h3 style="margin: 0; font-size: 1.4em; font-weight: 700; color: #1f2937;">
+                                    👤 ${group.name}
+                                </h3>
+                                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 0.95em;">
+                                    ${group.email} ${group.gradeLevel ? `• ${group.gradeLevel} Grade` : ''}
+                                </p>
                             </div>
                             <div style="text-align: right;">
-                                <span class="badge ${submission.assignment_type || 'homework'}">${submission.assignment_type || 'Homework'}</span>
-                                <br>
-                                <span class="badge ${submission.status}" style="margin-top: 8px; display: inline-block;">
-                                    ${submission.status}
-                                </span>
-                                ${isLate ? '<br><span class="badge late" style="margin-top: 8px; display: inline-block;">LATE</span>' : ''}
-                            </div>
-                        </div>
-                        <div class="submission-meta">
-                            <div class="meta-item">
-                                <span class="meta-icon">📚</span>
-                                <span>${submission.subject_key || 'No subject'}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-icon">📅</span>
-                                <span>Due: ${dueDate}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-icon">✅</span>
-                                <span>Submitted: ${submittedDate}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-icon">🎯</span>
-                                <span>${submission.points_possible || 100} points possible</span>
-                            </div>
-                            ${submission.status === 'graded' ? `
-                                <div class="meta-item">
-                                    <span class="meta-icon">📊</span>
-                                    <span>Grade: ${submission.points_earned || 0}/${submission.points_possible || 100}</span>
+                                <div style="font-size: 1.2em; font-weight: 600; color: #ea580c; margin-bottom: 4px;">
+                                    ${group.totalSubmissions} submission${group.totalSubmissions !== 1 ? 's' : ''}
                                 </div>
-                            ` : ''}
+                                <div style="font-size: 0.9em; color: #6b7280;">
+                                    <span style="color: #f59e0b;">${group.pendingCount} pending</span> •
+                                    <span style="color: #10b981;">${group.gradedCount} graded</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- SUBJECTS FOR THIS STUDENT -->
+                        ${Object.keys(group.subjects).sort().map(subjectKey => {
+                            const subjectSubmissions = group.subjects[subjectKey];
+
+                            return `
+                                <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                                    <div style="font-weight: 600; color: #374151; font-size: 1.1em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">
+                                        📚 ${subjectKey} <span style="color: #6b7280; font-size: 0.85em;">(${subjectSubmissions.length} assignment${subjectSubmissions.length !== 1 ? 's' : ''})</span>
+                                    </div>
+
+                                    ${subjectSubmissions.map(submission => {
+                                        const isLate = submission.submitted_at && submission.due_date &&
+                                                       new Date(submission.submitted_at) > new Date(submission.due_date);
+                                        const submittedDate = submission.submitted_at ?
+                                            new Date(submission.submitted_at).toLocaleDateString() : 'Not submitted';
+                                        const dueDate = submission.due_date ?
+                                            new Date(submission.due_date).toLocaleDateString() : 'No due date';
+
+                                        return `
+                                            <div class="submission-card ${isLate ? 'late' : ''}"
+                                                 onclick="openGradingModal('${submission.id}')"
+                                                 style="margin-bottom: 12px; cursor: pointer; transition: all 0.2s;"
+                                                 onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';"
+                                                 onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                                <div class="submission-header">
+                                                    <div>
+                                                        <div class="submission-title">${submission.title || 'Untitled Assignment'}</div>
+                                                    </div>
+                                                    <div style="text-align: right;">
+                                                        <span class="badge ${submission.assignment_type || 'homework'}">${submission.assignment_type || 'Homework'}</span>
+                                                        <br>
+                                                        <span class="badge ${submission.status}" style="margin-top: 8px; display: inline-block;">
+                                                            ${submission.status}
+                                                        </span>
+                                                        ${isLate ? '<br><span class="badge late" style="margin-top: 8px; display: inline-block;">LATE</span>' : ''}
+                                                    </div>
+                                                </div>
+                                                <div class="submission-meta">
+                                                    <div class="meta-item">
+                                                        <span class="meta-icon">📅</span>
+                                                        <span>Due: ${dueDate}</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <span class="meta-icon">✅</span>
+                                                        <span>Submitted: ${submittedDate}</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <span class="meta-icon">🎯</span>
+                                                        <span>${submission.points_possible || 100} points possible</span>
+                                                    </div>
+                                                    ${submission.status === 'graded' ? `
+                                                        <div class="meta-item">
+                                                            <span class="meta-icon">📊</span>
+                                                            <span>Grade: ${submission.points_earned || 0}/${submission.points_possible || 100}</span>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
-            }).join('');
+            });
+
+            container.innerHTML = html;
         }
 
         // Open grading modal for a specific submission
