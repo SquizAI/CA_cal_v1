@@ -1547,6 +1547,45 @@
             color: #1e40af;
         }
 
+        /* Assignment Type Filter Buttons */
+        .type-filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 0.9em;
+        }
+
+        .type-filter-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .type-filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .type-filter-btn .count {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            margin-left: 6px;
+            font-weight: 700;
+        }
+
+        .type-filter-btn.active .count {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
         /* Homework Submission Modal Styles */
         .hw-modal-header {
             margin-bottom: 30px;
@@ -2063,6 +2102,37 @@
                 <h3>My Assignments</h3>
             </div>
 
+            <!-- Assignment Type Filters -->
+            <div class="assignment-type-filters" style="padding: 15px 20px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
+                <div style="font-size: 0.9em; font-weight: 600; color: #6b7280; margin-bottom: 10px;">Filter by Type:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button class="type-filter-btn active" data-type="all" onclick="switchAssignmentType('all')">
+                        All <span class="count" id="typeCountAll">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="homework" onclick="switchAssignmentType('homework')">
+                        📚 Homework <span class="count" id="typeCountHomework">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="quiz" onclick="switchAssignmentType('quiz')">
+                        📝 Quizzes <span class="count" id="typeCountQuiz">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="test" onclick="switchAssignmentType('test')">
+                        📋 Tests <span class="count" id="typeCountTest">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="project" onclick="switchAssignmentType('project')">
+                        🎨 Projects <span class="count" id="typeCountProject">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="essay" onclick="switchAssignmentType('essay')">
+                        ✍️ Essays <span class="count" id="typeCountEssay">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="reading" onclick="switchAssignmentType('reading')">
+                        📖 Reading <span class="count" id="typeCountReading">0</span>
+                    </button>
+                    <button class="type-filter-btn" data-type="activity" onclick="switchAssignmentType('activity')">
+                        🎯 Activities <span class="count" id="typeCountActivity">0</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Assignment Tabs -->
             <div class="assignments-tabs">
                 <button class="assignments-tab active" data-tab="upcoming" onclick="switchAssignmentTab('upcoming')">
@@ -2219,6 +2289,7 @@
         // Store student assignments from database
         let studentAssignments = [];
         let currentAssignmentTab = 'upcoming';
+        let currentAssignmentType = 'all';
 
         // Load student assignments from serverless function
         async function loadStudentAssignments() {
@@ -2256,23 +2327,49 @@
         function updateAssignmentCounts() {
             const now = new Date();
 
-            const upcoming = studentAssignments.filter(a => {
+            // Filter by current assignment type for status counts
+            let typeFilteredAssignments = studentAssignments;
+            if (currentAssignmentType !== 'all') {
+                typeFilteredAssignments = studentAssignments.filter(a =>
+                    a.assignment_type === currentAssignmentType || a.type === currentAssignmentType
+                );
+            }
+
+            const upcoming = typeFilteredAssignments.filter(a => {
                 const dueDate = new Date(a.due_date);
                 return a.status === 'assigned' && dueDate >= now;
             });
 
-            const overdue = studentAssignments.filter(a => {
+            const overdue = typeFilteredAssignments.filter(a => {
                 const dueDate = new Date(a.due_date);
                 return a.status === 'assigned' && dueDate < now;
             });
 
-            const submitted = studentAssignments.filter(a => a.status === 'submitted');
-            const graded = studentAssignments.filter(a => a.status === 'graded');
+            const submitted = typeFilteredAssignments.filter(a => a.status === 'submitted');
+            const graded = typeFilteredAssignments.filter(a => a.status === 'graded');
 
+            // Update status tab counts
             document.getElementById('upcomingCount').textContent = upcoming.length;
             document.getElementById('overdueCount').textContent = overdue.length;
             document.getElementById('submittedCount').textContent = submitted.length;
             document.getElementById('gradedCount').textContent = graded.length;
+
+            // Update type filter counts
+            document.getElementById('typeCountAll').textContent = studentAssignments.length;
+            document.getElementById('typeCountHomework').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'homework' || a.type === 'homework').length;
+            document.getElementById('typeCountQuiz').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'quiz' || a.type === 'quiz').length;
+            document.getElementById('typeCountTest').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'test' || a.type === 'test').length;
+            document.getElementById('typeCountProject').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'project' || a.type === 'project').length;
+            document.getElementById('typeCountEssay').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'essay' || a.type === 'essay').length;
+            document.getElementById('typeCountReading').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'reading' || a.type === 'reading').length;
+            document.getElementById('typeCountActivity').textContent =
+                studentAssignments.filter(a => a.assignment_type === 'activity' || a.type === 'activity').length;
         }
 
         // Switch assignment tab
@@ -2290,28 +2387,56 @@
             renderMyAssignments();
         }
 
+        // Switch assignment type filter
+        function switchAssignmentType(type) {
+            currentAssignmentType = type;
+
+            // Update type filter button styles
+            document.querySelectorAll('.type-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update status tab counts based on selected type
+            updateAssignmentCounts();
+
+            // Re-render assignments with new filters
+            renderMyAssignments();
+        }
+
         // Render My Assignments section
         function renderMyAssignments() {
             const container = document.getElementById('myAssignmentsContent');
             const now = new Date();
 
+            // First filter by assignment type
+            let assignmentsToFilter = studentAssignments;
+            if (currentAssignmentType !== 'all') {
+                assignmentsToFilter = studentAssignments.filter(a =>
+                    a.assignment_type === currentAssignmentType || a.type === currentAssignmentType
+                );
+            }
+
+            // Then filter by status/tab
             let filteredAssignments = [];
 
             if (currentAssignmentTab === 'upcoming') {
-                filteredAssignments = studentAssignments.filter(a => {
+                filteredAssignments = assignmentsToFilter.filter(a => {
                     const dueDate = new Date(a.due_date);
                     return a.status === 'assigned' && dueDate >= now;
                 }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
             } else if (currentAssignmentTab === 'overdue') {
-                filteredAssignments = studentAssignments.filter(a => {
+                filteredAssignments = assignmentsToFilter.filter(a => {
                     const dueDate = new Date(a.due_date);
                     return a.status === 'assigned' && dueDate < now;
                 }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
             } else if (currentAssignmentTab === 'submitted') {
-                filteredAssignments = studentAssignments.filter(a => a.status === 'submitted')
+                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'submitted')
                     .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
             } else if (currentAssignmentTab === 'graded') {
-                filteredAssignments = studentAssignments.filter(a => a.status === 'graded')
+                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'graded')
                     .sort((a, b) => new Date(b.due_date) - new Date(a.due_date));
             }
 
