@@ -2167,6 +2167,31 @@
                 <h3>My Assignments</h3>
             </div>
 
+            <!-- Sort Controls -->
+            <div style="padding: 15px 20px; border-bottom: 1px solid #e5e7eb; background: white; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <span style="font-size: 0.9em; font-weight: 600; color: #6b7280;">Sort by:</span>
+                    <select id="sortBySelect" onchange="changeSortCriteria(this.value)" style="padding: 8px 32px 8px 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 0.9em; font-weight: 600; color: #374151; background: white; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px;">
+                        <option value="due_date">Due Date</option>
+                        <option value="title">Title (A-Z)</option>
+                        <option value="subject">Subject</option>
+                        <option value="points">Points</option>
+                        <option value="assigned_date">Date Assigned</option>
+                        <option value="status">Status</option>
+                    </select>
+                    <button id="sortDirectionBtn" onclick="toggleSortDirection()" style="padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 0.9em; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" title="Toggle sort direction">
+                        <span id="sortDirectionIcon">⬆️</span>
+                        <span id="sortDirectionText">Ascending</span>
+                    </button>
+                    <button onclick="resetSort()" style="padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85em; font-weight: 600; color: #6b7280; transition: all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'" title="Reset to default sort">
+                        🔄 Reset
+                    </button>
+                </div>
+                <div style="font-size: 0.85em; color: #6b7280; display: flex; align-items: center; gap: 6px;">
+                    <span id="sortStatusText">Sorting by due date (earliest first)</span>
+                </div>
+            </div>
+
             <!-- Assignment Type Filters -->
             <div class="assignment-type-filters" style="padding: 15px 20px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
                 <div style="font-size: 0.9em; font-weight: 600; color: #6b7280; margin-bottom: 10px;">Filter by Type:</div>
@@ -2387,6 +2412,8 @@
         let studentAssignments = [];
         let currentAssignmentTab = 'upcoming';
         let currentAssignmentType = 'all';
+        let currentSortBy = 'due_date';
+        let currentSortDirection = 'asc'; // 'asc' or 'desc'
 
         // Load student assignments from serverless function
         async function loadStudentAssignments() {
@@ -2609,6 +2636,124 @@
             }
         }
 
+        // Sort functions
+        function changeSortCriteria(criteria) {
+            currentSortBy = criteria;
+            updateSortStatusText();
+            renderMyAssignments();
+        }
+
+        function toggleSortDirection() {
+            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+
+            // Update UI
+            const icon = document.getElementById('sortDirectionIcon');
+            const text = document.getElementById('sortDirectionText');
+            const btn = document.getElementById('sortDirectionBtn');
+
+            if (currentSortDirection === 'asc') {
+                icon.textContent = '⬆️';
+                text.textContent = 'Ascending';
+                btn.style.borderColor = '#e5e7eb';
+                btn.style.background = 'white';
+            } else {
+                icon.textContent = '⬇️';
+                text.textContent = 'Descending';
+                btn.style.borderColor = '#667eea';
+                btn.style.background = '#eff6ff';
+            }
+
+            updateSortStatusText();
+            renderMyAssignments();
+        }
+
+        function updateSortStatusText() {
+            const sortLabels = {
+                'due_date': 'due date',
+                'title': 'title',
+                'subject': 'subject',
+                'points': 'points',
+                'assigned_date': 'date assigned',
+                'status': 'status'
+            };
+
+            const directionText = currentSortDirection === 'asc'
+                ? (currentSortBy === 'title' || currentSortBy === 'subject' ? 'A-Z' : 'earliest first')
+                : (currentSortBy === 'title' || currentSortBy === 'subject' ? 'Z-A' : 'latest first');
+
+            document.getElementById('sortStatusText').textContent =
+                `Sorting by ${sortLabels[currentSortBy]} (${directionText})`;
+        }
+
+        function resetSort() {
+            currentSortBy = 'due_date';
+            currentSortDirection = 'asc';
+
+            // Reset UI
+            document.getElementById('sortBySelect').value = 'due_date';
+            document.getElementById('sortDirectionIcon').textContent = '⬆️';
+            document.getElementById('sortDirectionText').textContent = 'Ascending';
+            document.getElementById('sortDirectionBtn').style.borderColor = '#e5e7eb';
+            document.getElementById('sortDirectionBtn').style.background = 'white';
+
+            updateSortStatusText();
+            renderMyAssignments();
+        }
+
+        function sortAssignments(assignments) {
+            const sorted = [...assignments]; // Create a copy
+
+            sorted.sort((a, b) => {
+                let compareA, compareB;
+
+                switch (currentSortBy) {
+                    case 'due_date':
+                        compareA = new Date(a.due_date || 0);
+                        compareB = new Date(b.due_date || 0);
+                        break;
+                    case 'title':
+                        compareA = (a.title || a.assignment_title || '').toLowerCase();
+                        compareB = (b.title || b.assignment_title || '').toLowerCase();
+                        break;
+                    case 'subject':
+                        compareA = (a.subject_key || '').toLowerCase();
+                        compareB = (b.subject_key || '').toLowerCase();
+                        break;
+                    case 'points':
+                        compareA = a.points_possible || 0;
+                        compareB = b.points_possible || 0;
+                        break;
+                    case 'assigned_date':
+                        compareA = new Date(a.assigned_date || a.created_at || 0);
+                        compareB = new Date(b.assigned_date || b.created_at || 0);
+                        break;
+                    case 'status':
+                        const statusOrder = { 'assigned': 1, 'submitted': 2, 'graded': 3, 'overdue': 4 };
+                        compareA = statusOrder[a.status] || 0;
+                        compareB = statusOrder[b.status] || 0;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                // Handle different comparison types
+                if (compareA instanceof Date && compareB instanceof Date) {
+                    return currentSortDirection === 'asc'
+                        ? compareA - compareB
+                        : compareB - compareA;
+                } else if (typeof compareA === 'string') {
+                    const result = compareA.localeCompare(compareB);
+                    return currentSortDirection === 'asc' ? result : -result;
+                } else {
+                    return currentSortDirection === 'asc'
+                        ? compareA - compareB
+                        : compareB - compareA;
+                }
+            });
+
+            return sorted;
+        }
+
         // Switch assignment type filter
         function switchAssignmentType(type) {
             currentAssignmentType = type;
@@ -2648,19 +2793,20 @@
                 filteredAssignments = assignmentsToFilter.filter(a => {
                     const dueDate = new Date(a.due_date);
                     return a.status === 'assigned' && dueDate >= now;
-                }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+                });
             } else if (currentAssignmentTab === 'overdue') {
                 filteredAssignments = assignmentsToFilter.filter(a => {
                     const dueDate = new Date(a.due_date);
                     return a.status === 'assigned' && dueDate < now;
-                }).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+                });
             } else if (currentAssignmentTab === 'submitted') {
-                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'submitted')
-                    .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'submitted');
             } else if (currentAssignmentTab === 'graded') {
-                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'graded')
-                    .sort((a, b) => new Date(b.due_date) - new Date(a.due_date));
+                filteredAssignments = assignmentsToFilter.filter(a => a.status === 'graded');
             }
+
+            // Apply user-selected sorting
+            filteredAssignments = sortAssignments(filteredAssignments);
 
             if (filteredAssignments.length === 0) {
                 const emptyMessages = {
