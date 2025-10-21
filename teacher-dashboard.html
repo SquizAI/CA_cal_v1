@@ -5900,7 +5900,7 @@ ${data}
                     let hasLessons = false;
                     periods.forEach(period => {
                         grades.forEach(grade => {
-                            const subj = periodStructure[period]?.[grade];
+                            const subj = periodStructure[dayType]?.[period]?.[grade];
                             if (subj) {
                                 const subjectType = getSubjectType(subj.subject);
                                 if (subjectFilter !== 'all' && subjectType !== subjectFilter) {
