@@ -6488,11 +6488,292 @@ ${data}
             grid.innerHTML = html;
         }
 
-        function renderAssignmentsView() {
-            // For now, render the week view for assignments
-            // This can be enhanced later with assignment-specific features
-            renderWeekView();
+        async function renderAssignmentsView() {
+            const grid = document.getElementById('calendar-grid');
+
+            // Show loading state
+            grid.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                    <div style="font-size: 3em; margin-bottom: 16px;">⏳</div>
+                    <h3 style="margin: 0;">Loading Assignments...</h3>
+                </div>
+            `;
+
+            try {
+                // Fetch all assignments (both assigned and submitted)
+                const { data: assignments, error } = await supabase
+                    .from('student_assignments')
+                    .select(`
+                        *,
+                        students:student_id (
+                            first_name,
+                            last_name,
+                            email,
+                            grade_level
+                        )
+                    `)
+                    .order('due_date', { ascending: false });
+
+                if (error) throw error;
+
+                // Build assignment management interface
+                let html = `
+                    <div style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                            <div>
+                                <h2 style="margin: 0; font-size: 2em; color: #1f2937;">📚 Assignment Management</h2>
+                                <p style="margin: 8px 0 0 0; color: #6b7280;">Manage all student assignments</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="filterAssignments('all')" class="filter-btn" data-filter="all" style="padding: 10px 20px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    All (${assignments.length})
+                                </button>
+                                <button onclick="filterAssignments('assigned')" class="filter-btn" data-filter="assigned" style="padding: 10px 20px; border: 2px solid #e5e7eb; background: white; color: #374151; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    Assigned (${assignments.filter(a => a.status === 'assigned').length})
+                                </button>
+                                <button onclick="filterAssignments('submitted')" class="filter-btn" data-filter="submitted" style="padding: 10px 20px; border: 2px solid #e5e7eb; background: white; color: #374151; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    Submitted (${assignments.filter(a => a.status === 'submitted').length})
+                                </button>
+                                <button onclick="filterAssignments('graded')" class="filter-btn" data-filter="graded" style="padding: 10px 20px; border: 2px solid #e5e7eb; background: white; color: #374151; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    Graded (${assignments.filter(a => a.status === 'graded').length})
+                                </button>
+                            </div>
+                        </div>
+                `;
+
+                if (assignments && assignments.length > 0) {
+                    html += '<div id="assignmentsContainer" style="display: grid; gap: 15px;">';
+
+                    assignments.forEach(assignment => {
+                        const student = assignment.students;
+                        const statusColors = {
+                            'assigned': '#6366f1',
+                            'submitted': '#f59e0b',
+                            'graded': '#10b981',
+                            'overdue': '#ef4444'
+                        };
+                        const statusColor = statusColors[assignment.status] || '#6b7280';
+                        const dueDate = new Date(assignment.due_date).toLocaleDateString();
+                        const assignedDate = new Date(assignment.assigned_at).toLocaleDateString();
+
+                        html += `
+                            <div class="assignment-card" data-status="${assignment.status}" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; transition: all 0.2s;">
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 20px;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                            <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; text-transform: uppercase;">
+                                                ${assignment.status}
+                                            </span>
+                                            <h3 style="margin: 0; font-size: 1.3em; color: #1f2937;">${assignment.assignment_title}</h3>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px;">
+                                            <div style="color: #6b7280;">
+                                                <strong>Student:</strong> ${student.first_name} ${student.last_name} (${student.email})
+                                            </div>
+                                            <div style="color: #6b7280;">
+                                                <strong>Grade:</strong> ${student.grade_level}
+                                            </div>
+                                            <div style="color: #6b7280;">
+                                                <strong>Subject:</strong> ${assignment.subject_key}
+                                            </div>
+                                            <div style="color: #6b7280;">
+                                                <strong>Type:</strong> ${assignment.assignment_type || 'homework'}
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 20px; color: #6b7280; font-size: 0.9em;">
+                                            <div>📅 <strong>Assigned:</strong> ${assignedDate}</div>
+                                            <div>⏰ <strong>Due:</strong> ${dueDate}</div>
+                                            ${assignment.submitted_at ? `<div>✅ <strong>Submitted:</strong> ${new Date(assignment.submitted_at).toLocaleDateString()}</div>` : ''}
+                                            ${assignment.points_possible ? `<div>🎯 <strong>Points:</strong> ${assignment.points_earned || 0}/${assignment.points_possible}</div>` : ''}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <button onclick="editAssignment('${assignment.id}')" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            ✏️ Edit
+                                        </button>
+                                        <button onclick="deleteAssignment('${assignment.id}', '${assignment.assignment_title}')" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                                            🗑️ Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += '</div>';
+                } else {
+                    html += `
+                        <div style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                            <div style="font-size: 3em; margin-bottom: 16px;">📚</div>
+                            <h3 style="margin: 0 0 8px 0;">No Assignments Found</h3>
+                            <p>Create your first assignment to get started.</p>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                grid.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #ef4444;">
+                        <div style="font-size: 3em; margin-bottom: 16px;">⚠️</div>
+                        <h3 style="margin: 0 0 8px 0;">Error Loading Assignments</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
         }
+
+        // Filter assignments by status
+        window.filterAssignments = function(status) {
+            const cards = document.querySelectorAll('.assignment-card');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            // Update button styles
+            filterBtns.forEach(btn => {
+                if (btn.dataset.filter === status) {
+                    btn.style.background = '#667eea';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#667eea';
+                } else {
+                    btn.style.background = 'white';
+                    btn.style.color = '#374151';
+                    btn.style.borderColor = '#e5e7eb';
+                }
+            });
+
+            // Filter cards
+            cards.forEach(card => {
+                if (status === 'all' || card.dataset.status === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        // Edit assignment
+        window.editAssignment = async function(assignmentId) {
+            try {
+                // Fetch assignment details
+                const { data: assignment, error } = await supabase
+                    .from('student_assignments')
+                    .select(`
+                        *,
+                        students:student_id (
+                            first_name,
+                            last_name,
+                            email
+                        )
+                    `)
+                    .eq('id', assignmentId)
+                    .single();
+
+                if (error) throw error;
+
+                const modal = document.getElementById('editModal');
+                const modalBody = document.getElementById('editModalBody');
+
+                // Format dates for input fields
+                const dueDate = new Date(assignment.due_date).toISOString().split('T')[0];
+
+                modalBody.innerHTML = `
+                    <h2 style="margin: 0 0 20px 0;">✏️ Edit Assignment</h2>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>Student:</strong> ${assignment.students.first_name} ${assignment.students.last_name} (${assignment.students.email})
+                    </div>
+                    <form id="editAssignmentForm" style="display: grid; gap: 20px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Assignment Title:</label>
+                            <input type="text" id="editTitle" value="${assignment.assignment_title}" required
+                                   style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Due Date:</label>
+                            <input type="date" id="editDueDate" value="${dueDate}" required
+                                   style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Points Possible:</label>
+                            <input type="number" id="editPoints" value="${assignment.points_possible || 100}" min="0" required
+                                   style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Assignment Type:</label>
+                            <select id="editType" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                                <option value="homework" ${assignment.assignment_type === 'homework' ? 'selected' : ''}>Homework</option>
+                                <option value="quiz" ${assignment.assignment_type === 'quiz' ? 'selected' : ''}>Quiz</option>
+                                <option value="test" ${assignment.assignment_type === 'test' ? 'selected' : ''}>Test</option>
+                                <option value="project" ${assignment.assignment_type === 'project' ? 'selected' : ''}>Project</option>
+                                <option value="essay" ${assignment.assignment_type === 'essay' ? 'selected' : ''}>Essay</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                            <button type="button" onclick="closeEditModal()" class="btn-save secondary" style="background: #6c757d;">Cancel</button>
+                            <button type="submit" class="btn-save">💾 Save Changes</button>
+                        </div>
+                    </form>
+                `;
+
+                modal.classList.add('active');
+
+                // Handle form submission
+                document.getElementById('editAssignmentForm').onsubmit = async (e) => {
+                    e.preventDefault();
+
+                    try {
+                        const { error: updateError } = await supabase
+                            .from('student_assignments')
+                            .update({
+                                assignment_title: document.getElementById('editTitle').value,
+                                due_date: document.getElementById('editDueDate').value,
+                                points_possible: parseInt(document.getElementById('editPoints').value),
+                                assignment_type: document.getElementById('editType').value,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', assignmentId);
+
+                        if (updateError) throw updateError;
+
+                        alert('✅ Assignment updated successfully!');
+                        closeEditModal();
+                        renderAssignmentsView();
+                    } catch (error) {
+                        alert('❌ Error updating assignment: ' + error.message);
+                    }
+                };
+
+            } catch (error) {
+                alert('❌ Error loading assignment: ' + error.message);
+            }
+        };
+
+        // Delete assignment
+        window.deleteAssignment = async function(assignmentId, assignmentTitle) {
+            const confirmed = confirm(
+                `⚠️ Delete Assignment?\n\n` +
+                `Are you sure you want to delete "${assignmentTitle}"?\n\n` +
+                `This action cannot be undone.`
+            );
+
+            if (!confirmed) return;
+
+            try {
+                const { error } = await supabase
+                    .from('student_assignments')
+                    .delete()
+                    .eq('id', assignmentId);
+
+                if (error) throw error;
+
+                alert('✅ Assignment deleted successfully!');
+                renderAssignmentsView();
+            } catch (error) {
+                alert('❌ Error deleting assignment: ' + error.message);
+            }
+        };
 
         window.toggleObjectives = function(objectivesId, allObjectives, textColor, dateStr, dayType, dayNum) {
             const ul = document.getElementById(objectivesId);
