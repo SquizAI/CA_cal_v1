@@ -2953,6 +2953,9 @@
             // Load lesson overrides from database
             await loadLessonOverrides();
 
+            // Load student roster for assignment functionality
+            await loadStudentRoster();
+
             try {
                 renderView();
             } catch (error) {
@@ -3261,6 +3264,35 @@
             }
 
             return cell;
+        }
+
+        // Open day modal - finds the lesson and opens the edit modal
+        function openDayModal(dateStr, dayType, dayNum) {
+            // Find the lesson for this day by searching through all periods and grades
+            const dayKey = `${dayNum}.${dayType}`;
+
+            // Search through periodStructure to find matching lesson
+            for (const dt in periodStructure) {
+                for (const period in periodStructure[dt]) {
+                    for (const grade in periodStructure[dt][period]) {
+                        const subj = periodStructure[dt][period][grade];
+                        if (subj && dt === dayType) {
+                            // Check if this subject has a lesson for this day
+                            const lesson = window.curriculumData.getLesson(subj.key, dayKey);
+                            if (lesson) {
+                                // Found the lesson! Call openEditModal with all parameters
+                                // Create a fake event object
+                                const fakeEvent = { stopPropagation: () => {} };
+                                openEditModal(fakeEvent, dateStr, dayType, dayNum, period, grade);
+                                return; // Exit after opening the first matching lesson
+                            }
+                        }
+                    }
+                }
+            }
+
+            // If no lesson found, show error
+            alert(`❌ No lesson found for Day ${dayNum}${dayType}`);
         }
 
         function openEditModal(e, dateStr, dayType, dayNum, period, grade) {
@@ -9085,6 +9117,78 @@ ${data}
         // ========================================
         // ASSIGN TO STUDENTS FUNCTIONALITY
         // ========================================
+
+        // Global variable to store student roster
+        let studentRoster = {
+            students: {},
+            period1: { A: {}, B: {} },
+            period2: { A: {}, B: {} },
+            period3: { A: {}, B: {} },
+            period4: { A: {}, B: {} }
+        };
+
+        /**
+         * Load all active students from Supabase
+         */
+        async function loadStudentRoster() {
+            try {
+                const { data: students, error } = await supabase
+                    .from('centner_students')
+                    .select('*')
+                    .eq('is_active', true);
+
+                if (error) {
+                    console.error('Error loading student roster:', error);
+                    return;
+                }
+
+                students.forEach(student => {
+                    studentRoster.students[student.id] = {
+                        id: student.id,
+                        firstName: student.first_name,
+                        lastName: student.last_name,
+                        email: student.email,
+                        grade: student.grade_level
+                    };
+                });
+
+                console.log(`✅ Loaded ${students.length} students into roster`);
+            } catch (error) {
+                console.error('Failed to load student roster:', error);
+            }
+        }
+
+        /**
+         * Get students enrolled in a specific period and subject
+         * @param {string} period - Period number (1, 2, 3, or 4)
+         * @param {string} dayType - Day type ('A' or 'B' or 'R' for both)
+         * @param {string} subjectKey - Subject key like '7th_civics' or '9th_math'
+         * @returns {Array} Array of student objects
+         */
+        function getStudentsByPeriod(period, dayType, subjectKey) {
+            // Extract grade level from subject key (e.g., '7th_civics' -> 7)
+            const gradeMatch = subjectKey.match(/^(\d+)(th|rd|nd|st)_/);
+            const targetGrade = gradeMatch ? parseInt(gradeMatch[1]) : null;
+
+            if (!targetGrade || !studentRoster.students) {
+                console.warn('No target grade found or roster not loaded');
+                return Object.values(studentRoster.students || {});
+            }
+
+            // Filter students by grade level
+            const enrolledStudents = Object.values(studentRoster.students)
+                .filter(student => {
+                    // Handle grade as either string or number
+                    const studentGrade = typeof student.grade === 'string'
+                        ? parseInt(student.grade.match(/\d+/)?.[0] || 0)
+                        : parseInt(student.grade);
+
+                    return studentGrade === targetGrade;
+                });
+
+            console.log(`Found ${enrolledStudents.length} students in grade ${targetGrade}`);
+            return enrolledStudents;
+        }
 
         // Global variable to store current assignment context
         let currentAssignmentContext = null;
