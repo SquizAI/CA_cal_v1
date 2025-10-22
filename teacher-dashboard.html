@@ -134,13 +134,14 @@
         }
 
         .tool-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            align-items: stretch;
         }
 
         .tool-btn {
-            padding: 14px 28px;
+            padding: 16px 24px;
             background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
             color: white;
             border: none;
@@ -150,6 +151,11 @@
             font-size: 15px;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 56px;
         }
 
         .tool-btn:hover {
@@ -2188,12 +2194,9 @@
             <h2>🛠️ Teacher Tools</h2>
             <div class="tool-buttons">
                 <button class="tool-btn" onclick="window.location.href='curriculum-sequencing.html'" style="background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); color: white; font-weight: 700; border: 3px solid #fed7aa; box-shadow: 0 4px 12px rgba(234,88,12,0.3);">📊 Curriculum Sequencing & AI Assignment Planning ✨</button>
-                <button class="tool-btn" onclick="openCreateAssignment()">📝 Create Assignment</button>
-                <button class="tool-btn" onclick="openGradeSubmissions()">✅ Grade Submissions</button>
+                <button class="tool-btn" onclick="changeViewMode('grading'); document.querySelector('.view-tab-btn[data-view=grading]').scrollIntoView({ behavior: 'smooth', block: 'center' });">✅ Grade Submissions</button>
                 <button class="tool-btn" onclick="openAttendance()">📋 Take Attendance</button>
-                <button class="tool-btn" onclick="openAnnouncements()">📢 Post Announcement</button>
                 <button class="tool-btn secondary" onclick="openRoster()">👥 View Roster</button>
-                <button class="tool-btn secondary" onclick="openReports()">📊 View Reports</button>
                 <button class="tool-btn" onclick="toggleViewAsStudent()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; font-weight: 600;">👁️ View as Student</button>
             </div>
         </div>
