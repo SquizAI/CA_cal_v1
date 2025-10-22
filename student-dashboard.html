@@ -3219,6 +3219,27 @@
             }
         }
 
+        // Alias function - openHomeworkSubmission calls openHomeworkModal from homework-submission.js
+        function openHomeworkSubmission(assignment) {
+            if (typeof openHomeworkModal === 'function') {
+                openHomeworkModal(assignment);
+            } else {
+                console.error('openHomeworkModal function not loaded from homework-submission.js');
+                alert('❌ Homework submission system not loaded. Please refresh the page.');
+            }
+        }
+
+        // Close functions for modals
+        function closeHomeworkModal() {
+            const modal = document.getElementById('homeworkModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function closeHwSubmissionModal() {
+            const modal = document.getElementById('hwSubmissionModal');
+            if (modal) modal.classList.remove('active');
+        }
+
         // Quiz Submission Modal - Full Implementation
         let currentQuizAssignment = null;
         let quizAnswers = {};
