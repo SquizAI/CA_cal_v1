@@ -683,17 +683,39 @@
                     return;
                 }
 
-                // Demo authentication for staff
-                if ((email.includes('teacher') || email.includes('brett') || email.includes('jairo')) && password === 'teacher123') {
-                    showAlert('✅ Login successful! Redirecting to Teacher Dashboard...', 'success');
-                    setTimeout(() => window.location.href = 'teacher-dashboard.html', 1000);
-                } else if (email.includes('admin') && password === 'admin123') {
-                    showAlert('✅ Login successful! Redirecting to Admin Dashboard...', 'success');
-                    setTimeout(() => window.location.href = 'admin-dashboard.html', 1000);
-                } else {
-                    showAlert('❌ Invalid email or password.', 'error');
-                    setLoading(false);
+                // Authenticate teachers and admins with Supabase Auth
+                if (email.endsWith('@centneracademy.com')) {
+                    // Use Supabase Auth for staff
+                    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (authError || !authData.user) {
+                        showAlert('❌ Invalid email or password.', 'error');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Check user role from metadata
+                    const userRole = authData.user.user_metadata?.role;
+
+                    if (userRole === 'admin' || email.includes('admin')) {
+                        showAlert('✅ Login successful! Redirecting to Admin Dashboard...', 'success');
+                        setTimeout(() => window.location.href = 'admin-dashboard.html', 1000);
+                    } else if (userRole === 'teacher' || email.includes('teacher') || email.includes('brett')) {
+                        showAlert('✅ Login successful! Redirecting to Teacher Dashboard...', 'success');
+                        setTimeout(() => window.location.href = 'teacher-dashboard.html', 1000);
+                    } else {
+                        showAlert('❌ Invalid account type.', 'error');
+                        setLoading(false);
+                    }
+                    return;
                 }
+
+                // If we get here, invalid credentials
+                showAlert('❌ Invalid email or password.', 'error');
+                setLoading(false);
             } catch (error) {
                 console.error('Login error:', error);
                 showAlert('❌ Login failed. Please try again.', 'error');
