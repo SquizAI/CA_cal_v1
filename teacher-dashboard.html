@@ -2533,7 +2533,7 @@
 
     <script src="dist/schedule-data.js?v=20251006j"></script>
     <script src="curriculum-api.js"></script>
-    <script src="dist/student-roster.js?v=20251006j"></script>
+    <!-- Student roster loaded from database, not hardcoded file -->
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Markdown parser for beautiful content rendering -->
@@ -2550,6 +2550,11 @@
                 storage: window.localStorage
             }
         });
+
+        // Initialize empty student roster (will be populated from database)
+        let studentRoster = {
+            students: {}
+        };
 
         let currentMonth = new Date('2025-09-01');
         let gradeFilter = 'all';
@@ -9121,17 +9126,11 @@ ${data}
         // ASSIGN TO STUDENTS FUNCTIONALITY
         // ========================================
 
-        // Global variable to store student roster
-        let studentRoster = {
-            students: {},
-            period1: { A: {}, B: {} },
-            period2: { A: {}, B: {} },
-            period3: { A: {}, B: {} },
-            period4: { A: {}, B: {} }
-        };
+        // Note: studentRoster is loaded from dist/student-roster.js
+        // This function enriches it with live data from Supabase
 
         /**
-         * Load all active students from Supabase
+         * Load all active students from Supabase into existing studentRoster
          */
         async function loadStudentRoster() {
             try {
