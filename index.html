@@ -3,489 +3,737 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Academy @ Centner - School Calendar 2025-2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>AI Academy @ Centner - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --centner-blue: #57BAEB;
-            --centner-pink: #EC4E88;
-            --centner-orange: #FC6F24;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --error-color: #f56565;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
-            color: #1f2937;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        .header {
-            background: linear-gradient(135deg, var(--centner-blue), var(--centner-pink));
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .controls {
-            background: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .grade-filter {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid #d1d5db;
-            border-radius: 0.375rem;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        
-        .filter-btn.active {
-            background: var(--centner-pink);
-            color: white;
-            border-color: var(--centner-pink);
-        }
-        
-        .view-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid #d1d5db;
-            border-radius: 0.375rem;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        
-        .view-btn.active {
-            background: var(--centner-orange);
-            color: white;
-            border-color: var(--centner-orange);
-        }
-        
-        .calendar-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        
-        .calendar-header {
-            background: white;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .calendar-grid {
+
+        /* Split Screen Container */
+        .split-container {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            background: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
         }
-        
-        .weekday-header {
-            padding: 0.75rem;
-            text-align: center;
-            font-weight: 600;
-            color: #6b7280;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .day-cell {
-            min-height: 120px;
-            padding: 0.5rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: all 0.2s;
+
+        /* Left Info Panel */
+        .info-panel {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             position: relative;
             overflow: hidden;
-            background: white;
         }
-        
-        .day-cell:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 10;
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
         }
-        
-        .day-cell.no-school {
-            background: #f9fafb;
-            opacity: 0.6;
+
+        .info-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 15s ease-in-out infinite reverse;
         }
-        
-        .day-cell.weekend {
-            background: #f3f4f6;
-            opacity: 0.4;
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(5deg); }
+            50% { transform: translate(-10px, 20px) rotate(-5deg); }
+            75% { transform: translate(10px, 10px) rotate(3deg); }
         }
-        
-        .day-cell.test-day {
-            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
-            border: 2px solid var(--centner-orange);
+
+        .info-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            animation: fadeInLeft 0.8s ease-out;
         }
-        
-        .day-cell.a-day {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
-        
-        .day-cell.b-day {
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+
+        .info-logo {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
         }
-        
-        .day-number {
-            font-size: 1rem;
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .info-title {
+            font-size: 2.8em;
             font-weight: 700;
-            color: #374151;
-            margin-bottom: 0.25rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
         }
-        
-        .day-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            display: inline-block;
-            margin-bottom: 0.25rem;
+
+        .info-subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 40px;
+            font-weight: 300;
         }
-        
-        .day-label.a-label {
-            background: var(--centner-blue);
-            color: white;
-        }
-        
-        .day-label.b-label {
-            background: var(--centner-pink);
-            color: white;
-        }
-        
-        .period-info {
-            font-size: 0.65rem;
-            color: #6b7280;
-            line-height: 1.3;
-            margin-top: 0.25rem;
-        }
-        
-        .period-info .period-title {
-            font-weight: 600;
-            color: #4b5563;
-        }
-        
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-        
-        .modal.show {
-            display: block;
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 3% auto;
-            padding: 0;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s;
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, var(--centner-blue), var(--centner-pink));
-            color: white;
-            padding: 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            max-height: calc(90vh - 200px);
-        }
-        
-        .modal-footer {
-            background: #f7fafc;
-            padding: 1rem 1.5rem;
-            border-top: 1px solid #e2e8f0;
+
+        .features {
             display: flex;
-            justify-content: flex-end;
-            position: sticky;
-            bottom: 0;
-            z-index: 10;
+            flex-direction: column;
+            gap: 25px;
         }
-        
-        .close {
-            color: white;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        .close:hover {
-            color: #f0f0f0;
-        }
-        
-        .lesson-section {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid var(--centner-blue);
-        }
-        
-        .lesson-title {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .lesson-details {
-            color: #4a5568;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        
-        .lesson-details ul {
-            list-style-type: disc;
-            margin-left: 1.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .lesson-details li {
-            margin-bottom: 0.25rem;
-        }
-        
-        .lesson-metadata {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-        
-        .lesson-metadata span {
+
+        .feature-item {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease-out backwards;
         }
-        
-        /* Mobile Accordion Styles */
-        .accordion-item {
-            display: none;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-            overflow: hidden;
-        }
-        
-        .accordion-header {
-            padding: 1rem;
-            background: white;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-        
-        .accordion-header:hover {
-            background: #f9fafb;
-        }
-        
-        .accordion-header.active {
-            background: linear-gradient(135deg, var(--centner-blue), var(--centner-pink));
-            color: white;
-        }
-        
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background: white;
-        }
-        
-        .accordion-content.show {
-            max-height: 1000px;
-            transition: max-height 0.5s ease-in;
-        }
-        
-        .accordion-body {
-            padding: 1rem;
-        }
-        
+
+        .feature-item:nth-child(1) { animation-delay: 0.2s; }
+        .feature-item:nth-child(2) { animation-delay: 0.4s; }
+        .feature-item:nth-child(3) { animation-delay: 0.6s; }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        /* Mobile Responsive Styles */
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            
-            .header h1 {
-                font-size: 1.5rem;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-            
-            .controls {
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-text h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .feature-text p {
+            font-size: 0.95em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        /* Right Login Panel */
+        .login-panel {
+            background: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInRight 0.8s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-content {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .login-title {
+            font-size: 1.8em;
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: var(--text-light);
+            font-size: 1em;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: var(--transition);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--bg-light);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:focus + label {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Forgot Password Link */
+        .forgot-links {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-links a {
+            color: var(--text-light);
+            font-size: 0.9em;
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 0 8px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .forgot-links a:last-child {
+            border-right: none;
+        }
+
+        .forgot-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .split-container {
+                grid-template-columns: 1fr;
+                /* Reverse order on mobile - login first */
+                display: flex;
+                flex-direction: column-reverse;
+            }
+
+            .info-panel {
+                padding: 40px 30px;
+                min-height: auto;
+            }
+
+            .info-content {
+                max-width: 100%;
+            }
+
+            .info-title {
+                font-size: 2.2em;
+            }
+
+            .info-subtitle {
+                font-size: 1.1em;
+            }
+
+            .features {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-item {
+                padding: 15px;
+            }
+
+            .login-panel {
+                padding: 40px 30px;
+            }
+
+            .login-content {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .info-panel {
+                padding: 30px 20px;
+            }
+
+            .info-logo {
+                font-size: 2.5em;
+            }
+
+            .info-title {
+                font-size: 1.8em;
+            }
+
+            .info-subtitle {
+                font-size: 1em;
+            }
+
+            .features {
+                gap: 15px;
+            }
+
+            .feature-item {
+                padding: 12px;
                 flex-direction: column;
-                align-items: stretch;
+                text-align: center;
             }
-            
-            .grade-filter, .view-selector {
-                width: 100%;
-                justify-content: center;
+
+            .feature-icon {
+                font-size: 1.5em;
+                width: 50px;
+                height: 50px;
             }
-            
-            .calendar-grid {
-                gap: 1px;
-                padding: 0.5rem;
+
+            .login-panel {
+                padding: 30px 20px;
             }
-            
-            .weekday-header {
-                padding: 0.5rem 0.25rem;
-                font-size: 0.75rem;
-            }
-            
-            .day-cell {
-                min-height: 60px;
-                padding: 0.25rem;
-            }
-            
-            .day-number {
-                font-size: 0.75rem;
-            }
-            
-            .day-label {
-                font-size: 0.6rem;
-                padding: 0.05rem 0.2rem;
-            }
-            
-            .period-info {
-                display: none;
-            }
-            
-            .calendar-grid.mobile-view {
-                display: none;
-            }
-            
-            .accordion-item {
-                display: block;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 2% auto;
-                max-height: 95vh;
-            }
-            
-            .modal-body {
-                max-height: calc(95vh - 150px);
-            }
-        }
-        
-        @media (min-width: 769px) {
-            .accordion-container {
-                display: none;
+
+            .login-title {
+                font-size: 1.5em;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1 class="text-3xl font-bold mb-2">AI Academy @ Centner</h1>
-        <p class="text-lg opacity-90">School Calendar 2025-2026</p>
-    </div>
-    
-    <!-- Controls -->
-    <div class="controls">
-        <div class="grade-filter">
-            <button class="filter-btn active" data-grade="all">All Grades</button>
-            <button class="filter-btn" data-grade="7">7th Grade</button>
-            <button class="filter-btn" data-grade="9">9th Grade</button>
-            <button class="filter-btn" data-grade="11">11th Grade</button>
-        </div>
-        <div class="view-selector">
-            <button class="view-btn active" data-view="month">Month</button>
-            <button class="view-btn" data-view="week">Week</button>
-            <button class="view-btn" data-view="day">Day</button>
-        </div>
-    </div>
-    
-    <!-- Calendar Container -->
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <button id="prevMonth" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">← Previous</button>
-            <h2 id="currentMonth" class="text-xl font-bold"></h2>
-            <button id="nextMonth" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Next →</button>
-        </div>
-        
-        <!-- Desktop Calendar Grid -->
-        <div class="calendar-grid" id="calendarGrid"></div>
-        
-        <!-- Mobile Accordion View -->
-        <div class="accordion-container" id="accordionContainer"></div>
-    </div>
-    
-    <!-- Lesson Details Modal -->
-    <div id="lessonModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h3 id="modalTitle" class="text-xl font-bold"></h3>
-                <p id="modalDate" class="opacity-90"></p>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
-            <div class="modal-footer">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onclick="closeModal()">Close</button>
+    <div class="split-container">
+        <!-- Left Info Panel -->
+        <div class="info-panel">
+            <div class="info-content">
+                <div class="info-logo">🎓</div>
+                <h1 class="info-title">AI Academy @ Centner</h1>
+                <p class="info-subtitle">Empowering students with AI-driven personalized learning</p>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-text">
+                            <h3>Dynamic Curriculum</h3>
+                            <p>Access your personalized schedule and curriculum designed for your success</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-text">
+                            <h3>Real-Time Progress</h3>
+                            <p>Track your grades, attendance, and achievements in one unified dashboard</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🚀</div>
+                        <div class="feature-text">
+                            <h3>AI-Powered Learning</h3>
+                            <p>Get intelligent insights and recommendations tailored to your learning style</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Right Login Panel -->
+        <div class="login-panel">
+            <div class="login-content">
+                <div class="login-header">
+                    <div class="login-logo">🔐</div>
+                    <h2 class="login-title">Welcome Back</h2>
+                    <p class="login-subtitle">Sign in to access your dashboard</p>
+                </div>
+
+                <div id="alertBox" class="hidden"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <div class="forgot-links">
+                        <a href="#" id="forgotEmail">Forgot Email?</a>
+                        <a href="#" id="forgotPassword">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn" id="loginBtn">
+                        <span id="btnText">Sign In</span>
+                        <span id="btnLoading" class="loading hidden"></span>
+                    </button>
+                </form>
+
+            </div>
+        </div>
     </div>
-    
-    <script src="schedule-data.js"></script>
-    <script src="curriculum-data.js"></script>
-    <script src="calendar-app.js"></script>
+
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://qypmfilbkvxwyznnenge.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cG1maWxia3Z4d3l6bm5lbmdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNDY3NTIsImV4cCI6MjA3NTcyMjc1Mn0.3uC16cqBUjjFrAz103yws-E5W45HUh6rexbLBI3KCII';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.toLowerCase();
+            const password = document.getElementById('password').value;
+
+            setLoading(true);
+            hideAlert();
+
+            try {
+                // Check for real Centner students using Supabase Auth
+                if (email.endsWith('@centnerstudents.com')) {
+                    // Authenticate with Supabase Auth
+                    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (authError || !authData.user) {
+                        showAlert('❌ Invalid email or password.', 'error');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Get student data from database
+                    const { data, error } = await supabase
+                        .from('centner_students')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('is_active', true)
+                        .single();
+
+                    if (error || !data) {
+                        showAlert('❌ Student record not found.', 'error');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Fetch student subjects
+                    const { data: subjectsData, error: subjectsError } = await supabase
+                        .from('student_subjects')
+                        .select('*')
+                        .eq('student_id', data.id);
+
+                    // Subject name to key mapping
+                    const getSubjectKey = (subjectName) => {
+                        const mapping = {
+                            '7th Life Science': '7th_science',
+                            '7th Pre-Algebra': '7th_math',
+                            '7th English Language Arts': '7th_ela',
+                            '7th Civics/History': '7th_civics',
+                            '9th English Language Arts': '9th_ela',
+                            '9th World History': '9th_world_history',
+                            '9th Geometry': '9th_math',
+                            '11th Pre-Calculus': '11th_math',
+                            '11th American Literature': '11th_ela',
+                            '11th U.S. Government': '11th_us_gvmnt'
+                        };
+                        return mapping[subjectName] || null;
+                    };
+
+                    // Helper to get subject keys for a specific period and track
+                    const getSubjectsForPeriodTrack = (period, track) => {
+                        if (!subjectsData) return [];
+                        return subjectsData
+                            .filter(s => s.period_number === period && s.track === track)
+                            .map(s => getSubjectKey(s.subject_name))
+                            .filter(key => key !== null);
+                    };
+
+                    // Format student data with subjects
+                    const studentData = {
+                        student_id: data.id,
+                        full_name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.email,
+                        email: data.email,
+                        grade_level: data.grade_level?.replace('th', ''),
+                        period_1_a_day: getSubjectsForPeriodTrack(1, 'A'),
+                        period_1_b_day: getSubjectsForPeriodTrack(1, 'B'),
+                        period_2_a_day: getSubjectsForPeriodTrack(2, 'A'),
+                        period_2_b_day: getSubjectsForPeriodTrack(2, 'B'),
+                        period_3_a_day: getSubjectsForPeriodTrack(3, 'A'),
+                        period_3_b_day: getSubjectsForPeriodTrack(3, 'B'),
+                        period_4_a_day: getSubjectsForPeriodTrack(4, 'A'),
+                        period_4_b_day: getSubjectsForPeriodTrack(4, 'B'),
+                        from_database: true
+                    };
+
+                    // Store formatted student data in localStorage
+                    localStorage.setItem('currentStudent', JSON.stringify(studentData));
+                    showAlert(`✅ Welcome ${studentData.full_name}! Redirecting to your dashboard...`, 'success');
+                    setTimeout(() => window.location.href = 'student-dashboard.html', 1000);
+                    return;
+                }
+
+                // Demo authentication for staff
+                if ((email.includes('teacher') || email.includes('brett') || email.includes('jairo')) && password === 'teacher123') {
+                    showAlert('✅ Login successful! Redirecting to Teacher Dashboard...', 'success');
+                    setTimeout(() => window.location.href = 'teacher-dashboard.html', 1000);
+                } else if (email.includes('admin') && password === 'admin123') {
+                    showAlert('✅ Login successful! Redirecting to Admin Dashboard...', 'success');
+                    setTimeout(() => window.location.href = 'admin-dashboard.html', 1000);
+                } else {
+                    showAlert('❌ Invalid email or password.', 'error');
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('❌ Login failed. Please try again.', 'error');
+                setLoading(false);
+            }
+        });
+
+        function setLoading(isLoading) {
+            loginBtn.disabled = isLoading;
+            if (isLoading) {
+                btnText.classList.add('hidden');
+                btnLoading.classList.remove('hidden');
+            } else {
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+        }
+
+        function hideAlert() {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = 'hidden';
+        }
+
+        // Forgot Email Handler
+        document.getElementById('forgotEmail').addEventListener('click', (e) => {
+            e.preventDefault();
+            showAlert('📧 Please contact your school administrator at admin@centneracademy.com for email assistance.', 'success');
+        });
+
+        // Forgot Password Handler
+        document.getElementById('forgotPassword').addEventListener('click', (e) => {
+            e.preventDefault();
+            showAlert('🔑 Please contact your school administrator at admin@centneracademy.com for password reset.', 'success');
+        });
+    </script>
 </body>
 </html>
