@@ -1,19 +1,42 @@
+# Netlify Configuration for AI Academy Calendar
+
 [build]
+  base = "."
   publish = "."
-  
+  command = "echo 'No build needed - static HTML'"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# No redirect needed - we have multiple HTML files
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+
+# Headers for security
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
-    
-[[redirects]]
-  from = "/calendar"
-  to = "/index.html"
-  status = 200
-  
-[[redirects]]
-  from = "/2025-2026"
-  to = "/index.html"
-  status = 200
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Dev server configuration
+[dev]
+  command = ""  # No build command needed for static HTML
+  targetPort = 8888
+  publish = "."
+  framework = "#static"
+
+# Function timeout configuration (paid plan)
+# Regular functions: 10s (free), 26s (Pro), 60s (Business/Enterprise)
+[functions]
+  node_bundler = "esbuild"
